@@ -2,7 +2,7 @@
 
 {
   imports = [
-    #./hypr
+    ./git.nix
   ];
 
   options = {

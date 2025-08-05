@@ -20,6 +20,10 @@
 
     plugins = with pkgs.vimPlugins; [
       {
+        plugin = nvim-autopairs;
+        #config = ...
+      }  
+      {
         plugin = nvim-lspconfig;
         config = toLuaFile ./nvim/plugin/lsp.lua;
       }

@@ -8,6 +8,7 @@
 
   fastfetch
   neofetch
+  tree
 
   #archive tools
   zip
