@@ -15,7 +15,10 @@
       rebuild = "sudo nixos-rebuild switch --flake .#asus-zephyrus";
       
       #git stuffs
-      gca = "git commit -a";
+      gca = "git add -A && git commit -a";
+      gp = "git push";
+      gst = "git status -sb";
+
 
     };
     plugins = [
