@@ -18,7 +18,8 @@
   #utils
   ripgrep
   yq-go
-  htop
+    htop
+    usbutils
 
   #misc
   libnotify

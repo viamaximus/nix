@@ -13,6 +13,10 @@
     soapybladerf
     libbladeRF
 
+    airspy
+    airspyhf
+    soapyairspy
+
     aircrack-ng
 
     kismet
