@@ -27,6 +27,37 @@
       key = "Time";
       format = "{14}:{17}:{20}";
     }
+    {
+      key = "Distro";
+      type = "os";
+    }
+    {
+      key = "Kernel";
+      type = "kernel";
+    }
+    {
+      key = "Shell";
+      type = "shell";
+    }
+    {
+      key = "Packages";
+      type = "packages";
+    }
+    {
+      key = "WM";
+      type = "wm";
+    }
+    {
+        key = "CPU";
+        type = "cpu";
+    }
+    {
+      key = "Memory";
+      type = "memory";
+    }
+    {
+    }
+
     "break"
     "player"
     "media"
