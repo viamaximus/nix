@@ -68,6 +68,17 @@
   programs.hyprland.package = inputs.hyprland.packages."${pkgs.system}".hyprland;
   programs.hyprlock.enable = true;
   security.pam.services.hyprlock = {};
+
+  #Asus Laptop Stuff
+  services = {
+    supergfxd = {
+      enable = true;
+    };
+    asusd = {
+      enable = true;
+      enableUserService = true;
+    };
+  };
  
  # Enable CUPS to print documents.
   services.printing.enable = true;
