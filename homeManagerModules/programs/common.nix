@@ -37,6 +37,8 @@
   waybar
   libnotify
 
+    #nmtui -- whats the package name??
+
   qFlipper
   ];
 

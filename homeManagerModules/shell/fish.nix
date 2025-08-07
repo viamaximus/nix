@@ -5,6 +5,19 @@
       set fish_greeting # Disable greeting
       ${pkgs.fastfetch}/bin/fastfetch
     '';
+    shellAliases = {
+      n = "nvim";
+      ".." = "cd .. ";
+      "..." = "cd ../..";
+      ff = "fastfetch";
+
+      #this will need updated in order to work on other hosts
+      rebuild = "sudo nixos-rebuild switch --flake .#asus-zephyrus";
+      
+      #git stuffs
+      gca = "git commit -a";
+
+    };
     plugins = [
       # Enable a plugin (here grc for colorized command output) from nixpkgs
       #{ name = "grc"; src = pkgs.fishPlugins.grc.src; }
