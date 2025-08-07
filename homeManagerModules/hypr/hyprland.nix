@@ -117,10 +117,17 @@ in {
       "$mainMod SHIFT, 8, movetoworkspace, 8"
       "$mainMod SHIFT, 9, movetoworkspace, 9"
 
-
-          ",XF86MonBrightnessUp, exec, brightnessctl set +10%"
-          ",XF86MonBrightnessDown, exec, brightnessctl set 10%-"
-	];
+      ",XF86MonBrightnessUp, exec, brightnessctl set +10%"
+      ",XF86MonBrightnessDown, exec, brightnessctl set 10%-"
+      ",XF86AudioMute, exec, wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 0%"
+    ];
+    
+    binde = 
+    [
+      ", XF86AudioLowerVolume, exec, wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%-"
+      ", XF86AudioRaiseVolume, exec, wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+"
+       
+    ];
 
 	bindm = [
 	  "$mainMod, mouse:272, movewindow"
