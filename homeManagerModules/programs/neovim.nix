@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ lib, config, pkgs, ... }:
 {
   programs.neovim = 
   let
@@ -20,7 +20,7 @@
 
     plugins = with pkgs.vimPlugins; [
       {
-        plugin = nvim-autopairs;
+          plugin = nvim-autopairs;
         #config = ...
       }  
       {
