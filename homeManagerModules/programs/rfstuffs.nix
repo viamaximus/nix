@@ -4,6 +4,7 @@
   ];
   home.packages = with pkgs; [
     urh
+
     gnuradio
     gnuradioPackages.osmosdr
     gnuradioPackages.fosphor

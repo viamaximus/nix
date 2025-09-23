@@ -123,6 +123,11 @@
     kitty
   ];
   
+#  enable virtualbox virtualization
+#  virtualisation.virtualbox.host.enable = true;
+#  virtualisation.virtualbox.host.enableExtensionPack = true;
+#  users.extraGroups.vboxusers.members = [ "max" ];
+
   fonts.packages = with pkgs; [
     nerd-fonts.fira-code
     nerd-fonts.droid-sans-mono
