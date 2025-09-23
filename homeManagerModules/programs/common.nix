@@ -11,7 +11,7 @@
   lazygit
   lazydocker
   impala
-
+  fd
 
   caligula  
   rpi-imager
