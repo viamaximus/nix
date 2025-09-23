@@ -5,24 +5,41 @@
   ...
 }: {
   home.packages = with pkgs; [
+  
+  cp210x-program
+  
+  lazygit
+  lazydocker
+  impala
+
+
+  caligula  
+  rpi-imager
 
   fastfetch
   neofetch
   tree
 
+  screen 
+
   #archive tools
   zip
   unzip
   p7zip
+  
+  usbimager
 
   #utils
   ripgrep
   yq-go
-    htop
-    usbutils
+  htop
+  usbutils
 
   #misc
-  libnotify
+    libnotify
+
+    #EVIL
+    google-chrome
 
   #homelabby stuff
   docker-compose
