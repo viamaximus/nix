@@ -1,13 +1,6 @@
-{ config, pkgs, ...}: 
-
+{config, pkgs, ...}:
 {
   imports = [
-    ./git.nix
+    ./docker.nix
   ];
-
-  options = {
-  };
-
-  config = {
-  };
 }
