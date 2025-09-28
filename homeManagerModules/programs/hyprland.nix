@@ -11,8 +11,8 @@ in
     # Hyprland user config
     wayland.windowManager.hyprland = {
       enable = true;
-      package = pkgs.hyprland;     # from nixpkgs 25.05
-      systemd.enable = true;       # user systemd units
+      package = lib.mkDefault pkgs.hyprland;
+      systemd.enable = true;
       xwayland.enable = true;
 
       # Small, sane defaults – replace with your own later
