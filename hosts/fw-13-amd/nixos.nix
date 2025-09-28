@@ -1,0 +1,5 @@
+{ ... }:
+{
+  my.hyprland.enable = true;
+}
+
