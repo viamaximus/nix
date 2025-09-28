@@ -2,5 +2,6 @@
 {
   imports = [
     ./programs
+    ./programs/hyprland.nix
   ];
 }

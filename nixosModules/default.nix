@@ -2,5 +2,6 @@
 {
   imports = [
     ./docker.nix
+    ./hyprland.nix
   ];
 }
