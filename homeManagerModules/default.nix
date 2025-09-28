@@ -2,6 +2,6 @@
 {
   imports = [
     ./programs
-    ./programs/hypr
+    ./hypr
   ];
 }
