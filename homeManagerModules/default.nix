@@ -1,12 +1,6 @@
-{ config, pkgs, ...}: 
+{config, pkgs, ...}:
 {
   imports = [
     ./programs
-    ./hypr
-    ./shell
   ];
-  options = {
-  };
-  config = {
-  };
 }
