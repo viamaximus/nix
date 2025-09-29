@@ -1,8 +1,9 @@
 { lib, config, pkgs, ... }:
 let
-  hasVP = name: lib.hasAttr name pkgs.vimPlugins;
-  vp = pkgs.vimPlugins;
+  vp    = pkgs.vimPlugins;
+  hasVP = name: lib.hasAttr name vp;
 
+  # Prefer modern package name; fall back if needed
   luaLsp =
     if pkgs ? lua-language-server
     then pkgs.lua-language-server
@@ -10,38 +11,47 @@ let
 
   isLinux = pkgs.stdenv.isLinux;
 
+  # Comment.nvim attr varies across nixpkgs
   commentPlugin =
     if hasVP "Comment-nvim" then vp."Comment-nvim"
     else if hasVP "comment-nvim" then vp.comment-nvim
     else null;
+
+  commentEntry =
+    if commentPlugin != null then {
+      plugin = commentPlugin;
+      type = "lua";
+      config = ''
+        local ok, C = pcall(require, "Comment")
+        if ok then C.setup() end
+      '';
+    } else null;
 in
 {
   programs.neovim = {
     enable = true;
     defaultEditor = true;
 
-    viAlias = true; vimAlias = true; vimdiffAlias = true;
+    viAlias      = true;
+    vimAlias     = true;
+    vimdiffAlias = true;
 
+    # External tools used by your config
     extraPackages =
       (with pkgs; [
         luaLsp
-        ripgrep
-        fd
-      ]) ++ lib.optionals isLinux (with pkgs; [ wl-clipboard xclip ]);
+        ripgrep     # telescope live_grep
+        fd          # telescope file finder
+      ]) ++ lib.optionals isLinux (with pkgs; [
+        wl-clipboard
+        xclip
+      ]);
 
+    # Plugins; every require(...) is guarded
     plugins = lib.filter (p: p != null) (with vp; [
+      # Editing / UX
       { plugin = nvim-autopairs; }
-
-      # Comment.nvim (guarded)
-      {
-        plugin = commentPlugin;
-        type = "lua";
-        config = ''
-          local ok, C = pcall(require, "Comment")
-          if ok then C.setup() end
-        '';
-      }
-
+      commentEntry
       lualine-nvim
       nvim-web-devicons
       vim-nix
@@ -57,7 +67,7 @@ in
       luasnip
       friendly-snippets
 
-      # Telescope (+ dependency + fzf)
+      # Telescope (+ dependency + fzf-native)
       plenary-nvim
       {
         plugin = telescope-nvim;
@@ -87,13 +97,14 @@ in
         ]));
         type = "lua";
         config = ''
-          local ok, _ = pcall(require, "nvim-treesitter.configs")
+          local ok, configs = pcall(require, "nvim-treesitter.configs")
           if not ok then return end
           ${builtins.readFile ./nvim/plugin/treesitter.lua}
         '';
       }
     ]);
 
+    # Global Lua appended after plugins
     extraLuaConfig = ''
       vim.opt.clipboard = "unnamedplus"
       vim.opt.termguicolors = true
