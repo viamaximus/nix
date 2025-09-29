@@ -1,3 +1,4 @@
+{ ... }:
 {
   imports = [
     ./common.nix
@@ -6,3 +7,4 @@
     # ./vm.nix
   ];
 }
+

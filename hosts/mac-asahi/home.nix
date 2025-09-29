@@ -1,5 +1,9 @@
 { lib, pkgs, ... }:
 {
+  imports = [
+    ../../homeManagerModules
+  ];
+
   my.hyprland.enable = true;
   my.hyprland.terminalPkg = pkgs.foot; 
 
@@ -32,8 +36,6 @@
     bind = SUPER, Return, exec, ${lib.getExe pkgs.foot} -e ${lib.getExe pkgs.fish}
     bind = SUPER, Enter,  exec, ${lib.getExe pkgs.foot} -e ${lib.getExe pkgs.fish}
   '';
-  
-  #home-manager.news.display = "silent";
 
   home = {
     packages = with pkgs; [
