@@ -3,5 +3,6 @@
   imports = [
     ./programs
     ./hypr
+    ./fonts.nix
   ];
 }
