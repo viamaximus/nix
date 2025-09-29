@@ -8,6 +8,10 @@
   programs.starship.enable = true;
   
   programs.home-manager.enable = true;
+  
+#  home-manager = {
+#    news.display = "silent";
+#  };
 
   programs.git.extraConfig = {
     pull.rebase = true;
