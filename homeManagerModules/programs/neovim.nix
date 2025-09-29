@@ -1,62 +1,81 @@
 { lib, config, pkgs, ... }:
 let
-  toLua      = str: "lua << 'EOF'\n${str}\nEOF\n";
-  toLuaFile  = file: "lua << 'EOF'\n${builtins.readFile file}\nEOF\n";
+  hasVP = name: lib.hasAttr name pkgs.vimPlugins;
+  vp = pkgs.vimPlugins;
 
-  # Prefer the modern language server package name if available
   luaLsp =
     if pkgs ? lua-language-server
     then pkgs.lua-language-server
     else pkgs.luajitPackages.lua-lsp;
 
-  isLinux  = pkgs.stdenv.isLinux;
-  isDarwin = pkgs.stdenv.isDarwin;
+  isLinux = pkgs.stdenv.isLinux;
+
+  commentPlugin =
+    if hasVP "Comment-nvim" then vp."Comment-nvim"
+    else if hasVP "comment-nvim" then vp.comment-nvim
+    else null;
 in
 {
   programs.neovim = {
     enable = true;
     defaultEditor = true;
 
-    viAlias = true;
-    vimAlias = true;
-    vimdiffAlias = true;
+    viAlias = true; vimAlias = true; vimdiffAlias = true;
 
-    # External tools Neovim will call
     extraPackages =
       (with pkgs; [
         luaLsp
-        ripgrep          # for telescope live_grep
-      ])
-      ++ lib.optionals isLinux (with pkgs; [
-        wl-clipboard     # Wayland clipboard
-        xclip            # X11 clipboard (harmless on Wayland)
-      ]);
+        ripgrep
+        fd
+      ]) ++ lib.optionals isLinux (with pkgs; [ wl-clipboard xclip ]);
 
-    # Plugins (Nix builds them; your per-plugin Lua lives under ./nvim/)
-    plugins = with pkgs.vimPlugins; [
-      # editing / UX
-      { plugin = nvim-autopairs; }                # auto pairs
-      { plugin = comment-nvim;   config = toLua ''require("Comment").setup()''; }
+    plugins = lib.filter (p: p != null) (with vp; [
+      { plugin = nvim-autopairs; }
+
+      # Comment.nvim (guarded)
+      {
+        plugin = commentPlugin;
+        type = "lua";
+        config = ''
+          local ok, C = pcall(require, "Comment")
+          if ok then C.setup() end
+        '';
+      }
+
       lualine-nvim
       nvim-web-devicons
       vim-nix
 
-      # LSP & Lua dev
-      { plugin = nvim-lspconfig; config = toLuaFile ./nvim/plugin/lsp.lua; }
+      # LSP
+      { plugin = nvim-lspconfig; type = "lua"; config = builtins.readFile ./nvim/plugin/lsp.lua; }
       neodev-nvim
 
-      # completion
-      { plugin = nvim-cmp;       config = toLuaFile ./nvim/plugin/cmp.lua; }
+      # Completion
+      { plugin = nvim-cmp;       type = "lua"; config = builtins.readFile ./nvim/plugin/cmp.lua; }
       cmp-nvim-lsp
       cmp_luasnip
       luasnip
       friendly-snippets
 
-      # telescope (with native fzf)
-      { plugin = telescope-nvim;            config = toLuaFile ./nvim/plugin/telescope.lua; }
-      { plugin = telescope-fzf-native-nvim; config = toLua ''pcall(require("telescope").load_extension, "fzf")''; }
+      # Telescope (+ dependency + fzf)
+      plenary-nvim
+      {
+        plugin = telescope-nvim;
+        type = "lua";
+        config = ''
+          local ok = pcall(require, "telescope")
+          if ok then
+            ${builtins.readFile ./nvim/plugin/telescope.lua}
+          end
+        '';
+      }
+      {
+        plugin = telescope-fzf-native-nvim;
+        type = "lua";
+        config = ''pcall(function() require("telescope").load_extension("fzf") end)'';
+      }
 
-      # treesitter
+      # Treesitter (guarded)
       {
         plugin = (nvim-treesitter.withPlugins (p: [
           p.tree-sitter-bash
@@ -66,18 +85,18 @@ in
           p.tree-sitter-python
           p.tree-sitter-vim
         ]));
-        config = toLuaFile ./nvim/plugin/treesitter.lua;
+        type = "lua";
+        config = ''
+          local ok, _ = pcall(require, "nvim-treesitter.configs")
+          if not ok then return end
+          ${builtins.readFile ./nvim/plugin/treesitter.lua}
+        '';
       }
-    ];
+    ]);
 
-    # Global Lua appended after plugins load
     extraLuaConfig = ''
-      -- sane defaults you likely already have in ./nvim/options.lua,
-      -- but keep a couple here to ensure host portability.
-      vim.opt.clipboard = "unnamedplus"   -- use system clipboard on all hosts
+      vim.opt.clipboard = "unnamedplus"
       vim.opt.termguicolors = true
-
-      -- Load your existing options file
       ${builtins.readFile ./nvim/options.lua}
     '';
   };

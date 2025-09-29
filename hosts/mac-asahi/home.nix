@@ -26,6 +26,15 @@
   
   wayland.windowManager.hyprland.package = lib.mkForce null;
 
+  wayland.windowManager.hyprland.extraConfig = lib.mkAfter ''
+    unbind = SUPER, Return
+    unbind = SUPER, Enter
+    bind = SUPER, Return, exec, ${lib.getExe pkgs.foot} -e ${lib.getExe pkgs.fish}
+    bind = SUPER, Enter,  exec, ${lib.getExe pkgs.foot} -e ${lib.getExe pkgs.fish}
+  '';
+  
+  #home-manager.news.display = "silent";
+
   home = {
     packages = with pkgs; [
       hello
