@@ -1,6 +1,6 @@
 { config, pkgs, lib, ... }:
 let
-  isLinux   = pkgs.stdenv.isLinux;
+  isLinux    = pkgs.stdenv.isLinux;
   hasTermPkg = lib.hasAttrByPath [ "my" "hyprland" "terminalPkg" ] config;
   useFoot    = isLinux && hasTermPkg && config.my.hyprland.terminalPkg == pkgs.foot;
 in
@@ -9,40 +9,27 @@ in
     enable = true;
     settings = {
       main = {
-        # match your kitty font (Nerd)
         font = "JetBrainsMono Nerd Font:size=12";
         dpi-aware = "yes";
         term = "foot";
       };
 
-      # Catppuccin Macchiato palette
+      cursor = {
+        style = "block";
+        blink = "no";
+        color = "24273a f4dbd6";  # <- correct key name
+      };
+
       colors = {
         foreground = "cad3f5";
         background = "24273a";
-
-        # regular
-        regular0 = "494d64"; # black (surface1-ish)
-        regular1 = "ed8796"; # red
-        regular2 = "a6da95"; # green
-        regular3 = "eed49f"; # yellow
-        regular4 = "8aadf4"; # blue
-        regular5 = "c6a0f6"; # magenta (mauve)
-        regular6 = "8bd5ca"; # cyan   (teal)
-        regular7 = "b8c0e0"; # white  (subtext1)
-
-        # bright
-        bright0 = "5b6078"; # bright black
-        bright1 = "ed8796";
-        bright2 = "a6da95";
-        bright3 = "eed49f";
-        bright4 = "8aadf4";
-        bright5 = "c6a0f6";
-        bright6 = "8bd5ca";
-        bright7 = "a5adcb";
-
         selection-foreground = "cad3f5";
         selection-background = "363a4f";
-        cursor = "f4dbd6";
+
+        regular0 = "494d64"; regular1 = "ed8796"; regular2 = "a6da95"; regular3 = "eed49f";
+        regular4 = "8aadf4"; regular5 = "c6a0f6"; regular6 = "8bd5ca"; regular7 = "b8c0e0";
+        bright0  = "5b6078"; bright1  = "ed8796"; bright2  = "a6da95"; bright3  = "eed49f";
+        bright4  = "8aadf4"; bright5  = "c6a0f6"; bright6  = "8bd5ca"; bright7  = "a5adcb";
       };
     };
   };
