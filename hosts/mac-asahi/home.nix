@@ -1,6 +1,7 @@
 { lib, pkgs, ... }:
 {
   my.hyprland.enable = true;
+  my.hyprland.terminalPkg = pkgs.foot; 
 
   xdg.portal = {
     enable = true;
