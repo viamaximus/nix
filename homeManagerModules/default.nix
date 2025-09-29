@@ -7,7 +7,7 @@
     ./shell
   ];
 
-  # Let HM manage itself and silence the “news” popups
+  # Make the 'home-manager' CLI available and silence the news popup
   programs.home-manager.enable = true;
   news.display = "silent";
 }

@@ -3,7 +3,7 @@
   imports = [
     ./common.nix
     ./git.nix
-    ./neovim.nix
+    ./neovim-minimal.nix
     # ./vm.nix
   ];
 }
