@@ -1,10 +1,8 @@
-# flake.nix
 {
   description = "flake to manage both nixos and home-manager";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
-
     home-manager = {
       url = "github:nix-community/home-manager/release-25.05";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -14,25 +12,16 @@
   outputs = inputs @ { self, nixpkgs, home-manager, ... }:
     let
       lib = nixpkgs.lib;
-
-      # the systems we actually use
       systems = [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" ];
-
       forAllSystems = f: lib.genAttrs systems (system: f system);
-
-      # pkgs per-system
-      pkgsFor = system:
-        import nixpkgs {
-          inherit system;
-          config = { allowUnfree = true; };
-          overlays = [ ];
-        };
-    in
-    {
-      # formatter
+      pkgsFor = system: import nixpkgs {
+        inherit system;
+        config = { allowUnfree = true; };
+        overlays = [];
+      };
+    in {
       formatter = forAllSystems (system: (pkgsFor system).alejandra);
 
-      # ----------- NixOS CONFIGS -----------
       nixosConfigurations = {
         asus-zephyrus = lib.nixosSystem {
           system = "x86_64-linux";
@@ -42,7 +31,6 @@
             ./nixosModules
             ./hosts/asus-zephyrus/nixos.nix
 
-            # Home Manager as a NixOS module (25.05)
             home-manager.nixosModules.home-manager
             {
               home-manager = {
@@ -74,7 +62,6 @@
         };
       };
 
-      # ----------- HOME CONFIGS -----------
       homeConfigurations = {
         "max@mac-asahi" = home-manager.lib.homeManagerConfiguration {
           pkgs = pkgsFor "aarch64-linux";
@@ -100,5 +87,4 @@
       };
     };
 }
-
 

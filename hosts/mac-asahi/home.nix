@@ -44,4 +44,11 @@
       fastfetch
     ];
   };
+  
+  #just a quick test for neovim config issues
+#  programs.neovim = {
+#    enable = true;
+#    vimAlias = true;
+#    plugins = [ pkgs.vimPlugins.vim-nix ];
+#  };
 }

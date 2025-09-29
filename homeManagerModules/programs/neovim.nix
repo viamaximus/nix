@@ -3,7 +3,7 @@ let
   vp    = pkgs.vimPlugins;
   hasVP = name: lib.hasAttr name vp;
 
-  # Prefer modern package name; fall back if needed
+  # Prefer modern LSP name; fall back if needed
   luaLsp =
     if pkgs ? lua-language-server
     then pkgs.lua-language-server
@@ -11,7 +11,7 @@ let
 
   isLinux = pkgs.stdenv.isLinux;
 
-  # Comment.nvim attr varies across nixpkgs
+  # Comment.nvim attr varies in nixpkgs snapshots
   commentPlugin =
     if hasVP "Comment-nvim" then vp."Comment-nvim"
     else if hasVP "comment-nvim" then vp.comment-nvim
@@ -32,42 +32,38 @@ in
     enable = true;
     defaultEditor = true;
 
+    # IMPORTANT: use the same Neovim build HM targets
+    # package = pkgs.neovim;
+
     viAlias      = true;
     vimAlias     = true;
     vimdiffAlias = true;
 
-    # External tools used by your config
+    # External CLI deps
     extraPackages =
       (with pkgs; [
         luaLsp
-        ripgrep     # telescope live_grep
-        fd          # telescope file finder
-      ]) ++ lib.optionals isLinux (with pkgs; [
-        wl-clipboard
-        xclip
-      ]);
+        ripgrep
+        fd
+      ]) ++ lib.optionals isLinux (with pkgs; [ wl-clipboard xclip ]);
 
-    # Plugins; every require(...) is guarded
+    # Plugins. All requires are guarded.
     plugins = lib.filter (p: p != null) (with vp; [
-      # Editing / UX
       { plugin = nvim-autopairs; }
       commentEntry
       lualine-nvim
       nvim-web-devicons
       vim-nix
 
-      # LSP
       { plugin = nvim-lspconfig; type = "lua"; config = builtins.readFile ./nvim/plugin/lsp.lua; }
       neodev-nvim
 
-      # Completion
       { plugin = nvim-cmp;       type = "lua"; config = builtins.readFile ./nvim/plugin/cmp.lua; }
       cmp-nvim-lsp
       cmp_luasnip
       luasnip
       friendly-snippets
 
-      # Telescope (+ dependency + fzf-native)
       plenary-nvim
       {
         plugin = telescope-nvim;
@@ -85,7 +81,6 @@ in
         config = ''pcall(function() require("telescope").load_extension("fzf") end)'';
       }
 
-      # Treesitter (guarded)
       {
         plugin = (nvim-treesitter.withPlugins (p: [
           p.tree-sitter-bash
@@ -104,7 +99,6 @@ in
       }
     ]);
 
-    # Global Lua appended after plugins
     extraLuaConfig = ''
       vim.opt.clipboard = "unnamedplus"
       vim.opt.termguicolors = true
