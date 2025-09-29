@@ -4,5 +4,6 @@
     ./programs
     ./hypr
     ./fonts.nix
+    ./shell
   ];
 }
