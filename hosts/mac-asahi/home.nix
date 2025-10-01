@@ -4,6 +4,8 @@
     ../../homeManagerModules
   ];
 
+  programs.vscode.enable = true;
+
   my.hyprland.enable = true;
   my.hyprland.terminalPkg = pkgs.foot; 
 

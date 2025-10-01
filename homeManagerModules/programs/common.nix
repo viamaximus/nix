@@ -16,6 +16,7 @@ in
         # dev & git
         lazygit
         lazydocker
+	vscode
 
         # finders
         fd
