@@ -5,9 +5,22 @@
   ...
 }: {
   home.packages = with pkgs; [
-  
+
+  python3
+
   cp210x-program
-  
+
+  obsidian
+   
+  cmake
+  ninja
+  gnumake
+  gcc13
+  pkg-config
+  spdlog
+  fmt
+
+
   lazygit
   lazydocker
   impala
@@ -47,6 +60,7 @@
 
   #social
   discord
+  element-desktop
 
   #adding some hyprland stuff here for now
   wofi
