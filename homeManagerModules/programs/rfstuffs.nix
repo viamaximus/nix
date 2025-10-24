@@ -10,6 +10,8 @@
     gnuradioPackages.fosphor
     gnuradioPackages.bladeRF
     gnuradioPackages.lora_sdr
+    
+    pkgs.python313Packages.meshtastic
 
     soapybladerf
     libbladeRF
