@@ -5,7 +5,8 @@
   ...
 }: {
   home.packages = with pkgs; [
-
+  
+  git
   python3
 
   cp210x-program

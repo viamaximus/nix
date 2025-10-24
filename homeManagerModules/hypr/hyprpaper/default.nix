@@ -5,8 +5,8 @@
     settings = {
       ipc = "on";
       #splash = false;
-      preload = [ "~/nixos-config/nix/homeManagerModules/hypr/hyprpaper/plasmawaves.png" ];
-      wallpaper = [ ", ~/nixos-config/nix/homeManagerModules/hypr/hyprpaper/plasmawaves.png" ];
+      preload = [ "~/nix/homeManagerModules/hypr/hyprpaper/plasmawaves.png" ];
+      wallpaper = [ ", ~/nix/homeManagerModules/hypr/hyprpaper/plasmawaves.png" ];
     };
   };
 }

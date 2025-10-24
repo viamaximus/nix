@@ -7,7 +7,7 @@
     ./hyprlock.nix
     ./hyprpaper
     ./waybar
-    ./gtk.nix
+    #./gtk.nix
   ];
 
   home.packages = with pkgs; [

@@ -25,17 +25,23 @@
         allowUnfree = true;
       };
     };
-  in
+in
   {
     nixosConfigurations = {
       asus-zephyrus = nixpkgs.lib.nixosSystem {
         specialArgs = { inherit inputs; };
         modules = [
-          ./hosts/asus-zephyrus/configuration.nix
+          ./hosts/cardboard/configuration.nix
+        ];
+      };
+
+      cardboard = nixpkgs.lib.nixosSystem {
+        specialArgs = { inherit inputs; };
+        modules = [
+          ./hosts/cardboard/configuration.nix
         ];
       };
       homeManagerModules.default = ./homeManagerModules;
     };
   };
 }
-
