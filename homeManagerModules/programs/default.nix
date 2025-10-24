@@ -3,7 +3,7 @@
     ./browsers.nix
     ./common.nix
     ./neovim.nix
-    #./git.nix
+    ./git.nix
     #./rfstuffs.nix
   ];
 }
