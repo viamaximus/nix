@@ -109,7 +109,7 @@
   users.users.max = {
     isNormalUser = true;
     description = "max";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [ "networkmanager" "wheel" "docker" ];
   };
   
   nix.settings.experimental-features = ["nix-command" "flakes"];
@@ -127,6 +127,7 @@
 #  virtualisation.virtualbox.host.enable = true;
 #  virtualisation.virtualbox.host.enableExtensionPack = true;
 #  users.extraGroups.vboxusers.members = [ "max" ];
+  virtualisation.docker.enable = true;
 
   fonts.packages = with pkgs; [
     nerd-fonts.fira-code
