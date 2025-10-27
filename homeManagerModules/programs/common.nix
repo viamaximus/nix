@@ -10,6 +10,8 @@
   python3
 
   cp210x-program
+  
+  tailscale
 
   obsidian
    

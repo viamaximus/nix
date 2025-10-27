@@ -68,6 +68,8 @@
   programs.hyprlock.enable = true;
   security.pam.services.hyprlock = {};
 
+  services.tailscale.enable = true;
+
   services.displayManager.ly.enable = true;
 
   # Configure keymap in X11
