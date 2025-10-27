@@ -31,7 +31,7 @@ in
       asus-zephyrus = nixpkgs.lib.nixosSystem {
         specialArgs = { inherit inputs; };
         modules = [
-          ./hosts/cardboard/configuration.nix
+          ./hosts/asus-zephyrus/configuration.nix
         ];
       };
 
