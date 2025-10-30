@@ -19,6 +19,14 @@
     useGlobalPkgs = true;
   };
 
+  #extra cache section
+  nix.settings = {
+		substituters = ["http://192.168.1.208:5000"];
+		trusted-substituters = ["http://192.168.1.208:5000"];
+		trusted-public-keys = ["cache:NyEVh5n7hP0rTsrYoiPAG/q4IKEG+EWfybU6syuHibg="];
+		#trusted-public-keys = ["nix-store-cache:4sC/LVO49ilugliBGFY1554LQS6h40cZaNOkLtomioY="]; #try this if above doesnt work
+	};
+
   # Bootloader.
   boot.loader = {
     grub = {
