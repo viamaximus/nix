@@ -6,7 +6,6 @@
 }: {
   home.packages = with pkgs; [
   
-  git
   python3
 
   cp210x-program
@@ -27,6 +26,9 @@
 
 
   lazygit
+  git
+  gh
+
   lazydocker
   impala
   fd
