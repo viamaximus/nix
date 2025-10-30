@@ -7,6 +7,7 @@
     ./hyprlock.nix
     ./hyprpaper
     ./waybar
+	./wofi.nix
     #./gtk.nix
   ];
 
