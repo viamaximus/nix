@@ -95,6 +95,10 @@ in {
 	  "$mainMod, space, exec, wofi --show drun"
 	  "$mainMod, L, exec, hyprlock"
 	  "$mainMod SHIFT, s, exec, grim -g \"$(slurp -d)\" - | wl-copy"
+
+	  "bind = $mainMod, F, fullscreen"
+	  "bind = $mainMod, mouse_up, workspace, e-1"
+	  "bind = $mainMod, mouse_down, workspace, e+1"
 	  
 	  #move to workspace with mainMod + #
 	  "$mainMod, 1, workspace, 1"
