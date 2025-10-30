@@ -12,6 +12,7 @@
   cp210x-program
   
   tailscale
+  signal-desktop
 
   obsidian
    
