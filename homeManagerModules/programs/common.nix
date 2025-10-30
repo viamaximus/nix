@@ -13,6 +13,7 @@
   
   tailscale
   signal-desktop
+  cosign
 
   obsidian
    
