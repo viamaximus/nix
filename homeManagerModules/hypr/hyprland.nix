@@ -12,6 +12,12 @@ in {
 	  force_zero_scaling = true;
 	};
 
+    monitor = [
+      "eDP-1,preferred,auto,1.6"
+      # "eDP-1,addreserved,64,0,0,0"
+    ];
+
+
 	exec-once = [
 	  "waybar"
 	  "hyprpaper"
@@ -81,9 +87,9 @@ in {
 	windowrule = [];
 
 	gestures = {
-            workspace_swipe = true;
-            workspace_swipe_fingers = 3;
-        };
+					# enabled = true;
+      gesture = "3, horizontal, workspace";
+    };
 
 	"$mainMod" = "SUPER";
 	bind = [
@@ -123,6 +129,8 @@ in {
 
       ",XF86MonBrightnessUp, exec, brightnessctl set +10%"
       ",XF86MonBrightnessDown, exec, brightnessctl set 10%-"
+	  ",XF86LaunchA, exec, brightnessctl --device='kbd_backlight' set 5%-"
+      ",XF86Search, exec, brightnessctl --device='kbd_backlight' set 5%+" 
       ",XF86AudioMute, exec, wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 0%"
     ];
     

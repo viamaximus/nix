@@ -27,7 +27,7 @@ window#waybar {
     color: #ffffff;
     transition-property: background-color;
     transition-duration: .5s;
-    border-radius: 4px;
+    border-radius: 0px;
 }
 
 window#waybar.hidden {
@@ -47,7 +47,7 @@ window#waybar.hidden {
     margin: 4px 0 6px 0;
     background-color: #ddddff;
     color: #303030;
-    min-width: 36px;
+    min-width: 24px;
 }
 
 #workspaces button:hover {
@@ -89,19 +89,12 @@ window#waybar.hidden {
     background-color:transparent;
 }
 
-#window,
-#workspaces {
+#window {
     margin: 0 4px;
 }
 
-/* If workspaces is the leftmost module, omit left margin */
-.modules-left > widget:first-child > #workspaces {
-    margin-left: 0;
-}
-
-/* If workspaces is the rightmost module, omit right margin */
-.modules-right > widget:last-child > #workspaces {
-    margin-right: 0;
+#workspaces {
+    margin: 0 4px 0 20px; /* extra left margin to clear the curved edge */
 }
 
 #clock {
@@ -196,7 +189,7 @@ label:focus {
 
 #idle_inhibitor {
     background-color: #343434;
-    border-radius: 4px;
+    border-radius: 0px;
 }
 
 #mpd {

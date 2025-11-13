@@ -10,17 +10,23 @@
       exclusive = true;
       passtrough = false;
       gtk-layer-shell = true;
-      height = 10;
+      height = 35;
+	
       modules-left = [
         "hyprland/workspaces"
         "custom/divider"
-        "cpu"
-        "custom/divider"
-        "memory"
+        "hyprland/window"
       ];
-      modules-center = [ "hyprland/window" ];
+
+      modules-center = [ ];
+
       modules-right = [
         "tray"
+		"custom/divider"
+        "cpu"
+	    "custom/divider"
+        "memory"
+        "custom/divider"
         "network"
         "custom/divider"
         "pulseaudio"
@@ -29,6 +35,9 @@
         "custom/divider"
         "clock"
       ];
+
+      
+
       "hyprland/window" = { format = "{}"; };
       "wlr/workspaces" = {
         on-scroll-up = "hyprctl dispatch workspace e+1";

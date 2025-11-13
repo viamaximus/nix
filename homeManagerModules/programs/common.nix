@@ -3,16 +3,18 @@
   lib,
   pkgs,
   ...
-}: {
-  home.packages = with pkgs; [
-  
-  python3
+}: 
+let
+  inherit (pkgs.stdenv) isAarch64 isx86_64;
+
+  universalPkgs = with pkgs; [
+    python3
 
   cp210x-program
   
   tailscale
   signal-desktop
-  cosign
+  # cosign
 
   obsidian
    
@@ -34,7 +36,7 @@
   fd
 
   caligula  
-  rpi-imager
+  # rpi-imager
 
   fastfetch
   neofetch
@@ -47,7 +49,7 @@
   unzip
   p7zip
   
-  usbimager
+  # usbimager
 
   #utils
   ripgrep
@@ -59,15 +61,15 @@
     libnotify
 
     #EVIL
-    google-chrome
+    # google-chrome
 
   #homelabby stuff
   docker-compose
   kubectl
 
   #social
-  discord
-  element-desktop
+  # discord
+  # element-desktop
 
   #adding some hyprland stuff here for now
   wofi
@@ -75,13 +77,24 @@
   kitty
   waybar
   libnotify
-
-    #nmtui -- whats the package name??
-
-  qFlipper
   ];
+  
+  x86Pkgs = with pkgs; [
+    discord
+  ];
+  
+  armPkgs = with pkgs; [
+    discordo
+	vesktop
+  ];
+in
+{
+  home.packages = 
+		universalPkgs
+		++ lib.optionals isx86_64 x86Pkgs
+		++ lib.optionals isAarch64 armPkgs;
 
-  programs = {
+	programs = {
     tmux = {
       enable = true;
       clock24 = true;
