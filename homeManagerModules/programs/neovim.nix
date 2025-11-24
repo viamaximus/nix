@@ -1,15 +1,21 @@
-{ lib, config, pkgs, ... }:
-
 {
+  lib,
+  config,
+  pkgs,
+  ...
+}: {
   home.packages = with pkgs; [
-    rustc cargo clippy rustfmt rust-analyzer
+    rustc
+    cargo
+    clippy
+    rustfmt
+    rust-analyzer
     pkg-config
     taplo
   ];
 
-  programs.neovim =
-  let
-    toLua     = str: "lua << EOF\n${str}\nEOF\n";
+  programs.neovim = let
+    toLua = str: "lua << EOF\n${str}\nEOF\n";
     toLuaFile = file: "lua << EOF\n${builtins.readFile file}\nEOF\n";
   in {
     enable = true;
@@ -60,7 +66,7 @@
       # Treesitter
       ################
       {
-        plugin = (nvim-treesitter.withPlugins (p: [
+        plugin = nvim-treesitter.withPlugins (p: [
           p.rust
           p.toml
           p.lua
@@ -70,7 +76,7 @@
           p.json
           p.nix
           p.query
-        ]));
+        ]);
         config = toLuaFile ./nvim/plugin/treesitter.lua;
       }
 
@@ -86,9 +92,9 @@
       ################
       # Rust goodies
       ################
-      rustaceanvim      # maintained successor to rust-tools
-      conform-nvim      # lightweight formatter manager
-      crates-nvim       # Cargo.toml helpers
+      rustaceanvim # maintained successor to rust-tools
+      conform-nvim # lightweight formatter manager
+      crates-nvim # Cargo.toml helpers
     ];
 
     extraLuaConfig = ''
@@ -155,4 +161,3 @@
     '';
   };
 }
-

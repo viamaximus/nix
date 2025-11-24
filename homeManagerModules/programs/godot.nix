@@ -1,9 +1,12 @@
-{ config, pkgs, lib, ...}: 
 {
+  config,
+  pkgs,
+  lib,
+  ...
+}: {
   imports = [
   ];
   home.packages = with pkgs; [
-		godot
-
+    godot
   ];
 }

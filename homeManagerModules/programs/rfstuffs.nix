@@ -1,5 +1,9 @@
-{ config, pkgs, lib, ...}: 
 {
+  config,
+  pkgs,
+  lib,
+  ...
+}: {
   imports = [
   ];
   home.packages = with pkgs; [
@@ -10,7 +14,7 @@
     gnuradioPackages.fosphor
     gnuradioPackages.bladeRF
     gnuradioPackages.lora_sdr
-    
+
     pkgs.python313Packages.meshtastic
 
     soapybladerf
@@ -37,7 +41,7 @@
 
     sdrangel
 
-    qflipper
+    qFlipper
 
     python312Packages.rfcat
 
@@ -48,6 +52,5 @@
     proxmark3
 
     python313Packages.meshtastic
-
   ];
 }

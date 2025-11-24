@@ -24,19 +24,32 @@
     hyprland.url = "github:hyprwm/Hyprland?ref=v0.51.0&submodules=1";
 
     home-manager = {
-      url = "github:nix-community/home-manager/release-25.05";
+      url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    zen-browser = {
+      url = "github:0xc000022070/zen-browser-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+	stylix = {
+ 	  url = "github:danth/stylix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
-  outputs = { self, nixpkgs, apple-silicon, hyprland, ... }@inputs: {
+  outputs = {
+    self,
+    nixpkgs,
+    apple-silicon,
+    hyprland,
+    ...
+  } @ inputs: {
     nixosConfigurations = {
       mac-asahi = nixpkgs.lib.nixosSystem {
         system = "aarch64-linux";
-        specialArgs = { inherit inputs apple-silicon hyprland; };
+        specialArgs = {inherit inputs apple-silicon hyprland;};
         modules = [
           apple-silicon.nixosModules.apple-silicon-support
-          # ./hardware-configuration.nix
           ./hosts/mac-asahi/configuration.nix
         ];
       };
@@ -44,4 +57,3 @@
     };
   };
 }
-

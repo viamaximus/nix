@@ -1,4 +1,4 @@
-{ 
+{
   config,
   lib,
   pkgs,
@@ -10,7 +10,7 @@
 
   programs = {
   };
-  
+
   services = {
   };
 }

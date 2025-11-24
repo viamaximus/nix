@@ -1,4 +1,4 @@
-{ pkgs, ... }:{
+{pkgs, config, ...}: {
   programs.fish = {
     enable = true;
     interactiveShellInit = ''
@@ -10,16 +10,14 @@
       ".." = "cd .. ";
       "..." = "cd ../..";
       ff = "fastfetch";
+	  c = "clear";
 
-      #this will need updated in order to work on other hosts
-      rebuild = "sudo nixos-rebuild switch --flake .#asus-zephyrus";
-      
+      rebuild = "sudo nixos-rebuild switch --flake .#$(hostname)";
+
       #git stuffs
       gca = "git add -A && git commit -a";
       gp = "git push";
       gst = "git status -sb";
-
-
     };
     plugins = [
       # Enable a plugin (here grc for colorized command output) from nixpkgs

@@ -1,23 +1,30 @@
-{ inputs, pkgs, lib, config, hyprland, ... }:
-
 {
+  inputs,
+  pkgs,
+  lib,
+  config,
+  hyprland,
+  ...
+}: {
   imports = [
     ./hardware-configuration.nix
-    inputs.home-manager.nixosModules.home-manager
+	inputs.home-manager.nixosModules.home-manager
   ];
 
   ##
   # home manger
   ##
   home-manager = {
-    extraSpecialArgs = { inherit inputs; };
+    extraSpecialArgs = {inherit inputs;};
+	sharedModules = [
+      inputs.stylix.homeModules.stylix
+	];
     users = {
       max = import ./home.nix;
     };
     useGlobalPkgs = true;
     backupFileExtension = "backup";
   };
-
 
   ############################################
   # Apple Silicon / Asahi (local firmware)
@@ -27,7 +34,7 @@
     setupAsahiSound = true;
     peripheralFirmwareDirectory = ../../firmware; # path literal
   };
-  
+
   boot.kernelParams = [
     "apple_dcp.show_notch=1"
   ];
@@ -57,22 +64,23 @@
   programs.hyprland = {
     enable = true;
     package = hyprland.packages.${pkgs.system}.hyprland;
-    # If you ever want their NixOS module too:
-    # extraConfig = '' ... '';
   };
 
   ############################################
   # Login manager: greetd → Hyprland as max
   ############################################
-  services.greetd = {
-    enable = true;
-    settings.default_session = {
-      command = "Hyprland";
-      user = "max";
-    };
-  };
+	# services.greetd = {
+  	#   enable = true;
+  	#   settings.default_session = {
+  	#     command = "Hyprland";
+  	#     user = "max";
+  	#   };
+  	# };
+  services.displayManager.ly.enable = true;
 
   services.seatd.enable = true;
+
+  services.logind.lidSwitch = "lock";
 
   ############################################
   # User
@@ -80,13 +88,17 @@
   users.users.max = {
     isNormalUser = true;
     description = "max";
-    extraGroups = [ "wheel" "networkmanager" "audio" "video" "input" "docker" ];
+    extraGroups = ["wheel" "networkmanager" "audio" "video" "input" "docker" "dialout" ];
     shell = pkgs.fish;
   };
+
+  virtualisation.docker.enable = true;
 
   programs.fish.enable = true;
 
   security.sudo.enable = true;
+
+  programs.ssh.startAgent = true;
 
   ############################################
   # System packages (minimal)
@@ -108,7 +120,7 @@
   # Nix / Cachix
   ############################################
   nix.settings = {
-    experimental-features = [ "nix-command" "flakes" ];
+    experimental-features = ["nix-command" "flakes"];
 
     substituters = [
       "https://cache.nixos.org"
@@ -136,7 +148,6 @@
   time.timeZone = "America/New_York";
   i18n.defaultLocale = "en_US.UTF-8";
 
-
   fonts.packages = with pkgs; [
     nerd-fonts.fira-code
     nerd-fonts.droid-sans-mono
@@ -145,8 +156,6 @@
     nerd-fonts.ubuntu
   ];
 
-
   # This is about defaults/migrations, not package pinning
   system.stateVersion = "25.05";
 }
-

@@ -1,100 +1,105 @@
-{ 
+{
   config,
   lib,
   pkgs,
+  inputs,
   ...
-}: 
-let
+}: let
   inherit (pkgs.stdenv) isAarch64 isx86_64;
 
   universalPkgs = with pkgs; [
     python3
+    alejandra
 
-  cp210x-program
-  
-  tailscale
-  signal-desktop
-  # cosign
+    cp210x-program
 
-  obsidian
-   
-  cmake
-  ninja
-  gnumake
-  gcc13
-  pkg-config
-  spdlog
-  fmt
+    tailscale
+    signal-desktop
+    # cosign
 
+    obsidian
 
-  lazygit
-  git
-  gh
+    cmake
+    ninja
+    gnumake
+    gcc13
+    pkg-config
+    spdlog
+    fmt
 
-  lazydocker
-  impala
-  fd
+    lazygit
+    git
+    gh
 
-  caligula  
-  # rpi-imager
+    lazydocker
+    impala
+    fd
 
-  fastfetch
-  neofetch
-  tree
+    caligula
+    # rpi-imager
 
-  screen 
+    fastfetch
+    neofetch
+    tree
 
-  #archive tools
-  zip
-  unzip
-  p7zip
-  
-  # usbimager
+    screen
+	tio
 
-  #utils
-  ripgrep
-  yq-go
-  htop
-  usbutils
+    #archive tools
+    zip
+    unzip
+    p7zip
 
-  #misc
+    # usbimager
+
+    #utils
+    ripgrep
+    yq-go
+    htop
+    usbutils
+	feh
+
+    #misc
     libnotify
+	nodejs_22
 
     #EVIL
     # google-chrome
+    inputs.zen-browser.packages.${pkgs.system}.default
+    ungoogled-chromium
 
-  #homelabby stuff
-  docker-compose
-  kubectl
+    #homelabby stuff
+    docker-compose
+	docker
+    kubectl
 
-  #social
-  # discord
-  # element-desktop
+    #social
+    # discord
+    # element-desktop
 
-  #adding some hyprland stuff here for now
-  wofi
-  nautilus
-  kitty
-  waybar
-  libnotify
+    #adding some hyprland stuff here for now
+    wofi
+    nautilus
+    kitty
+    waybar
+    libnotify
   ];
-  
+
   x86Pkgs = with pkgs; [
     discord
   ];
-  
+
   armPkgs = with pkgs; [
     discordo
-	vesktop
+    vesktop
   ];
-in
-{
-  home.packages = 
-		universalPkgs
-		++ lib.optionals isx86_64 x86Pkgs
-		++ lib.optionals isAarch64 armPkgs;
+in {
+  home.packages =
+    universalPkgs
+    ++ lib.optionals isx86_64 x86Pkgs
+    ++ lib.optionals isAarch64 armPkgs;
 
-	programs = {
+  programs = {
     tmux = {
       enable = true;
       clock24 = true;
@@ -108,7 +113,7 @@ in
     #ssh.enable = true;
     aria2.enable = true;
   };
-  
+
   services = {
     # auto mount usb drives
     udiskie.enable = true;

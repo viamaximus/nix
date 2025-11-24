@@ -1,14 +1,18 @@
-{ config, pkgs, lib, ...}: 
-
 {
+  config,
+  pkgs,
+  lib,
+  ...
+}: {
   imports = [
     ./hyprland.nix
     ./hypridle.nix
     ./hyprlock.nix
     ./hyprpaper
     ./waybar
-	./wofi.nix
-    #./gtk.nix
+    ./wofi.nix
+	./gtk.nix
+	./mako.nix
   ];
 
   home.packages = with pkgs; [
