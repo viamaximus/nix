@@ -62,6 +62,8 @@
     #misc
     libnotify
 	nodejs_22
+	cbonsai
+	cowsay
 
     #EVIL
     # google-chrome

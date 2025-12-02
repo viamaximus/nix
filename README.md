@@ -5,6 +5,8 @@ i tend to bounce around between a few machines, so i needed a single flake that 
 
 ## screenshots
 
+![desktop](screenshots/desktop.png)
+
 ## features
 
 ### desktop environment
@@ -37,6 +39,18 @@ Wallpaper switching command:
 2. regenerated stylix color pallete
 3. applies changes & rebuilds nix system
 
+### Wallpaper Switching Demo
+  <table>
+    <tr>
+      <td><img src="screenshots/desktop.png" alt="before"/></td>
+      <td><img src="screenshots/blossoms-desktop.png" alt="after"/></td>
+    </tr>
+    <tr>
+      <td align="center">theme 1</td>
+      <td align="center">theme 2</td>
+    </tr>
+  </table>
+
 structure
 ```
   ├── flake.nix              # flake entry point
@@ -51,3 +65,8 @@ structure
   ├── nixosModules/          # system-level modules
   └── wallpapers/            # theme wallpapers
 ```
+
+## todo
+- simplify wallpaper switch system (maybe waybar widget)
+- low battery notification
+- fix nightlight (doesnt work out of the box)
