@@ -9,5 +9,9 @@
 	./kicad.nix
 	./wallpaper-switch.nix
 	./vesktop.nix
+	./spotify.nix
+	./spotify-config.nix
+	./clipboard.nix
+	./nightlight.nix
   ];
 }

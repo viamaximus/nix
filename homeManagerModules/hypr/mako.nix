@@ -3,13 +3,15 @@
 {
   services.mako = {
     enable = true;
-    borderSize = lib.mkForce 2;
-    borderRadius = lib.mkForce 15;
-    width = lib.mkForce 350;
-    height = lib.mkForce 150;
-    padding = lib.mkForce "15";
-    margin = lib.mkForce "20";
-    defaultTimeout = lib.mkForce 5000;
+    settings = {
+      border-size = lib.mkForce 2;
+      border-radius = lib.mkForce 15;
+      width = lib.mkForce 350;
+      height = lib.mkForce 150;
+      padding = lib.mkForce "15";
+      margin = lib.mkForce "20";
+      default-timeout = lib.mkForce 5000;
+    };
 
     extraConfig = ''
       [urgency=low]

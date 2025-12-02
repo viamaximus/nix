@@ -6,9 +6,9 @@
 }: {
   programs.git = {
     enable = true;
-    userName = "max";
-    userEmail = "ianawestlake@gmail.com";
-    extraConfig = {
+    settings = {
+      user.name = "max";
+      user.email = "ianawestlake@gmail.com";
       credential.helper = "manager";
       credential."https://github.com".username = "viamaximus";
       credential.credentialStore = "cache";

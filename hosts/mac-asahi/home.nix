@@ -5,19 +5,10 @@
   inputs,
   ...
 }:
-let
-  wallpaperConfig = import ./current-wallpaper.nix;
-in
 {
   imports = [
     ../../homeManagerModules
   ];
-  
-  stylix = {
-    enable = true;
-    image = wallpaperConfig.currentWallpaper;
-    polarity = "dark";
-  };
 
   home.username = "max";
   home.homeDirectory = "/home/max";

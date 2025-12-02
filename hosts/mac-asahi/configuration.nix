@@ -5,20 +5,27 @@
   config,
   hyprland,
   ...
-}: {
+}:
+let
+  wallpaperConfig = import ./current-wallpaper.nix;
+in {
   imports = [
     ./hardware-configuration.nix
 	inputs.home-manager.nixosModules.home-manager
+	inputs.stylix.nixosModules.stylix
   ];
+
+  stylix = {
+    enable = true;
+    image = wallpaperConfig.currentWallpaper;
+    polarity = "dark";
+  };
 
   ##
   # home manger
   ##
   home-manager = {
     extraSpecialArgs = {inherit inputs;};
-	sharedModules = [
-      inputs.stylix.homeModules.stylix
-	];
     users = {
       max = import ./home.nix;
     };
@@ -45,6 +52,11 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = false;
 
+  # Disable P2P support in brcmfmac WiFi driver to suppress boot errors
+  boot.extraModprobeConfig = ''
+    options brcmfmac p2pon=0
+  '';
+
   networking.hostName = "mac-asahi";
   networking.networkmanager.enable = true;
 
@@ -63,7 +75,7 @@
   ############################################
   programs.hyprland = {
     enable = true;
-    package = hyprland.packages.${pkgs.system}.hyprland;
+    package = hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
   };
 
   ############################################
@@ -80,7 +92,7 @@
 
   services.seatd.enable = true;
 
-  services.logind.lidSwitch = "lock";
+  services.logind.settings.Login.HandleLidSwitch = "lock";
 
   ############################################
   # User
