@@ -46,8 +46,8 @@ Wallpaper switching command:
       <td><img src=".github/screenshots/blossoms-desktop.png" alt="after"/></td>
     </tr>
     <tr>
-      <td align="center">theme 1</td>
-      <td align="center">theme 2</td>
+      <td align="center">fern</td>
+      <td align="center">sakura</td>
     </tr>
   </table>
 
