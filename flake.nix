@@ -53,6 +53,23 @@
           ./hosts/mac-asahi/configuration.nix
         ];
       };
+
+      asus-zephyrus = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        specialArgs = {inherit inputs hyprland;};
+        modules = [
+          ./hosts/asus-zephyrus/configuration.nix
+        ];
+      };
+
+      cardboard = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        specialArgs = {inherit inputs hyprland;};
+        modules = [
+          ./hosts/cardboard/configuration.nix
+        ];
+      };
+
       homeManagerModules.default = ./homeManagerModules;
     };
   };
