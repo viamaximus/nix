@@ -1,0 +1,12 @@
+wallpapers/*.jpg
+wallpapers/*.jpeg
+wallpapers/*.png
+wallpapers/*.webp
+wallpapers/*.avif
+wallpapers/*.mp4
+
+!wallpapers/README.md
+!wallpapers/example.*
+
+result
+result-*
