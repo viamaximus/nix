@@ -5,7 +5,7 @@ i tend to bounce around between a few machines, so i needed a single flake that 
 
 ## screenshots
 
-![desktop](screenshots/desktop.png)
+![desktop](.github/screenshots/desktop.png)
 
 ## features
 
@@ -42,8 +42,8 @@ Wallpaper switching command:
 ### Wallpaper Switching Demo
   <table>
     <tr>
-      <td><img src="screenshots/desktop.png" alt="before"/></td>
-      <td><img src="screenshots/blossoms-desktop.png" alt="after"/></td>
+      <td><img src=".github/screenshots/desktop.png" alt="before"/></td>
+      <td><img src=".github/screenshots/blossoms-desktop.png" alt="after"/></td>
     </tr>
     <tr>
       <td align="center">theme 1</td>
