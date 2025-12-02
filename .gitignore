@@ -8,5 +8,7 @@ wallpapers/*.mp4
 !wallpapers/README.md
 !wallpapers/example.*
 
+!.github/screenshots/*
+
 result
 result-*
