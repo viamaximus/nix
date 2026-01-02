@@ -1,5 +1,5 @@
 {
-  description = "Asahi NixOS + Hyprland 0.51.0 (minimal, no HM)";
+  description = "Multi-System flake";
 
   nixConfig = {
     extra-substituters = [
@@ -67,6 +67,14 @@
         specialArgs = {inherit inputs hyprland;};
         modules = [
           ./hosts/cardboard/configuration.nix
+        ];
+      };
+
+      tower = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        specialArgs = {inherit inputs hyprland;};
+        modules = [
+          ./hosts/tower/configuration.nix
         ];
       };
 
