@@ -65,6 +65,12 @@
 	cbonsai
 	cowsay
 
+    #bluetooth
+    bluetuith
+
+    #audio
+    pwvucontrol
+
     #EVIL
     # google-chrome
     inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
