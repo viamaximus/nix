@@ -7,6 +7,7 @@ wallpapers/*.mp4
 
 !wallpapers/README.md
 !wallpapers/example.*
+!wallpapers/current-wallpaper.*
 
 !.github/screenshots/*
 
