@@ -5,9 +5,10 @@ let
     set -e
 
     WALLPAPER_PATH="$1"
-    CONFIG_DIR="$HOME/nix-testing"
+    HOSTNAME=$(${pkgs.hostname}/bin/hostname)
+    CONFIG_DIR="$HOME/nix"
     WALLPAPER_DIR="$CONFIG_DIR/wallpapers"
-    WALLPAPER_CONFIG="$CONFIG_DIR/hosts/mac-asahi/current-wallpaper.nix"
+    WALLPAPER_CONFIG="$CONFIG_DIR/hosts/$HOSTNAME/current-wallpaper.nix"
     CURRENT_WALLPAPER="$WALLPAPER_DIR/current-wallpaper"
 
     if [ -z "$WALLPAPER_PATH" ]; then
@@ -41,7 +42,7 @@ NIXEOF
 
     echo "Rebuilding system..."
     cd "$CONFIG_DIR"
-    sudo ${pkgs.nixos-rebuild}/bin/nixos-rebuild switch --impure --flake .#mac-asahi
+    sudo nixos-rebuild switch --impure --flake .#$HOSTNAME
 
     echo "Restarting hyprpaper..."
     ${pkgs.procps}/bin/pkill hyprpaper || true
