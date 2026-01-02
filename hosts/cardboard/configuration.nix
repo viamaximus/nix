@@ -13,13 +13,11 @@ in
       inputs.home-manager.nixosModules.home-manager
       inputs.stylix.nixosModules.stylix
       ../../nixosModules/automount.nix
+      ../../nixosModules/fonts.nix
+      ../../nixosModules/stylix.nix
     ];
 
-  stylix = {
-    enable = true;
-    image = wallpaperConfig.currentWallpaper;
-    polarity = "dark";
-  };
+  stylix.image = wallpaperConfig.currentWallpaper;
 
 
   home-manager = {
@@ -149,14 +147,6 @@ in
 
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
-
-  fonts.packages = with pkgs; [
-    nerd-fonts.fira-code
-    nerd-fonts.droid-sans-mono
-    nerd-fonts.noto
-    nerd-fonts.hack
-    nerd-fonts.ubuntu
-  ];
 
   system.stateVersion = "25.05"; # Did you read the comment?
 

@@ -13,7 +13,6 @@
 
     cp210x-program
 
-    tailscale
     signal-desktop
     # cosign
 
@@ -43,7 +42,7 @@
     tree
 
     screen
-	tio
+    tio
 
     #archive tools
     zip
@@ -57,13 +56,13 @@
     yq-go
     htop
     usbutils
-	feh
+    feh
 
     #misc
     libnotify
-	nodejs_22
-	cbonsai
-	cowsay
+    nodejs_22
+    cbonsai
+    cowsay
 
     #bluetooth
     bluetuith
@@ -77,20 +76,14 @@
     ungoogled-chromium
 
     #homelabby stuff
-    docker-compose
-	docker
     kubectl
 
     #social
     # discord
     # element-desktop
 
-    #adding some hyprland stuff here for now
-    wofi
     nautilus
     kitty
-    waybar
-    libnotify
   ];
 
   x86Pkgs = with pkgs; [
@@ -120,10 +113,5 @@ in {
     jq.enable = true; # A lightweight and flexible command-line JSON processor
     #ssh.enable = true;
     aria2.enable = true;
-  };
-
-  services = {
-    # auto mount usb drives
-    udiskie.enable = true;
   };
 }

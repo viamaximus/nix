@@ -11,8 +11,4 @@
     #./tools.nix
     ./fastfetch.nix
   ];
-  home.packages = with pkgs; [
-    starship
-    fish
-  ];
 }

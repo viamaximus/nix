@@ -14,13 +14,11 @@ in {
 	inputs.home-manager.nixosModules.home-manager
 	inputs.stylix.nixosModules.stylix
 	../../nixosModules/automount.nix
+	../../nixosModules/fonts.nix
+	../../nixosModules/stylix.nix
   ];
 
-  stylix = {
-    enable = true;
-    image = wallpaperConfig.currentWallpaper;
-    polarity = "dark";
-  };
+  stylix.image = wallpaperConfig.currentWallpaper;
 
   ##
   # home manger
@@ -160,14 +158,6 @@ in {
   ############################################
   time.timeZone = "America/New_York";
   i18n.defaultLocale = "en_US.UTF-8";
-
-  fonts.packages = with pkgs; [
-    nerd-fonts.fira-code
-    nerd-fonts.droid-sans-mono
-    nerd-fonts.noto
-    nerd-fonts.hack
-    nerd-fonts.ubuntu
-  ];
 
   # This is about defaults/migrations, not package pinning
   system.stateVersion = "25.05";
