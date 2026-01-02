@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  osConfig,
   ...
 }:
 with lib; let
@@ -27,7 +28,8 @@ in {
           "wl-paste -p -t text --watch clipman store -P --histpath=\"~/.local/share/clipman-primary.json\""
         ];
         env = [
-          "XCURSOR_SIZE,32"
+          "XCURSOR_THEME,${osConfig.stylix.cursor.name}"
+          "XCURSOR_SIZE,${toString osConfig.stylix.cursor.size}"
           "WLR_NO_HARDWARE_CURSORS,1"
         ];
 
@@ -100,7 +102,7 @@ in {
           "$mainMod, B, exec, zen"
           "$mainMod, E, exec, nautilus"
           "$mainMod, Q, killactive"
-          "$mainMod, D, exec, vesktop"
+          "$mainMod, D, exec, sh -c 'if [ \"$(uname -m)\" = \"x86_64\" ]; then discord; else vesktop; fi'"
           "$mainMod, space, exec, wofi --show drun"
           "$mainMod SHIFT, L, exec, hyprlock"
           "$mainMod SHIFT, s, exec, grim -g \"$(slurp -d)\" - | wl-copy"
