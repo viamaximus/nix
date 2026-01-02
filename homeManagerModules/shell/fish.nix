@@ -4,6 +4,19 @@
     interactiveShellInit = ''
       set fish_greeting # Disable greeting
       ${pkgs.fastfetch}/bin/fastfetch
+
+      # Function to prepend sudo to current or last command
+      function prepend_sudo
+        set -l cmd (commandline)
+        if test -z "$cmd"
+          commandline -r "sudo $history[1]"
+        else
+          commandline -r "sudo $cmd"
+        end
+      end
+
+      # Bind Alt+S to prepend sudo
+      bind \es prepend_sudo
     '';
     shellAliases = {
       n = "nvim";
@@ -20,8 +33,8 @@
       gst = "git status -sb";
     };
     plugins = [
-      # Enable a plugin (here grc for colorized command output) from nixpkgs
-      #{ name = "grc"; src = pkgs.fishPlugins.grc.src; }
+      # Enable grc for colorized command output
+      { name = "grc"; src = pkgs.fishPlugins.grc.src; }
       # Manually packaging and enable a plugin
       #{
       #  name = "z";
