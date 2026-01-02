@@ -47,8 +47,8 @@ in {
           gaps_in = 3;
           gaps_out = 3;
           border_size = 1;
-					# "col.active_border" = "rgba(9742b5ee) rgba(9742b5ee) 45deg";
-					# "col.inactive_border" = "rgba(595959aa)";
+          # "col.active_border" = "rgba(9742b5ee) rgba(9742b5ee) 45deg";
+          # "col.inactive_border" = "rgba(595959aa)";
           layout = "dwindle";
         };
 
@@ -103,6 +103,7 @@ in {
           "$mainMod, E, exec, nautilus"
           "$mainMod, Q, killactive"
           "$mainMod, D, exec, sh -c 'if [ \"$(uname -m)\" = \"x86_64\" ]; then discord; else vesktop; fi'"
+          "$mainMod, S, exec, spot"
           "$mainMod, space, exec, wofi --show drun"
           "$mainMod SHIFT, L, exec, hyprlock"
           "$mainMod SHIFT, s, exec, grim -g \"$(slurp -d)\" - | wl-copy"
@@ -111,11 +112,20 @@ in {
           "bind = $mainMod, V, togglefloating"
           "bind = $mainMod, mouse_up, workspace, e-1"
           "bind = $mainMod, mouse_down, workspace, e+1"
-		  
-		  "bind = $mainMod, h, movefocus, l" #move focus left
-		  "bind = $mainMod, j, movefocus, d" #move focus down
-		  "bind = $mainMod, k, movefocus, u" #move focus up
-		  "bind = $mainMod, l, movefocus, r" #move focus right
+
+          "bind = $mainMod CTRL, h, swapwindow, l"
+          "bind = $mainMod CTRL, h, moveactive, -50 0"
+          "bind = $mainMod CTRL, l, swapwindow, r"
+          "bind = $mainMod CTRL, l, moveactive, 50 0"
+          "bind = $mainMod CTRL, k, swapwindow, u"
+          "bind = $mainMod CTRL, k, moveactive, 0 -50"
+          "bind = $mainMod CTRL, j, swapwindow, d"
+          "bind = $mainMod CTRL, j, moveactive, 0 50"
+
+          "bind = $mainMod, h, movefocus, l" #move focus left
+          "bind = $mainMod, j, movefocus, d" #move focus down
+          "bind = $mainMod, k, movefocus, u" #move focus up
+          "bind = $mainMod, l, movefocus, r" #move focus right
 
           #move to workspace with mainMod + #
           "$mainMod, 1, workspace, 1"
