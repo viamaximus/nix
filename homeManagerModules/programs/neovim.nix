@@ -28,7 +28,9 @@
       xclip
       wl-clipboard
       luajitPackages.lua-lsp
-      # rnix-lsp
+      nil
+      alejandra
+      statix
     ];
 
     plugins = with pkgs.vimPlugins; [
@@ -135,6 +137,7 @@
         formatters_by_ft = {
           rust = { "rustfmt" },
           toml = { "taplo" },
+          nix = { "alejandra" },
         },
         format_on_save = {
           lsp_fallback = true,
