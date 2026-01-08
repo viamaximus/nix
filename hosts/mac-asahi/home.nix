@@ -10,6 +10,8 @@
     ../../homeManagerModules
   ];
 
+  features.desktop.hyprland.enable = true;
+
   home.username = "max";
   home.homeDirectory = "/home/max";
 

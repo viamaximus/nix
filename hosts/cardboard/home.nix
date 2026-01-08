@@ -10,6 +10,8 @@
     ../../homeManagerModules
   ];
 
+  features.desktop.hyprland.enable = true;
+
   home.username = "nix";
   home.homeDirectory = "/home/nix";
 

@@ -18,7 +18,14 @@ in {
 	../../nixosModules/stylix.nix
   ];
 
-  stylix.image = wallpaperConfig.currentWallpaper;
+  stylix = {
+    image = wallpaperConfig.currentWallpaper;
+    cursor = {
+      name = "Catppuccin-Macchiato-Mauve";
+      package = pkgs.catppuccin-cursors.macchiatoMauve;
+      size = 24;
+    };
+  };
 
   ##
   # home manger
@@ -90,6 +97,10 @@ in {
   services.displayManager.ly.enable = true;
 
   services.seatd.enable = true;
+
+  services.tailscale.enable = true;
+
+  services.openssh.enable = true;
 
   services.logind.settings.Login.HandleLidSwitch = "lock";
 
