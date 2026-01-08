@@ -27,11 +27,16 @@ in {
           "hypridle"
           "wl-paste -p -t text --watch clipman store -P --histpath=\"~/.local/share/clipman-primary.json\""
         ];
-        env = [
-          "XCURSOR_THEME,${osConfig.stylix.cursor.name}"
-          "XCURSOR_SIZE,${toString osConfig.stylix.cursor.size}"
-          "WLR_NO_HARDWARE_CURSORS,1"
-        ];
+        env =
+          [
+            "WLR_NO_HARDWARE_CURSORS,1"
+          ]
+          ++ lib.optionals (osConfig ? stylix && osConfig.stylix ? cursor && osConfig.stylix.cursor != null && osConfig.stylix.cursor ? name) [
+            "XCURSOR_THEME,${osConfig.stylix.cursor.name}"
+          ]
+          ++ lib.optionals (osConfig ? stylix && osConfig.stylix ? cursor && osConfig.stylix.cursor != null && osConfig.stylix.cursor ? size) [
+            "XCURSOR_SIZE,${toString osConfig.stylix.cursor.size}"
+          ];
 
         input = {
           kb_layout = "us";
