@@ -67,6 +67,11 @@ in {
   networking.networkmanager.enable = true;
 
   ############################################
+  # Printing
+  ############################################
+  services.printing.enable = true;
+
+  ############################################
   # Audio stack
   ############################################
   services.pipewire = {
@@ -75,6 +80,20 @@ in {
     pulse.enable = true;
     wireplumber.enable = true;
   };
+
+  ############################################
+  # Bluetooth
+  ############################################
+  hardware.bluetooth = {
+    enable = true;
+    powerOnBoot = true;
+    settings = {
+      General = {
+        Enable = "Source,Sink,Media,Socket";
+      };
+    };
+  };
+  services.blueman.enable = true;
 
   ############################################
   # Hyprland 0.51.0 from flake (PINNED)

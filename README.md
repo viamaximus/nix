@@ -82,4 +82,6 @@ structure
 ## todo
 - simplify wallpaper switch system (maybe waybar widget)
 - low battery notification
-- fix nightlight (doesnt work out of the box)
+- fix lid switch/laptop behavior
+- expand options for desktop environments
+
