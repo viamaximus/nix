@@ -81,7 +81,7 @@ in
   
   programs.xwayland.enable = true;
   programs.hyprland.enable = true;
-  programs.hyprland.package = inputs.hyprland.packages."${pkgs.system}".hyprland;
+  programs.hyprland.package = inputs.hyprland.packages."${pkgs.stdenv.hostPlatform.system}".hyprland;
   programs.hyprlock.enable = true;
   security.pam.services.hyprlock = {};
 
