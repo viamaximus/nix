@@ -31,6 +31,9 @@
     gh
 
     lazydocker
+    docker
+    docker-buildx
+    docker-compose
     impala
     fd
 

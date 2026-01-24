@@ -1,17 +1,20 @@
-{ config, pkgs, inputs, ... }:
-let
-  wallpaperConfig = import ./current-wallpaper.nix;
-in
 {
-  imports =
-    [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-      inputs.home-manager.nixosModules.home-manager
-      inputs.stylix.nixosModules.stylix
-      ../../nixosModules/automount.nix
-      ../../nixosModules/fonts.nix
-      ../../nixosModules/stylix.nix
-    ];
+  config,
+  pkgs,
+  inputs,
+  ...
+}: let
+  wallpaperConfig = import ./current-wallpaper.nix;
+in {
+  imports = [
+    # Include the results of the hardware scan.
+    ./hardware-configuration.nix
+    inputs.home-manager.nixosModules.home-manager
+    inputs.stylix.nixosModules.stylix
+    ../../nixosModules/automount.nix
+    ../../nixosModules/fonts.nix
+    ../../nixosModules/stylix.nix
+  ];
 
   stylix = {
     image = wallpaperConfig.currentWallpaper;
@@ -22,16 +25,14 @@ in
     };
   };
 
-
   home-manager = {
-    extraSpecialArgs = { inherit inputs; };
+    extraSpecialArgs = {inherit inputs;};
     users = {
       max = import ./home.nix;
     };
     useGlobalPkgs = true;
     backupFileExtension = "backup";
   };
-
 
   # Bootloader.
   boot.loader = {
@@ -49,38 +50,37 @@ in
 
   networking = {
     networkmanager.enable = true;
-	useNetworkd = false;
-	};
+    useNetworkd = false;
+  };
   systemd.network.wait-online.enable = false;
   systemd.services.NetworkManager-wait-online.enable = false;
 
-  services.xserver.videoDrivers = [ "nvidia" ];
-  
+  services.xserver.videoDrivers = ["nvidia"];
+
   hardware.graphics = {
     enable = true;
   };
-  
+
   hardware.nvidia = {
-	open = false;
-	modesetting.enable = true;
-	powerManagement.enable = true;
-	# powerManagement.finegrained = false;
+    open = false;
+    modesetting.enable = true;
+    powerManagement.enable = true;
+    # powerManagement.finegrained = false;
   };
-  
-  boot.blacklistedKernelModules = [ "nouveau" ];
+
+  boot.blacklistedKernelModules = ["nouveau"];
 
   fileSystems."/mnt/games" = {
-	device = "/dev/disk/by-uuid/4808c298-cd75-4cbd-bdef-71c063463b2e";
-	fsType = "ext4";
-	options = [
-	  "noatime"
-	  "discard"
-	];
+    device = "/dev/disk/by-uuid/4808c298-cd75-4cbd-bdef-71c063463b2e";
+    fsType = "ext4";
+    options = [
+      "noatime"
+      "discard"
+    ];
   };
   systemd.tmpfiles.rules = [
     "d /mnt/games 0755 max max -"
   ];
-
 
   # Set your time zone.
   time.timeZone = "America/New_York";
@@ -104,9 +104,10 @@ in
     shell = pkgs.fish;
   };
 
+  virtualisation.docker.enable = true;
+
   # Enable the X11 windowing system.
   services.xserver.enable = true;
-
 
   programs.xwayland.enable = true;
   programs.hyprland.enable = true;
@@ -157,14 +158,14 @@ in
     isNormalUser = true;
     description = "max";
     group = "max";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = ["networkmanager" "wheel" "docker"];
     packages = with pkgs; [
-    #  thunderbird
+      #  thunderbird
     ];
   };
   users.groups.max = {};
 
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  nix.settings.experimental-features = ["nix-command" "flakes"];
 
   programs.firefox.enable = true;
 
@@ -173,12 +174,11 @@ in
   environment.systemPackages = with pkgs; [
     neovim
     kitty
-	git
+    git
   ];
 
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
 
   system.stateVersion = "25.05"; # Did you read the comment?
-
 }
