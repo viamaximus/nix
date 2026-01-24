@@ -99,9 +99,9 @@ in
     LC_TIME = "en_US.UTF-8";
   };
 
-  programs.fish.enable = true;
+  programs.zsh.enable = true;
   users.users.max = {
-    shell = pkgs.fish;
+    shell = pkgs.zsh;
   };
 
   # Enable the X11 windowing system.

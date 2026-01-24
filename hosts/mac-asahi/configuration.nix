@@ -130,12 +130,12 @@ in {
     isNormalUser = true;
     description = "max";
     extraGroups = ["wheel" "networkmanager" "audio" "video" "input" "docker" "dialout" ];
-    shell = pkgs.fish;
+    shell = pkgs.zsh;
   };
 
   virtualisation.docker.enable = true;
 
-  programs.fish.enable = true;
+  programs.zsh.enable = true;
 
   security.sudo.enable = true;
 

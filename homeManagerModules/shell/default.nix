@@ -5,7 +5,7 @@
   ...
 }: {
   imports = [
-    ./fish.nix
+    ./zsh.nix
     ./starship.nix
     ./kitty.nix
     #./tools.nix
