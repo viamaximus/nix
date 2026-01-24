@@ -158,26 +158,20 @@ in {
     isNormalUser = true;
     description = "max";
     group = "max";
-<<<<<<< HEAD
-    extraGroups = ["networkmanager" "wheel" "docker"];
-=======
-    extraGroups = [ "networkmanager" "wheel" "docker" "audio" "video" "input" "dialout" ];
->>>>>>> origin/main
+    extraGroups = ["networkmanager" "wheel" "docker" "audio" "video" "input" "dialout"];
     packages = with pkgs; [
       #  thunderbird
     ];
   };
   users.groups.max = {};
 
-<<<<<<< HEAD
   nix.settings.experimental-features = ["nix-command" "flakes"];
-=======
   virtualisation.docker.enable = true;
 
   programs.ssh.startAgent = true;
 
   nix.settings = {
-    experimental-features = [ "nix-command" "flakes" ];
+    experimental-features = ["nix-command" "flakes"];
 
     substituters = [
       "https://cache.nixos.org"
@@ -198,8 +192,6 @@ in {
       "nixpkgs-wayland.cachix.org-1:3lwxaILxMRkVhehr5StQprHdEo4IrE8sRho9R9HOLYA="
     ];
   };
->>>>>>> origin/main
-
   programs.firefox.enable = true;
 
   nixpkgs.config.allowUnfree = true;

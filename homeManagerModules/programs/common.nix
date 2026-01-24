@@ -33,10 +33,7 @@
     gh
 
     lazydocker
-<<<<<<< HEAD
     docker
-=======
->>>>>>> origin/main
     docker-buildx
     docker-compose
     impala
