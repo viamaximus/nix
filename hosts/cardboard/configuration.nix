@@ -17,7 +17,14 @@ in
       ../../nixosModules/stylix.nix
     ];
 
-  stylix.image = wallpaperConfig.currentWallpaper;
+  stylix = {
+    image = wallpaperConfig.currentWallpaper;
+    cursor = {
+      name = "Catppuccin-Macchiato-Mauve";
+      package = pkgs.catppuccin-cursors.macchiatoMauve;
+      size = 24;
+    };
+  };
 
 
   home-manager = {
@@ -29,12 +36,30 @@ in
     backupFileExtension = "backup";
   };
 
-  #extra cache section
   nix.settings = {
-		substituters = ["http://192.168.1.208:5000"];
-		trusted-substituters = ["http://192.168.1.208:5000"];
-		trusted-public-keys = ["cache:NyEVh5n7hP0rTsrYoiPAG/q4IKEG+EWfybU6syuHibg="];
-		#trusted-public-keys = ["nix-store-cache:4sC/LVO49ilugliBGFY1554LQS6h40cZaNOkLtomioY="]; #try this if above doesnt work
+		experimental-features = ["nix-command" "flakes"];
+
+		substituters = [
+		  "https://cache.nixos.org"
+		  "http://192.168.1.208:5000"
+		  "https://hyprland.cachix.org"
+		  "https://nix-community.cachix.org"
+		  "https://nixpkgs-wayland.cachix.org"
+		];
+
+		trusted-substituters = [
+		  "http://192.168.1.208:5000"
+		  "https://hyprland.cachix.org"
+		  "https://nix-community.cachix.org"
+		  "https://nixpkgs-wayland.cachix.org"
+		];
+
+		trusted-public-keys = [
+		  "cache:NyEVh5n7hP0rTsrYoiPAG/q4IKEG+EWfybU6syuHibg="
+		  "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
+		  "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+		  "nixpkgs-wayland.cachix.org-1:3lwxaILxMRkVhehr5StQprHdEo4IrE8sRho9R9HOLYA="
+		];
 	};
 
   # Bootloader.
@@ -71,9 +96,9 @@ in
     LC_TIME = "en_US.UTF-8";
   };
 
-  programs.fish.enable = true;
+  programs.zsh.enable = true;
   users.users.nix = {
-    shell = pkgs.fish;
+    shell = pkgs.zsh;
   };
 
   # Enable the X11 windowing system.
@@ -82,7 +107,7 @@ in
 
   programs.xwayland.enable = true;
   programs.hyprland.enable = true;
-  programs.hyprland.package = inputs.hyprland.packages."${pkgs.system}".hyprland;
+  programs.hyprland.package = inputs.hyprland.packages."${pkgs.stdenv.hostPlatform.system}".hyprland;
   programs.hyprlock.enable = true;
   security.pam.services.hyprlock = {};
 
@@ -122,13 +147,15 @@ in
   users.users.nix = {
     isNormalUser = true;
     description = "nix";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [ "networkmanager" "wheel" "docker" "audio" "video" "input" "dialout" ];
     packages = with pkgs; [
     #  thunderbird
     ];
   };
 
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  virtualisation.docker.enable = true;
+
+  programs.ssh.startAgent = true;
 
   # Install firefox.
   programs.firefox.enable = true;
@@ -141,6 +168,7 @@ in
   environment.systemPackages = with pkgs; [
     neovim
     kitty
+    git
   ];
 
   # List services that you want to enable:

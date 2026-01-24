@@ -11,5 +11,6 @@
   options = {
   };
   config = {
+    stylix.targets.firefox.profileNames = [ "default" ];
   };
 }

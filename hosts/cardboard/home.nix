@@ -10,6 +10,8 @@
     ../../homeManagerModules
   ];
 
+  features.desktop.hyprland.enable = true;
+
   home.username = "nix";
   home.homeDirectory = "/home/nix";
 
@@ -19,13 +21,6 @@
 
   home.sessionVariables = {
     EDITOR = "nvim";
-  };
-
-  programs.fish = {
-    enable = true;
-    shellInit = ''
-      fish_add_path $HOME/.npm-global/bin
-    '';
   };
 
   home.file = {

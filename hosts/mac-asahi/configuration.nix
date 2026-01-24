@@ -18,7 +18,14 @@ in {
 	../../nixosModules/stylix.nix
   ];
 
-  stylix.image = wallpaperConfig.currentWallpaper;
+  stylix = {
+    image = wallpaperConfig.currentWallpaper;
+    cursor = {
+      name = "Catppuccin-Macchiato-Mauve";
+      package = pkgs.catppuccin-cursors.macchiatoMauve;
+      size = 24;
+    };
+  };
 
   ##
   # home manger
@@ -60,6 +67,11 @@ in {
   networking.networkmanager.enable = true;
 
   ############################################
+  # Printing
+  ############################################
+  services.printing.enable = true;
+
+  ############################################
   # Audio stack
   ############################################
   services.pipewire = {
@@ -68,6 +80,20 @@ in {
     pulse.enable = true;
     wireplumber.enable = true;
   };
+
+  ############################################
+  # Bluetooth
+  ############################################
+  hardware.bluetooth = {
+    enable = true;
+    powerOnBoot = true;
+    settings = {
+      General = {
+        Enable = "Source,Sink,Media,Socket";
+      };
+    };
+  };
+  services.blueman.enable = true;
 
   ############################################
   # Hyprland 0.51.0 from flake (PINNED)
@@ -91,6 +117,10 @@ in {
 
   services.seatd.enable = true;
 
+  services.tailscale.enable = true;
+
+  services.openssh.enable = true;
+
   services.logind.settings.Login.HandleLidSwitch = "lock";
 
   ############################################
@@ -100,12 +130,12 @@ in {
     isNormalUser = true;
     description = "max";
     extraGroups = ["wheel" "networkmanager" "audio" "video" "input" "docker" "dialout" ];
-    shell = pkgs.fish;
+    shell = pkgs.zsh;
   };
 
   virtualisation.docker.enable = true;
 
-  programs.fish.enable = true;
+  programs.zsh.enable = true;
 
   security.sudo.enable = true;
 
