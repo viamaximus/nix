@@ -24,14 +24,6 @@
     EDITOR = "nvim";
   };
 
-  programs.fish = {
-    enable = true;
-    shellInit = ''
-      fish_add_path $HOME/.npm-global/bin
-      fish_add_path $HOME/.local/bin
-    '';
-  };
-
   home.file = {
     #put .rc files here
   };

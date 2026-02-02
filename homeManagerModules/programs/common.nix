@@ -12,6 +12,8 @@
     python3
     alejandra
 
+    nextcloud-client
+
     cp210x-program
 
     signal-desktop
@@ -32,6 +34,9 @@
     gh
 
     lazydocker
+    docker
+    docker-buildx
+    docker-compose
     impala
     fd
 

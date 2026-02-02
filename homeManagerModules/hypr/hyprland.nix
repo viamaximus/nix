@@ -17,7 +17,7 @@ in {
         };
 
         monitor = [
-          "eDP-1,preferred,auto,1.6"
+          "eDP-1,2880x1800@120.00,0x0,1.6"
           # "eDP-1,addreserved,64,0,0,0"
         ];
 
@@ -91,6 +91,7 @@ in {
         misc = {
           disable_splash_rendering = true;
           disable_hyprland_logo = true;
+          vrr = 0;
         };
 
         windowrule = [];

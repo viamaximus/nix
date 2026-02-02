@@ -1,20 +1,23 @@
 # Edit this configuration file to define what should be installed on
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running 'nixos-help').
-{ config, pkgs, inputs, ... }:
-let
-  wallpaperConfig = import ./current-wallpaper.nix;
-in
 {
-  imports =
-    [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-      inputs.home-manager.nixosModules.home-manager
-      inputs.stylix.nixosModules.stylix
-      ../../nixosModules/automount.nix
-      ../../nixosModules/fonts.nix
-      ../../nixosModules/stylix.nix
-    ];
+  config,
+  pkgs,
+  inputs,
+  ...
+}: let
+  wallpaperConfig = import ./current-wallpaper.nix;
+in {
+  imports = [
+    # Include the results of the hardware scan.
+    ./hardware-configuration.nix
+    inputs.home-manager.nixosModules.home-manager
+    inputs.stylix.nixosModules.stylix
+    ../../nixosModules/automount.nix
+    ../../nixosModules/fonts.nix
+    ../../nixosModules/stylix.nix
+  ];
 
   stylix = {
     image = wallpaperConfig.currentWallpaper;
@@ -26,7 +29,7 @@ in
   };
 
   home-manager = {
-    extraSpecialArgs = { inherit inputs; };
+    extraSpecialArgs = {inherit inputs;};
     users = {
       max = import ./home.nix;
     };
@@ -37,18 +40,21 @@ in
   # Bootloader.
   boot.loader = {
     grub = {
-	enable = true;
-	#useOSProber = true;
-	efiSupport = true;
-	devices = ["nodev"];
-    };		
+      enable = true;
+      #useOSProber = true;
+      efiSupport = true;
+      devices = ["nodev"];
+    };
   };
   boot.loader.efi.canTouchEfiVariables = true;
 
   # Use latest kernel.
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
-  networking.hostName = "nixmax"; # Define your hostname.
+  #fix amd gpu
+  boot.kernelParams = ["amdgpu.dcdebugmask=0x10"];
+
+  networking.hostName = "asus-zephyrus"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
   # Enable networking
@@ -70,15 +76,15 @@ in
     LC_TELEPHONE = "en_US.UTF-8";
     LC_TIME = "en_US.UTF-8";
   };
-  
-  programs.fish.enable = true;
+
+  programs.zsh.enable = true;
   users.users.max = {
-    shell = pkgs.fish;
+    shell = pkgs.zsh;
   };
 
   # Enable the X11 windowing system.
   services.xserver.enable = true;
-  
+
   programs.xwayland.enable = true;
   programs.hyprland.enable = true;
   programs.hyprland.package = inputs.hyprland.packages."${pkgs.stdenv.hostPlatform.system}".hyprland;
@@ -96,17 +102,17 @@ in
     };
   };
 
-  boot.loader.grub.theme = pkgs.stdenv.mkDerivation {
-  pname = "distro-grub-themes";
-  version = "3.1";
-  src = pkgs.fetchFromGitHub {
-    owner = "AdisonCavani";
-    repo = "distro-grub-themes";
-    rev = "v3.1";
-    hash = "sha256-ZcoGbbOMDDwjLhsvs77C7G7vINQnprdfI37a9ccrmPs=";
-  };
-  installPhase = "cp -r customize/nixos $out";
-};
+  #   boot.loader.grub.theme = pkgs.stdenv.mkDerivation {
+  #   pname = "distro-grub-themes";
+  #   version = "3.1";
+  #   src = pkgs.fetchFromGitHub {
+  #     owner = "AdisonCavani";
+  #     repo = "distro-grub-themes";
+  #     rev = "v3.1";
+  #     hash = "sha256-ZcoGbbOMDDwjLhsvs77C7G7vINQnprdfI37a9ccrmPs=";
+  #   };
+  #   installPhase = "cp -r customize/nixos $out";
+  # };
 
   services.displayManager.ly.enable = true;
 
@@ -145,10 +151,10 @@ in
   users.users.max = {
     isNormalUser = true;
     description = "max";
-    extraGroups = [ "networkmanager" "wheel" "docker" "audio" "video" "input" "dialout" ];
+    extraGroups = ["networkmanager" "wheel" "docker" "audio" "video" "input" "dialout"];
   };
 
-  virtualisation.docker.enable = true;
+  # virtualisation.docker.enable = true;
 
   programs.ssh.startAgent = true;
 
@@ -188,11 +194,11 @@ in
     kitty
     git
   ];
-  
-#  enable virtualbox virtualization
-#  virtualisation.virtualbox.host.enable = true;
-#  virtualisation.virtualbox.host.enableExtensionPack = true;
-#  users.extraGroups.vboxusers.members = [ "max" ];
+
+  #  enable virtualbox virtualization
+  #  virtualisation.virtualbox.host.enable = true;
+  #  virtualisation.virtualbox.host.enableExtensionPack = true;
+  #  users.extraGroups.vboxusers.members = [ "max" ];
   virtualisation.docker.enable = true;
 
   system.stateVersion = "25.05"; # Did you read the comment?

@@ -5,17 +5,16 @@
   config,
   hyprland,
   ...
-}:
-let
+}: let
   wallpaperConfig = import ./current-wallpaper.nix;
 in {
   imports = [
     ./hardware-configuration.nix
-	inputs.home-manager.nixosModules.home-manager
-	inputs.stylix.nixosModules.stylix
-	../../nixosModules/automount.nix
-	../../nixosModules/fonts.nix
-	../../nixosModules/stylix.nix
+    inputs.home-manager.nixosModules.home-manager
+    inputs.stylix.nixosModules.stylix
+    ../../nixosModules/automount.nix
+    ../../nixosModules/fonts.nix
+    ../../nixosModules/stylix.nix
   ];
 
   stylix = {
@@ -59,7 +58,7 @@ in {
   boot.loader.efi.canTouchEfiVariables = false;
 
   # Enable x86_64 emulation for Luckfox SDK toolchain
-  boot.binfmt.emulatedSystems = [ "x86_64-linux" ];
+  boot.binfmt.emulatedSystems = ["x86_64-linux"];
 
   # Enable nix-ld for dynamic linker support (FHS compatibility)
   programs.nix-ld.enable = true;
@@ -145,13 +144,13 @@ in {
   ############################################
   # Login manager: greetd → Hyprland as max
   ############################################
-	# services.greetd = {
-  	#   enable = true;
-  	#   settings.default_session = {
-  	#     command = "Hyprland";
-  	#     user = "max";
-  	#   };
-  	# };
+  # services.greetd = {
+  #   enable = true;
+  #   settings.default_session = {
+  #     command = "Hyprland";
+  #     user = "max";
+  #   };
+  # };
   services.displayManager.ly.enable = true;
 
   services.seatd.enable = true;
@@ -191,13 +190,13 @@ in {
   users.users.max = {
     isNormalUser = true;
     description = "max";
-    extraGroups = ["wheel" "networkmanager" "audio" "video" "input" "docker" "dialout" "plugdev" ];
-    shell = pkgs.fish;
+    extraGroups = ["wheel" "networkmanager" "audio" "video" "input" "docker" "dialout"];
+    shell = pkgs.zsh;
   };
 
   virtualisation.docker.enable = true;
 
-  programs.fish.enable = true;
+  programs.zsh.enable = true;
 
   security.sudo.enable = true;
 
