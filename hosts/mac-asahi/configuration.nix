@@ -96,9 +96,9 @@ in {
     NIX_LDFLAGS = "-L/usr/lib";
   };
 
-  # Disable P2P support in brcmfmac WiFi driver to suppress boot errors
+  # Suppress brcmfmac boot errors on BCM4387:
   boot.extraModprobeConfig = ''
-    options brcmfmac p2pon=0
+    options brcmfmac feature_disable=1 roamoff=1
   '';
 
   networking.hostName = "mac-asahi";
