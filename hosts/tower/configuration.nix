@@ -104,8 +104,6 @@ in {
     shell = pkgs.zsh;
   };
 
-  virtualisation.docker.enable = true;
-
   # Enable the X11 windowing system.
   services.xserver.enable = true;
 
@@ -165,7 +163,6 @@ in {
   };
   users.groups.max = {};
 
-  nix.settings.experimental-features = ["nix-command" "flakes"];
   virtualisation.docker.enable = true;
 
   programs.ssh.startAgent = true;
