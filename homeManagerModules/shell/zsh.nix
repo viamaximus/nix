@@ -119,6 +119,7 @@
       "..." = "cd ../..";
       ff = "fastfetch";
       c = "clear";
+      bt = "blutuith";
 
       rebuild = "sudo nixos-rebuild switch --flake .#$(hostname)";
 
