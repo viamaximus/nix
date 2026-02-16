@@ -8,7 +8,7 @@ with lib; let
   cfg = config.features.desktop.hyprland;
 in {
   options.features.desktop.hyprland.enable = mkEnableOption "hyprland config";
-  config = {
+  config = mkIf cfg.enable {
     wayland.windowManager.hyprland = {
       enable = true;
       settings = {
@@ -17,7 +17,7 @@ in {
         };
 
         monitor = [
-          "eDP-1,preferred,auto,1.6"
+          "eDP-1,2880x1800@120.00,0x0,1.6"
           # "eDP-1,addreserved,64,0,0,0"
         ];
 
@@ -27,11 +27,16 @@ in {
           "hypridle"
           "wl-paste -p -t text --watch clipman store -P --histpath=\"~/.local/share/clipman-primary.json\""
         ];
-        env = [
-          "XCURSOR_THEME,${osConfig.stylix.cursor.name}"
-          "XCURSOR_SIZE,${toString osConfig.stylix.cursor.size}"
-          "WLR_NO_HARDWARE_CURSORS,1"
-        ];
+        env =
+          [
+            "WLR_NO_HARDWARE_CURSORS,1"
+          ]
+          ++ lib.optionals (osConfig ? stylix && osConfig.stylix ? cursor && osConfig.stylix.cursor != null && osConfig.stylix.cursor ? name) [
+            "XCURSOR_THEME,${osConfig.stylix.cursor.name}"
+          ]
+          ++ lib.optionals (osConfig ? stylix && osConfig.stylix ? cursor && osConfig.stylix.cursor != null && osConfig.stylix.cursor ? size) [
+            "XCURSOR_SIZE,${toString osConfig.stylix.cursor.size}"
+          ];
 
         input = {
           kb_layout = "us";
@@ -86,6 +91,7 @@ in {
         misc = {
           disable_splash_rendering = true;
           disable_hyprland_logo = true;
+          vrr = 0;
         };
 
         windowrule = [];

@@ -1,4 +1,8 @@
 {pkgs, config, ...}: {
+  home.packages = with pkgs; [
+    grc
+  ];
+
   programs.fish = {
     enable = true;
     interactiveShellInit = ''

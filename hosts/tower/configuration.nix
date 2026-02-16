@@ -99,9 +99,9 @@ in {
     LC_TIME = "en_US.UTF-8";
   };
 
-  programs.fish.enable = true;
+  programs.zsh.enable = true;
   users.users.max = {
-    shell = pkgs.fish;
+    shell = pkgs.zsh;
   };
 
   virtualisation.docker.enable = true;
@@ -111,7 +111,7 @@ in {
 
   programs.xwayland.enable = true;
   programs.hyprland.enable = true;
-  programs.hyprland.package = inputs.hyprland.packages."${pkgs.system}".hyprland;
+  programs.hyprland.package = inputs.hyprland.packages."${pkgs.stdenv.hostPlatform.system}".hyprland;
   programs.hyprlock.enable = true;
   security.pam.services.hyprlock = {};
 
@@ -158,15 +158,39 @@ in {
     isNormalUser = true;
     description = "max";
     group = "max";
-    extraGroups = ["networkmanager" "wheel" "docker"];
+    extraGroups = ["networkmanager" "wheel" "docker" "audio" "video" "input" "dialout"];
     packages = with pkgs; [
       #  thunderbird
     ];
   };
   users.groups.max = {};
 
-  nix.settings.experimental-features = ["nix-command" "flakes"];
+  virtualisation.docker.enable = true;
 
+  programs.ssh.startAgent = true;
+
+  nix.settings = {
+    experimental-features = ["nix-command" "flakes"];
+
+    substituters = [
+      "https://cache.nixos.org"
+      "https://hyprland.cachix.org"
+      "https://nix-community.cachix.org"
+      "https://nixpkgs-wayland.cachix.org"
+    ];
+
+    trusted-substituters = [
+      "https://hyprland.cachix.org"
+      "https://nix-community.cachix.org"
+      "https://nixpkgs-wayland.cachix.org"
+    ];
+
+    trusted-public-keys = [
+      "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
+      "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+      "nixpkgs-wayland.cachix.org-1:3lwxaILxMRkVhehr5StQprHdEo4IrE8sRho9R9HOLYA="
+    ];
+  };
   programs.firefox.enable = true;
 
   nixpkgs.config.allowUnfree = true;

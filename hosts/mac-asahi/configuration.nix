@@ -5,20 +5,26 @@
   config,
   hyprland,
   ...
-}:
-let
+}: let
   wallpaperConfig = import ./current-wallpaper.nix;
 in {
   imports = [
     ./hardware-configuration.nix
-	inputs.home-manager.nixosModules.home-manager
-	inputs.stylix.nixosModules.stylix
-	../../nixosModules/automount.nix
-	../../nixosModules/fonts.nix
-	../../nixosModules/stylix.nix
+    inputs.home-manager.nixosModules.home-manager
+    inputs.stylix.nixosModules.stylix
+    ../../nixosModules/automount.nix
+    ../../nixosModules/fonts.nix
+    ../../nixosModules/stylix.nix
   ];
 
-  stylix.image = wallpaperConfig.currentWallpaper;
+  stylix = {
+    image = wallpaperConfig.currentWallpaper;
+    cursor = {
+      name = "Catppuccin-Macchiato-Mauve";
+      package = pkgs.catppuccin-cursors.macchiatoMauve;
+      size = 24;
+    };
+  };
 
   ##
   # home manger
@@ -51,13 +57,57 @@ in {
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = false;
 
-  # Disable P2P support in brcmfmac WiFi driver to suppress boot errors
+  # Enable x86_64 emulation for Luckfox SDK toolchain
+  boot.binfmt.emulatedSystems = ["x86_64-linux"];
+
+  # Enable nix-ld for dynamic linker support (FHS compatibility)
+  programs.nix-ld.enable = true;
+
+  # For x86_64 emulation under QEMU, create /lib64 with x86_64 glibc
+  system.activationScripts.setup-x86_64-ld = lib.mkIf pkgs.stdenv.isAarch64 ''
+    mkdir -p /lib64
+    ln -sfn ${pkgs.pkgsCross.gnu64.glibc}/lib/ld-linux-x86-64.so.2 /lib64/ld-linux-x86-64.so.2
+  '';
+
+  # Create /bin/bash symlink for SDK Makefiles (FHS compatibility)
+  system.activationScripts.setup-bin-bash = ''
+    mkdir -p /bin
+    ln -sfn ${pkgs.bash}/bin/bash /bin/bash
+  '';
+
+  # Create /usr symlinks for SDK build dependencies (FHS compatibility)
+  system.activationScripts.setup-usr-fhs = ''
+    mkdir -p /usr/include /usr/lib
+
+    # Link ncurses headers
+    for file in ${pkgs.ncurses.dev}/include/*; do
+      ln -sfn "$file" /usr/include/$(basename "$file")
+    done
+
+    # Link ncurses libraries
+    for file in ${pkgs.ncurses}/lib/libncurses*.so*; do
+      [ -e "$file" ] && ln -sfn "$file" /usr/lib/$(basename "$file")
+    done
+  '';
+
+  # Make gcc look in /usr/include and /usr/lib for FHS compatibility
+  environment.sessionVariables = {
+    NIX_CFLAGS_COMPILE = "-I/usr/include";
+    NIX_LDFLAGS = "-L/usr/lib";
+  };
+
+  # Suppress brcmfmac boot errors on BCM4387:
   boot.extraModprobeConfig = ''
-    options brcmfmac p2pon=0
+    options brcmfmac feature_disable=1 roamoff=1
   '';
 
   networking.hostName = "mac-asahi";
   networking.networkmanager.enable = true;
+
+  ############################################
+  # Printing
+  ############################################
+  services.printing.enable = true;
 
   ############################################
   # Audio stack
@@ -70,6 +120,20 @@ in {
   };
 
   ############################################
+  # Bluetooth
+  ############################################
+  hardware.bluetooth = {
+    enable = true;
+    powerOnBoot = true;
+    settings = {
+      General = {
+        Enable = "Source,Sink,Media,Socket";
+      };
+    };
+  };
+  services.blueman.enable = true;
+
+  ############################################
   # Hyprland 0.51.0 from flake (PINNED)
   ############################################
   programs.hyprland = {
@@ -80,18 +144,45 @@ in {
   ############################################
   # Login manager: greetd → Hyprland as max
   ############################################
-	# services.greetd = {
-  	#   enable = true;
-  	#   settings.default_session = {
-  	#     command = "Hyprland";
-  	#     user = "max";
-  	#   };
-  	# };
+  # services.greetd = {
+  #   enable = true;
+  #   settings.default_session = {
+  #     command = "Hyprland";
+  #     user = "max";
+  #   };
+  # };
   services.displayManager.ly.enable = true;
 
   services.seatd.enable = true;
 
+  services.tailscale.enable = true;
+
+  services.openssh.enable = true;
+
   services.logind.settings.Login.HandleLidSwitch = "lock";
+
+  ############################################
+  # Luckfox Pico udev rules
+  ############################################
+  services.udev.extraRules = ''
+    # Common USB-to-serial adapters (FTDI, CH340, CP210x, Prolific)
+    SUBSYSTEM=="tty", ATTRS{idVendor}=="0403", MODE="0666", GROUP="dialout"
+    SUBSYSTEM=="tty", ATTRS{idVendor}=="1a86", MODE="0666", GROUP="dialout"
+    SUBSYSTEM=="tty", ATTRS{idVendor}=="10c4", MODE="0666", GROUP="dialout"
+    SUBSYSTEM=="tty", ATTRS{idVendor}=="067b", MODE="0666", GROUP="dialout"
+
+    # Rockchip devices (Luckfox RV1103) - Serial
+    SUBSYSTEM=="tty", ATTRS{idVendor}=="2207", MODE="0666", GROUP="dialout"
+
+    # Rockchip devices (Luckfox RV1103) - ADB
+    SUBSYSTEM=="usb", ATTR{idVendor}=="2207", MODE="0666", GROUP="plugdev", TAG+="uaccess"
+    SUBSYSTEM=="usb", ATTR{idVendor}=="2207", ATTR{idProduct}=="0006", SYMLINK+="android_adb"
+    SUBSYSTEM=="usb", ATTR{idVendor}=="2207", ATTR{idProduct}=="0006", SYMLINK+="android%n"
+
+    # Generic USB serial devices (fallback)
+    KERNEL=="ttyUSB[0-9]*", MODE="0666", GROUP="dialout"
+    KERNEL=="ttyACM[0-9]*", MODE="0666", GROUP="dialout"
+  '';
 
   ############################################
   # User
@@ -99,13 +190,13 @@ in {
   users.users.max = {
     isNormalUser = true;
     description = "max";
-    extraGroups = ["wheel" "networkmanager" "audio" "video" "input" "docker" "dialout" ];
-    shell = pkgs.fish;
+    extraGroups = ["wheel" "networkmanager" "audio" "video" "input" "docker" "dialout"];
+    shell = pkgs.zsh;
   };
 
   virtualisation.docker.enable = true;
 
-  programs.fish.enable = true;
+  programs.zsh.enable = true;
 
   security.sudo.enable = true;
 

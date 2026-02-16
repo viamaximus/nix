@@ -32,6 +32,12 @@
       alejandra
       statix
       lazygit
+
+      # Copilot / CopilotChat deps
+      nodejs_20
+      curl
+      ripgrep
+      git
     ];
 
     plugins = with pkgs.vimPlugins; [
@@ -50,7 +56,6 @@
       neodev-nvim
 
       # Completion stack
-      nvim-cmp
       {
         plugin = nvim-cmp;
         config = toLuaFile ./nvim/plugin/cmp.lua;
@@ -60,6 +65,12 @@
       luasnip
       friendly-snippets
       lspkind-nvim
+
+      ################
+      # GitHub Copilot
+      ################
+      copilot-vim
+      CopilotChat-nvim
 
       # UI bits
       lualine-nvim
@@ -91,6 +102,7 @@
         config = toLuaFile ./nvim/plugin/telescope.lua;
       }
       telescope-fzf-native-nvim
+      telescope-ui-select-nvim
 
       ################
       # Rust goodies
@@ -107,7 +119,7 @@
         config = toLuaFile ./nvim/plugin/neo-tree.lua;
       }
       nui-nvim # required for neo-tree
-      plenary-nvim # required for neo-tree
+      plenary-nvim # required for neo-tree (also required for CopilotChat)
 
       ################
       # Git Integration
@@ -186,9 +198,9 @@
       -- your existing options
       ${builtins.readFile ./nvim/options.lua}
 
-      -------------------------------------------------------------------
+      -- -------------------------------------------------------------------
       -- Keybinds for plugins
-      -------------------------------------------------------------------
+      -- -------------------------------------------------------------------
       -- Neo-tree (file explorer)
       vim.keymap.set('n', '<leader>e', ':Neotree toggle<CR>', { silent = true, desc = 'Toggle file explorer' })
       vim.keymap.set('n', '<leader>o', ':Neotree focus<CR>', { silent = true, desc = 'Focus file explorer' })
@@ -230,9 +242,49 @@
       vim.keymap.set('n', '<leader>xt', ':TodoTrouble<CR>', { silent = true, desc = 'Todo list (Trouble)' })
       vim.keymap.set('n', '<leader>st', ':TodoTelescope<CR>', { silent = true, desc = 'Search todos (Telescope)' })
 
-      -------------------------------------------------------------------
+      -- -------------------------------------------------------------------
+      -- GitHub Copilot (copilot.vim)
+      -- -------------------------------------------------------------------
+      -- Don't let Copilot steal <Tab> from nvim-cmp / luasnip
+      vim.g.copilot_no_tab_map = true
+
+      -- Accept suggestion with Ctrl-J (change if you prefer)
+      vim.keymap.set('i', '<C-J>', 'copilot#Accept("\\<CR>")', {
+        expr = true,
+        silent = true,
+        replace_keycodes = false,
+        desc = 'Copilot accept',
+      })
+
+      -- -------------------------------------------------------------------
+      -- CopilotChat.nvim
+      -- -------------------------------------------------------------------
+      pcall(function()
+        require("CopilotChat").setup({
+          window = { layout = "vertical", width = 0.5 },
+          auto_insert_mode = true,
+        })
+      end)
+
+      vim.keymap.set('n', '<leader>cc', ':CopilotChat<CR>', { silent = true, desc = 'CopilotChat' })
+      vim.keymap.set('n', '<leader>ct', ':CopilotChatToggle<CR>', { silent = true, desc = 'Toggle CopilotChat' })
+      vim.keymap.set('n', '<leader>cr', ':CopilotChatReset<CR>', { silent = true, desc = 'Reset CopilotChat' })
+
+      -- Visual-mode helpers (select code first)
+      vim.keymap.set('v', '<leader>ce', ':CopilotChatExplain<CR>', { silent = true, desc = 'Explain selection' })
+      vim.keymap.set('v', '<leader>cf', ':CopilotChatFix<CR>', { silent = true, desc = 'Fix selection' })
+      vim.keymap.set('v', '<leader>co', ':CopilotChatOptimize<CR>', { silent = true, desc = 'Optimize selection' })
+      vim.keymap.set('v', '<leader>cd', ':CopilotChatDocs<CR>', { silent = true, desc = 'Docs for selection' })
+      vim.keymap.set('v', '<leader>cT', ':CopilotChatTests<CR>', { silent = true, desc = 'Tests for selection' })
+
+      -- Optional: if telescope-ui-select.nvim is installed, use it for vim.ui.select
+      pcall(function()
+        require("telescope").load_extension("ui-select")
+      end)
+
+      -- -------------------------------------------------------------------
       -- rustaceanvim: Rust LSP (rust-analyzer) + tools
-      -------------------------------------------------------------------
+      -- -------------------------------------------------------------------
       local ok_cmp, cmp_nvim_lsp = pcall(require, "cmp_nvim_lsp")
       local capabilities = ok_cmp and cmp_nvim_lsp.default_capabilities() or nil
 
@@ -254,9 +306,9 @@
         tools = { float_win_config = { border = "rounded" } },
       }
 
-      -------------------------------------------------------------------
+      -- -------------------------------------------------------------------
       -- conform.nvim: format on save (rustfmt / taplo)
-      -------------------------------------------------------------------
+      -- -------------------------------------------------------------------
       require("conform").setup({
         formatters_by_ft = {
           rust = { "rustfmt" },
@@ -269,9 +321,9 @@
         },
       })
 
-      -------------------------------------------------------------------
+      -- -------------------------------------------------------------------
       -- crates.nvim: handy helpers in Cargo.toml
-      -------------------------------------------------------------------
+      -- -------------------------------------------------------------------
       pcall(function()
         require("crates").setup({})
         vim.api.nvim_create_autocmd("FileType", {

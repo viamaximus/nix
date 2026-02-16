@@ -8,8 +8,11 @@
   inherit (pkgs.stdenv) isAarch64 isx86_64;
 
   universalPkgs = with pkgs; [
+    nextcloud-client
     python3
     alejandra
+
+    nextcloud-client
 
     cp210x-program
 
