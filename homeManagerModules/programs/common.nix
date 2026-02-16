@@ -85,8 +85,9 @@
     kubectl
 
     #social
-    # discord
-    # element-desktop
+    element-desktop
+    fluffychat
+
 
     nautilus
     kitty
