@@ -4,8 +4,6 @@
   ...
 }: {
   imports = [
-		# ./stylix.nix
-		# ./stylix-disable-anki.nix
   ];
   options = {
   };

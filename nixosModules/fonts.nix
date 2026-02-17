@@ -6,4 +6,12 @@
     nerd-fonts.hack
     nerd-fonts.ubuntu
   ];
+
+  fonts.fontconfig = {
+    defaultFonts.sansSerif = ["Sans"];
+    hinting.enable = true;
+    hinting.style = "full";
+    antialias = true;
+    subpixel.rgba = "rgb";
+  };
 }
