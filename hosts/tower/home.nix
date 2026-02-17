@@ -45,9 +45,9 @@
     workspace = 3, monitor:DP-2
 
     # make games always open on center monitor
-    windowrule = monitor DP-3, class:^(steam_app_[0-9]+)$
-    windowrule = monitor DP-3, class:^(gamescope)$
-    windowrule = workspace 2, class:^(steam_app_[0-9]+)$
+    windowrule = match:class steam_app_[0-9]+, monitor DP-3
+    windowrule = match:class gamescope, monitor DP-3
+    windowrule = match:class steam_app_[0-9]+, workspace 2
   '';
 
   home.stateVersion = "25.05";

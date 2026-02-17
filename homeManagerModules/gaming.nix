@@ -1,19 +1,22 @@
-{ config, pkgs, lib, ... }:
-
 {
+  config,
+  pkgs,
+  lib,
+  ...
+}: {
   home.packages = with pkgs; [
     steam
     steam-run
 
-    mangohud      
-    goverlay      
-    gamemode      
-    protontricks  
+    mangohud
+    goverlay
+    gamemode
+    protontricks
 
-    wineWowPackages.waylandFull
+    wineWow64Packages.waylandFull
     winetricks
     lutris
-    bottles  
+    bottles
 
     gamescope
   ];
@@ -54,4 +57,3 @@
     # supervisor=systemd
   '';
 }
-
