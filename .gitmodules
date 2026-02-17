@@ -1,0 +1,3 @@
+[submodule "themes/Chicago95"]
+	path = themes/Chicago95
+	url = https://github.com/grassmunk/Chicago95.git
