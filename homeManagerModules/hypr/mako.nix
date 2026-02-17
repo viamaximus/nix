@@ -1,7 +1,6 @@
-{ config, pkgs, lib, ... }:
-
-{
-  services.mako = {
+{ config, pkgs, lib, ... }: {
+  config = lib.mkIf config.features.desktop.hyprland.enable {
+    services.mako = {
     enable = true;
     settings = {
       border-size = lib.mkForce 2;
@@ -24,5 +23,6 @@
       border-color=${config.lib.stylix.colors.withHashtag.base08}
       background-color=${config.lib.stylix.colors.withHashtag.base01}
     '';
+    };
   };
 }

@@ -1,8 +1,5 @@
-{
-  config,
-  pkgs,
-  ...
-}: {
-  programs.wofi.enable = true;
-	# xdg.configFile."wofi/style.css".source = ./wofi-style.css;
+{config, lib, ...}: {
+  config = lib.mkIf config.features.desktop.hyprland.enable {
+    programs.wofi.enable = true;
+  };
 }

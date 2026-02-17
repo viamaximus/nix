@@ -1,11 +1,12 @@
-{pkgs, ...}: {
-  services.hyprpaper = {
-    enable = true;
-    settings = {
-      ipc = "on";
-      #splash = false;
-      preload = ["../../../current.jpg"];
-      wallpaper = [", ../../../current.jpg"];
+{config, pkgs, lib, ...}: {
+  config = lib.mkIf config.features.desktop.hyprland.enable {
+    services.hyprpaper = {
+      enable = true;
+      settings = {
+        ipc = "on";
+        preload = ["../../../current.jpg"];
+        wallpaper = [", ../../../current.jpg"];
+      };
     };
   };
 }

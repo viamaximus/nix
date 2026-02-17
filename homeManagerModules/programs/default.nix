@@ -1,4 +1,10 @@
-{ config, pkgs, lib, inputs, ... }: {
+{
+  config,
+  pkgs,
+  lib,
+  inputs,
+  ...
+}: {
   imports = [
     ./browsers.nix
     ./common.nix
@@ -6,12 +12,10 @@
     ./git.nix
     ./godot.nix
     ./rfstuffs.nix
-	./kicad.nix
-	./wallpaper-switch.nix
-	./vesktop.nix
-	./spotify.nix
-	./spotify-config.nix
-	./clipboard.nix
-	./nightlight.nix
+    ./kicad.nix
+    ./wallpaper-switch.nix
+    ./vesktop.nix
+    ./spotify.nix
+    ./spotify-config.nix
   ];
 }

@@ -16,10 +16,7 @@ in {
           force_zero_scaling = true;
         };
 
-        monitor = [
-          "eDP-1,2880x1800@120.00,0x0,1.6"
-          # "eDP-1,addreserved,64,0,0,0"
-        ];
+        monitor = [];
 
         exec-once = [
           "waybar"

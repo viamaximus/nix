@@ -191,7 +191,7 @@
       undotree
     ];
 
-    extraLuaConfig = ''
+    initLua = ''
       -- autopairs
       require("nvim-autopairs").setup({})
 

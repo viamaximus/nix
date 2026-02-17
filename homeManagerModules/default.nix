@@ -6,11 +6,9 @@
   imports = [
     ./programs
     ./hypr
+    ./xfce
     ./shell
   ];
-  options = {
-  };
   config = {
-    stylix.targets.firefox.profileNames = [ "default" ];
   };
 }

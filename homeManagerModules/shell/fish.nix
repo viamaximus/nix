@@ -1,4 +1,8 @@
-{pkgs, config, ...}: {
+{
+  pkgs,
+  config,
+  ...
+}: {
   home.packages = with pkgs; [
     grc
   ];
@@ -27,7 +31,7 @@
       ".." = "cd .. ";
       "..." = "cd ../..";
       ff = "fastfetch";
-	  c = "clear";
+      c = "clear";
 
       rebuild = "sudo nixos-rebuild switch --flake .#$(hostname)";
 
@@ -38,7 +42,10 @@
     };
     plugins = [
       # Enable grc for colorized command output
-      { name = "grc"; src = pkgs.fishPlugins.grc.src; }
+      {
+        name = "grc";
+        src = pkgs.fishPlugins.grc.src;
+      }
       # Manually packaging and enable a plugin
       #{
       #  name = "z";

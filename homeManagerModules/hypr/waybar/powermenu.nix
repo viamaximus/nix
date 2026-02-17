@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 let
   powermenu = pkgs.writeShellScriptBin "powermenu" ''
@@ -45,8 +45,10 @@ let
     esac
   '';
 in {
-  home.packages = [
-    powermenu
-  ];
+  config = lib.mkIf config.features.desktop.hyprland.enable {
+    home.packages = [
+      powermenu
+    ];
+  };
 }
 
