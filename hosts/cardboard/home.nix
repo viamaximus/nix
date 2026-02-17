@@ -11,6 +11,7 @@
   ];
 
   features.desktop.hyprland.enable = true;
+  stylix.targets.firefox.profileNames = [ "default" ];
 
   home.username = "nix";
   home.homeDirectory = "/home/nix";

@@ -13,6 +13,11 @@
 
   features.desktop.hyprland.enable = true;
 
+  wayland.windowManager.hyprland.settings.monitor = [
+    "eDP-1,2880x1800@120.00,0x0,1.6"
+  ];
+  stylix.targets.firefox.profileNames = [ "default" ];
+
   home.username = "max";
   home.homeDirectory = "/home/max";
 

@@ -3,35 +3,24 @@
   pkgs,
   lib,
   config,
+  chicago95-src,
   ...
-}: let
-  wallpaperConfig = import ./current-wallpaper.nix;
-in {
+}: {
   imports = [
-    ./hardware-configuration.nix
+    ../mac-asahi/hardware-configuration.nix
     inputs.home-manager.nixosModules.home-manager
     inputs.stylix.nixosModules.stylix
     ../../nixosModules/automount.nix
     ../../nixosModules/fonts.nix
-    ../../nixosModules/stylix.nix
     ../../nixosModules/nix-settings.nix
     ../../nixosModules/audio.nix
   ];
 
-  stylix = {
-    image = wallpaperConfig.currentWallpaper;
-    cursor = {
-      name = "Catppuccin-Macchiato-Mauve";
-      package = pkgs.catppuccin-cursors.macchiatoMauve;
-      size = 24;
-    };
-  };
+  # Disable Stylix — Chicago95 handles all theming
+  stylix.enable = false;
 
-  ##
-  # home manger
-  ##
   home-manager = {
-    extraSpecialArgs = {inherit inputs;};
+    extraSpecialArgs = {inherit inputs chicago95-src;};
     users = {
       max = import ./home.nix;
     };
@@ -45,11 +34,11 @@ in {
   hardware.asahi = {
     enable = true;
     setupAsahiSound = true;
-    peripheralFirmwareDirectory = ../../firmware; # path literal
+    peripheralFirmwareDirectory = ../../firmware;
   };
 
   boot.kernelParams = [
-    "appledrm.show_notch=1"
+    "apple_dcp.show_notch=1"
   ];
 
   ############################################
@@ -58,46 +47,37 @@ in {
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = false;
 
-  # Enable x86_64 emulation for Luckfox SDK toolchain
   boot.binfmt.emulatedSystems = ["x86_64-linux"];
 
-  # Enable nix-ld for dynamic linker support (FHS compatibility)
   programs.nix-ld.enable = true;
 
-  # For x86_64 emulation under QEMU, create /lib64 with x86_64 glibc
   system.activationScripts.setup-x86_64-ld = lib.mkIf pkgs.stdenv.isAarch64 ''
     mkdir -p /lib64
     ln -sfn ${pkgs.pkgsCross.gnu64.glibc}/lib/ld-linux-x86-64.so.2 /lib64/ld-linux-x86-64.so.2
   '';
 
-  # Create /bin/bash symlink for SDK Makefiles (FHS compatibility)
   system.activationScripts.setup-bin-bash = ''
     mkdir -p /bin
     ln -sfn ${pkgs.bash}/bin/bash /bin/bash
   '';
 
-  # Create /usr symlinks for SDK build dependencies (FHS compatibility)
   system.activationScripts.setup-usr-fhs = ''
     mkdir -p /usr/include /usr/lib
 
-    # Link ncurses headers
     for file in ${pkgs.ncurses.dev}/include/*; do
       ln -sfn "$file" /usr/include/$(basename "$file")
     done
 
-    # Link ncurses libraries
     for file in ${pkgs.ncurses}/lib/libncurses*.so*; do
       [ -e "$file" ] && ln -sfn "$file" /usr/lib/$(basename "$file")
     done
   '';
 
-  # Make gcc look in /usr/include and /usr/lib for FHS compatibility
   environment.sessionVariables = {
     NIX_CFLAGS_COMPILE = "-I/usr/include";
     NIX_LDFLAGS = "-L/usr/lib";
   };
 
-  # Suppress brcmfmac boot errors on BCM4387:
   boot.extraModprobeConfig = ''
     options brcmfmac feature_disable=1 roamoff=1
   '';
@@ -105,34 +85,17 @@ in {
   networking.hostName = "mac-asahi";
   networking.networkmanager.enable = true;
 
-  ############################################
-  # Printing
-  ############################################
   services.printing.enable = true;
 
   # Audio + Bluetooth provided by ../../nixosModules/audio.nix
 
   ############################################
-  # Hyprland (from nixpkgs)
+  # XFCE Desktop (instead of Hyprland)
   ############################################
-  programs.hyprland = {
-    enable = true;
-    withUWSM = true;
-  };
-
-  ############################################
-  # Login manager: greetd → Hyprland as max
-  ############################################
-  # services.greetd = {
-  #   enable = true;
-  #   settings.default_session = {
-  #     command = "Hyprland";
-  #     user = "max";
-  #   };
-  # };
-  services.displayManager.ly.enable = true;
-
-  services.seatd.enable = true;
+  services.xserver.enable = true;
+  services.xserver.dpi = 192;
+  services.xserver.desktopManager.xfce.enable = true;
+  services.xserver.displayManager.lightdm.enable = true;
 
   services.tailscale.enable = true;
 
@@ -144,21 +107,14 @@ in {
   # Luckfox Pico udev rules
   ############################################
   services.udev.extraRules = ''
-    # Common USB-to-serial adapters (FTDI, CH340, CP210x, Prolific)
     SUBSYSTEM=="tty", ATTRS{idVendor}=="0403", MODE="0666", GROUP="dialout"
     SUBSYSTEM=="tty", ATTRS{idVendor}=="1a86", MODE="0666", GROUP="dialout"
     SUBSYSTEM=="tty", ATTRS{idVendor}=="10c4", MODE="0666", GROUP="dialout"
     SUBSYSTEM=="tty", ATTRS{idVendor}=="067b", MODE="0666", GROUP="dialout"
-
-    # Rockchip devices (Luckfox RV1103) - Serial
     SUBSYSTEM=="tty", ATTRS{idVendor}=="2207", MODE="0666", GROUP="dialout"
-
-    # Rockchip devices (Luckfox RV1103) - ADB
     SUBSYSTEM=="usb", ATTR{idVendor}=="2207", MODE="0666", GROUP="plugdev", TAG+="uaccess"
     SUBSYSTEM=="usb", ATTR{idVendor}=="2207", ATTR{idProduct}=="0006", SYMLINK+="android_adb"
     SUBSYSTEM=="usb", ATTR{idVendor}=="2207", ATTR{idProduct}=="0006", SYMLINK+="android%n"
-
-    # Generic USB serial devices (fallback)
     KERNEL=="ttyUSB[0-9]*", MODE="0666", GROUP="dialout"
     KERNEL=="ttyACM[0-9]*", MODE="0666", GROUP="dialout"
   '';
@@ -182,27 +138,17 @@ in {
   programs.ssh.startAgent = true;
 
   ############################################
-  # System packages (minimal)
+  # System packages
   ############################################
   environment.systemPackages = with pkgs; [
-    foot
     kitty
     neovim
-    mesa-demos
-    vulkan-tools
-    wayland-utils
-    wl-clipboard
     git
     firefox
   ];
-  # Nix settings + allowUnfree provided by ../../nixosModules/nix-settings.nix
 
-  ############################################
-  # Locale / time
-  ############################################
   time.timeZone = "America/New_York";
   i18n.defaultLocale = "en_US.UTF-8";
 
-  # This is about defaults/migrations, not package pinning
   system.stateVersion = "25.05";
 }

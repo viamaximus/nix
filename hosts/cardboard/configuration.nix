@@ -15,6 +15,8 @@ in
       ../../nixosModules/automount.nix
       ../../nixosModules/fonts.nix
       ../../nixosModules/stylix.nix
+      ../../nixosModules/nix-settings.nix
+      ../../nixosModules/audio.nix
     ];
 
   stylix = {
@@ -36,31 +38,7 @@ in
     backupFileExtension = "backup";
   };
 
-  nix.settings = {
-		experimental-features = ["nix-command" "flakes"];
-
-		substituters = [
-		  "https://cache.nixos.org"
-		  "http://192.168.1.208:5000"
-		  "https://hyprland.cachix.org"
-		  "https://nix-community.cachix.org"
-		  "https://nixpkgs-wayland.cachix.org"
-		];
-
-		trusted-substituters = [
-		  "http://192.168.1.208:5000"
-		  "https://hyprland.cachix.org"
-		  "https://nix-community.cachix.org"
-		  "https://nixpkgs-wayland.cachix.org"
-		];
-
-		trusted-public-keys = [
-		  "cache:NyEVh5n7hP0rTsrYoiPAG/q4IKEG+EWfybU6syuHibg="
-		  "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
-		  "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
-		  "nixpkgs-wayland.cachix.org-1:3lwxaILxMRkVhehr5StQprHdEo4IrE8sRho9R9HOLYA="
-		];
-	};
+  # Nix settings provided by ../../nixosModules/nix-settings.nix
 
   # Bootloader.
   boot.loader = {
@@ -97,9 +75,6 @@ in
   };
 
   programs.zsh.enable = true;
-  users.users.nix = {
-    shell = pkgs.zsh;
-  };
 
   # Enable the X11 windowing system.
   services.xserver.enable = true;
@@ -107,7 +82,6 @@ in
 
   programs.xwayland.enable = true;
   programs.hyprland.enable = true;
-  programs.hyprland.package = inputs.hyprland.packages."${pkgs.stdenv.hostPlatform.system}".hyprland;
   programs.hyprlock.enable = true;
   security.pam.services.hyprlock = {};
 
@@ -124,21 +98,8 @@ in
   # Enable CUPS to print documents.
   services.printing.enable = true;
 
-  # Enable sound with pipewire.
-  services.pulseaudio.enable = false;
-  security.rtkit.enable = true;
-  services.pipewire = {
-    enable = true;
-    alsa.enable = true;
-    alsa.support32Bit = true;
-    pulse.enable = true;
-    # If you want to use JACK applications, uncomment this
-    #jack.enable = true;
-
-    # use the example session manager (no others are packaged yet so this is enabled by default,
-    # no need to redefine it in your config for now)
-    #media-session.enable = true;
-  };
+  # Audio provided by ../../nixosModules/audio.nix
+  features.bluetooth.enable = false;
 
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
@@ -147,6 +108,7 @@ in
   users.users.nix = {
     isNormalUser = true;
     description = "nix";
+    shell = pkgs.zsh;
     extraGroups = [ "networkmanager" "wheel" "docker" "audio" "video" "input" "dialout" ];
     packages = with pkgs; [
     #  thunderbird
@@ -160,11 +122,7 @@ in
   # Install firefox.
   programs.firefox.enable = true;
 
-  # Allow unfree packages
-  nixpkgs.config.allowUnfree = true;
-
-  # List packages installed in system profile. To search, run:
-  # $ nix search wget
+  # allowUnfree provided by ../../nixosModules/nix-settings.nix
   environment.systemPackages = with pkgs; [
     neovim
     kitty

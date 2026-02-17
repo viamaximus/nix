@@ -1,3 +1,3 @@
 {
-  currentWallpaper = ../../wallpapers/current-wallpaper.jpeg;
+  currentWallpaper = ../../wallpapers/current-wallpaper.jpg;
 }

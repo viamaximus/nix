@@ -4,15 +4,15 @@
   lib,
   inputs,
   ...
-}:
-{
+}: {
   imports = [
     ../../homeManagerModules
-	../../homeManagerModules/gaming.nix
-	../../homeManagerModules/programs/3dprint.nix
+    ../../homeManagerModules/gaming.nix
+    ../../homeManagerModules/programs/3dprint.nix
   ];
 
   features.desktop.hyprland.enable = true;
+  stylix.targets.firefox.profileNames = ["default"];
 
   home.username = "max";
   home.homeDirectory = "/home/max";

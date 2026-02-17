@@ -4,13 +4,18 @@
   lib,
   inputs,
   ...
-}:
-{
+}: {
   imports = [
     ../../homeManagerModules
   ];
 
   features.desktop.hyprland.enable = true;
+  features.desktop.hyprland.waybarHeight = 32;
+  stylix.targets.firefox.profileNames = ["default"];
+
+  wayland.windowManager.hyprland.settings.monitor = [
+    "eDP-1,2560x1600@60,0x0,1.6"
+  ];
 
   home.username = "max";
   home.homeDirectory = "/home/max";
