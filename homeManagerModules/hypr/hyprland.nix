@@ -102,7 +102,7 @@ in {
         bind = [
           #programs, general stuffs
           "$mainMod, return, exec, kitty"
-          "$mainMod, B, exec, zen"
+          "$mainMod, B, exec, zen-beta"
           "$mainMod, E, exec, nautilus"
           "$mainMod, Q, killactive"
           "$mainMod, D, exec, sh -c 'if [ \"$(uname -m)\" = \"x86_64\" ]; then discord; else vesktop; fi'"
