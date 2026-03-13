@@ -31,6 +31,9 @@
       url = "github:danth/stylix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    pwndbg = {
+      url = "github:pwndbg/pwndbg/dev";
+    };
     chicago95 = {
       url = "github:grassmunk/Chicago95";
       flake = false;

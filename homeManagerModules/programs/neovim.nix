@@ -29,6 +29,8 @@
       wl-clipboard
       luajitPackages.lua-lsp
       nil
+      clang-tools
+      cmake-language-server
       alejandra
       statix
       lazygit
@@ -61,6 +63,8 @@
         config = toLuaFile ./nvim/plugin/cmp.lua;
       }
       cmp-nvim-lsp
+      cmp-buffer
+      cmp-path
       cmp_luasnip
       luasnip
       friendly-snippets
@@ -81,6 +85,10 @@
       ################
       {
         plugin = nvim-treesitter.withPlugins (p: [
+          p.c
+          p.cpp
+          p.cmake
+          p.make
           p.rust
           p.toml
           p.lua
@@ -103,6 +111,19 @@
       }
       telescope-fzf-native-nvim
       telescope-ui-select-nvim
+
+      ################
+      # Debugging
+      ################
+      mason-nvim
+      mason-nvim-dap-nvim
+      {
+        plugin = nvim-dap;
+        config = toLuaFile ./nvim/plugin/dap.lua;
+      }
+      nvim-dap-ui
+      nvim-dap-virtual-text
+      nvim-nio
 
       ################
       # Rust goodies
@@ -236,6 +257,17 @@
       -- Undotree
       vim.keymap.set('n', '<leader>u', ':UndotreeToggle<CR>', { silent = true, desc = 'Toggle undo tree' })
 
+      -- DAP
+      vim.keymap.set('n', '<F5>', function() require('dap').continue() end, { silent = true, desc = 'Debug continue' })
+      vim.keymap.set('n', '<F10>', function() require('dap').step_over() end, { silent = true, desc = 'Debug step over' })
+      vim.keymap.set('n', '<F11>', function() require('dap').step_into() end, { silent = true, desc = 'Debug step into' })
+      vim.keymap.set('n', '<F12>', function() require('dap').step_out() end, { silent = true, desc = 'Debug step out' })
+      vim.keymap.set('n', '<leader>db', function() require('dap').toggle_breakpoint() end, { silent = true, desc = 'Toggle breakpoint' })
+      vim.keymap.set('n', '<leader>dB', function() require('dap').set_breakpoint(vim.fn.input('Breakpoint condition: ')) end, { silent = true, desc = 'Conditional breakpoint' })
+      vim.keymap.set('n', '<leader>dr', function() require('dap').repl.open() end, { silent = true, desc = 'Open debug REPL' })
+      vim.keymap.set('n', '<leader>dl', function() require('dap').run_last() end, { silent = true, desc = 'Run last debug config' })
+      vim.keymap.set('n', '<leader>du', function() require('dapui').toggle() end, { silent = true, desc = 'Toggle debug UI' })
+
       -- Todo comments
       vim.keymap.set('n', ']t', function() require('todo-comments').jump_next() end, { silent = true, desc = 'Next todo' })
       vim.keymap.set('n', '[t', function() require('todo-comments').jump_prev() end, { silent = true, desc = 'Previous todo' })
@@ -245,16 +277,18 @@
       -- -------------------------------------------------------------------
       -- GitHub Copilot (copilot.vim)
       -- -------------------------------------------------------------------
-      -- Don't let Copilot steal <Tab> from nvim-cmp / luasnip
+      -- Let nvim-cmp own <Tab> and delegate to Copilot/snippets when appropriate
       vim.g.copilot_no_tab_map = true
 
-      -- Accept suggestion with Ctrl-J (change if you prefer)
+      -- Secondary Copilot inline-suggestion controls
       vim.keymap.set('i', '<C-J>', 'copilot#Accept("\\<CR>")', {
         expr = true,
         silent = true,
         replace_keycodes = false,
         desc = 'Copilot accept',
       })
+      vim.keymap.set('i', '<M-]>', '<Plug>(copilot-next)', { silent = true, desc = 'Copilot next suggestion' })
+      vim.keymap.set('i', '<M-[>', '<Plug>(copilot-previous)', { silent = true, desc = 'Copilot previous suggestion' })
 
       -- -------------------------------------------------------------------
       -- CopilotChat.nvim
@@ -311,6 +345,8 @@
       -- -------------------------------------------------------------------
       require("conform").setup({
         formatters_by_ft = {
+          c = { "clang_format" },
+          cpp = { "clang_format" },
           rust = { "rustfmt" },
           toml = { "taplo" },
           nix = { "alejandra" },

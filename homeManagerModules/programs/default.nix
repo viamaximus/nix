@@ -7,6 +7,7 @@
 }: {
   imports = [
     ./browsers.nix
+    ./c-dev.nix
     ./common.nix
     ./neovim.nix
     ./git.nix

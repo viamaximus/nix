@@ -2,6 +2,7 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 vim.o.clipboard = 'unnamedplus'
+vim.o.completeopt = 'menu,menuone,noselect,popup'
 
 vim.o.number = true
 vim.o.relativenumber = true

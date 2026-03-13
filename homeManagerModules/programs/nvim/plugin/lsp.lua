@@ -45,8 +45,29 @@ vim.lsp.config.nil_ls = {
         ignored = {},
         excludedFiles = {},
       },
+      nix = {
+        flake = {
+          autoArchive = true,
+        },
+      },
     },
   },
 }
 
+vim.lsp.config.clangd = {
+  cmd = { 'clangd', '--background-index', '--clang-tidy', '--completion-style=detailed' },
+  filetypes = { 'c', 'cpp', 'objc', 'objcpp' },
+  root_markers = { 'compile_commands.json', 'compile_flags.txt', '.clangd', '.git' },
+  capabilities = capabilities,
+}
+
+vim.lsp.config.cmake = {
+  cmd = { 'cmake-language-server' },
+  filetypes = { 'cmake' },
+  root_markers = { 'CMakePresets.json', 'CTestConfig.cmake', 'CMakeLists.txt', '.git' },
+  capabilities = capabilities,
+}
+
+vim.lsp.enable('clangd')
+vim.lsp.enable('cmake')
 vim.lsp.enable('nil_ls')
