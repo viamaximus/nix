@@ -53,7 +53,7 @@ in {
   # Use latest kernel.
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
-  #fix amd gpu
+  # fix amd gpu
   boot.kernelParams = ["amdgpu.dcdebugmask=0x10"];
 
   networking.hostName = "asus-zephyrus"; # Define your hostname.
@@ -84,12 +84,46 @@ in {
   # Enable the X11 windowing system.
   services.xserver.enable = true;
 
+  # GPU / graphics setup (AMD iGPU + NVIDIA dGPU laptop)
+  hardware.graphics.enable = true;
+
+  # Include both drivers on hybrid laptop
+  services.xserver.videoDrivers = ["amdgpu" "nvidia"];
+
+  hardware.nvidia = {
+    # Wayland/Hyprland support
+    modesetting.enable = true;
+
+    # Laptop power management
+    powerManagement.enable = true;
+    powerManagement.finegrained = true;
+
+    # RTX 40-series generally supports the open kernel module
+    # If you hit issues, set this to false.
+    open = false;
+
+    nvidiaSettings = true;
+    package = config.boot.kernelPackages.nvidiaPackages.stable;
+
+    # PRIME offload (AMD iGPU + NVIDIA dGPU)
+    prime = {
+      offload.enable = true;
+      offload.enableOffloadCmd = true;
+
+      # Derived from:
+      # NVIDIA: 01:00.0 -> PCI:1@0:0:0
+      # AMD:    65:00.0 -> PCI:101@0:0:0  (0x65 = 101)
+      amdgpuBusId = "PCI:101@0:0:0";
+      nvidiaBusId = "PCI:1@0:0:0";
+    };
+  };
+
   programs.xwayland.enable = true;
   programs.hyprland.enable = true;
   programs.hyprlock.enable = true;
   security.pam.services.hyprlock = {};
 
-  #Asus Laptop Stuff
+  # Asus Laptop Stuff
   services = {
     supergfxd = {
       enable = true;
@@ -148,6 +182,8 @@ in {
     neovim
     kitty
     git
+    # Ensure nvidia-smi is available in PATH from the active NVIDIA driver package
+    config.hardware.nvidia.package
   ];
 
   #  enable virtualbox virtualization

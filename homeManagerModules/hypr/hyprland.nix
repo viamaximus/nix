@@ -2,12 +2,25 @@
   config,
   lib,
   osConfig,
+  pkgs,
   ...
 }:
 with lib; let
   cfg = config.features.desktop.hyprland;
+  hostName = osConfig.networking.hostName or "";
+
+  panelBrightnessDevice =
+    if builtins.elem hostName ["zephyrus" "asus-zephyrus"]
+    then "amdgpu_bl2"
+    else null;
+
+  brightnessctlCmd =
+    if panelBrightnessDevice != null
+    then "${pkgs.brightnessctl}/bin/brightnessctl -d ${panelBrightnessDevice}"
+    else "${pkgs.brightnessctl}/bin/brightnessctl";
 in {
   options.features.desktop.hyprland.enable = mkEnableOption "hyprland config";
+
   config = mkIf cfg.enable {
     wayland.windowManager.hyprland = {
       enable = true;
@@ -24,6 +37,7 @@ in {
           "hypridle"
           "wl-paste -p -t text --watch clipman store -P --histpath=\"~/.local/share/clipman-primary.json\""
         ];
+
         env =
           [
             "WLR_NO_HARDWARE_CURSORS,1"
@@ -42,6 +56,7 @@ in {
           touchpad = {
             natural_scroll = true;
           };
+
           sensitivity = 0;
         };
 
@@ -49,8 +64,6 @@ in {
           gaps_in = 3;
           gaps_out = 3;
           border_size = 1;
-          # "col.active_border" = "rgba(9742b5ee) rgba(9742b5ee) 45deg";
-          # "col.inactive_border" = "rgba(595959aa)";
           layout = "dwindle";
         };
 
@@ -94,13 +107,12 @@ in {
         windowrule = [];
 
         gestures = {
-          # enabled = true;
           gesture = "3, horizontal, workspace";
         };
 
         "$mainMod" = "SUPER";
+
         bind = [
-          #programs, general stuffs
           "$mainMod, return, exec, kitty"
           "$mainMod, B, exec, zen-beta"
           "$mainMod, E, exec, nautilus"
@@ -111,26 +123,25 @@ in {
           "$mainMod SHIFT, L, exec, hyprlock"
           "$mainMod SHIFT, s, exec, grim -g \"$(slurp -d)\" - | wl-copy"
 
-          "bind = $mainMod, F, fullscreen"
-          "bind = $mainMod, V, togglefloating"
-          "bind = $mainMod, mouse_up, workspace, e-1"
-          "bind = $mainMod, mouse_down, workspace, e+1"
+          "$mainMod, F, fullscreen"
+          "$mainMod, V, togglefloating"
+          "$mainMod, mouse_up, workspace, e-1"
+          "$mainMod, mouse_down, workspace, e+1"
 
-          "bind = $mainMod CTRL, h, swapwindow, l"
-          "bind = $mainMod CTRL, h, moveactive, -50 0"
-          "bind = $mainMod CTRL, l, swapwindow, r"
-          "bind = $mainMod CTRL, l, moveactive, 50 0"
-          "bind = $mainMod CTRL, k, swapwindow, u"
-          "bind = $mainMod CTRL, k, moveactive, 0 -50"
-          "bind = $mainMod CTRL, j, swapwindow, d"
-          "bind = $mainMod CTRL, j, moveactive, 0 50"
+          "$mainMod CTRL, h, swapwindow, l"
+          "$mainMod CTRL, h, moveactive, -50 0"
+          "$mainMod CTRL, l, swapwindow, r"
+          "$mainMod CTRL, l, moveactive, 50 0"
+          "$mainMod CTRL, k, swapwindow, u"
+          "$mainMod CTRL, k, moveactive, 0 -50"
+          "$mainMod CTRL, j, swapwindow, d"
+          "$mainMod CTRL, j, moveactive, 0 50"
 
-          "bind = $mainMod, h, movefocus, l" #move focus left
-          "bind = $mainMod, j, movefocus, d" #move focus down
-          "bind = $mainMod, k, movefocus, u" #move focus up
-          "bind = $mainMod, l, movefocus, r" #move focus right
+          "$mainMod, h, movefocus, l"
+          "$mainMod, j, movefocus, d"
+          "$mainMod, k, movefocus, u"
+          "$mainMod, l, movefocus, r"
 
-          #move to workspace with mainMod + #
           "$mainMod, 1, workspace, 1"
           "$mainMod, 2, workspace, 2"
           "$mainMod, 3, workspace, 3"
@@ -140,7 +151,7 @@ in {
           "$mainMod, 7, workspace, 7"
           "$mainMod, 8, workspace, 8"
           "$mainMod, 9, workspace, 9"
-          #move active window to workspace
+
           "$mainMod SHIFT, 1, movetoworkspace, 1"
           "$mainMod SHIFT, 2, movetoworkspace, 2"
           "$mainMod SHIFT, 3, movetoworkspace, 3"
@@ -151,16 +162,16 @@ in {
           "$mainMod SHIFT, 8, movetoworkspace, 8"
           "$mainMod SHIFT, 9, movetoworkspace, 9"
 
-          ",XF86MonBrightnessUp, exec, brightnessctl set +10%"
-          ",XF86MonBrightnessDown, exec, brightnessctl set 10%-"
           ",XF86LaunchA, exec, brightnessctl --device='kbd_backlight' set 5%-"
           ",XF86Search, exec, brightnessctl --device='kbd_backlight' set 5%+"
           ",XF86AudioMute, exec, wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 0%"
         ];
 
-        binde = [
-          ", XF86AudioLowerVolume, exec, wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%-"
-          ", XF86AudioRaiseVolume, exec, wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+"
+        bindel = [
+          ",XF86MonBrightnessUp, exec, ${brightnessctlCmd} set +10%"
+          ",XF86MonBrightnessDown, exec, ${brightnessctlCmd} set 10%-"
+          ",XF86AudioLowerVolume, exec, wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%-"
+          ",XF86AudioRaiseVolume, exec, wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+"
         ];
 
         bindm = [
