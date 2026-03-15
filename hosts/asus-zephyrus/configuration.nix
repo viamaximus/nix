@@ -192,5 +192,7 @@ in {
   #  users.extraGroups.vboxusers.members = [ "max" ];
   virtualisation.docker.enable = true;
 
+  programs.nix-ld.enable = true;
+
   system.stateVersion = "25.05"; # Did you read the comment?
 }

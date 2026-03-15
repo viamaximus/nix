@@ -8,6 +8,7 @@
   imports = [
     ./browsers.nix
     ./c-dev.nix
+    ./ghidra.nix
     ./common.nix
     ./neovim.nix
     ./git.nix

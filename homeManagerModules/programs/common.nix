@@ -8,6 +8,9 @@
   inherit (pkgs.stdenv) isAarch64 isx86_64;
 
   universalPkgs = with pkgs; [
+    file
+    ida-free
+
     nextcloud-client
     python3
     alejandra
@@ -87,7 +90,6 @@
     #social
     element-desktop
     fluffychat
-
 
     nautilus
     kitty
