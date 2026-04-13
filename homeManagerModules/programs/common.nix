@@ -11,6 +11,18 @@
     file
     ida-free
 
+    qbittorrent
+    protonvpn-gui
+
+    saleae-logic-2
+    pulseview
+    snapshot
+    obs-studio
+
+    vlc
+
+    unixtools.xxd
+
     nextcloud-client
     python3
     alejandra

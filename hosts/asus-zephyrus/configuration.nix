@@ -61,6 +61,11 @@ in {
 
   # Enable networking
   networking.networkmanager.enable = true;
+  networking.extraHosts = ''
+       100.94.202.56 chm005 chm005.4dvc.com
+    100.98.106.44 chm006 chm006.4dvc.com
+       100.84.14.74 chm007 chm007.4dvc.com
+  '';
 
   # Set your time zone.
   time.timeZone = "America/New_York";
@@ -121,6 +126,26 @@ in {
   programs.xwayland.enable = true;
   programs.hyprland.enable = true;
   programs.hyprlock.enable = true;
+
+  security.unprivilegedUsernsClone = true;
+
+  xdg.portal = {
+    enable = true;
+    xdgOpenUsePortal = true;
+
+    extraPortals = with pkgs; [
+      xdg-desktop-portal-hyprland
+      xdg-desktop-portal-gtk
+    ];
+
+    config = {
+      common = {
+        default = ["hyprland" "gtk"];
+        "org.freedesktop.impl.portal.FileChooser" = ["gtk"];
+      };
+    };
+  };
+
   security.pam.services.hyprlock = {};
 
   # Asus Laptop Stuff
