@@ -61,14 +61,22 @@ in {
 
   hardware.graphics = {
     enable = true;
+    enable32Bit = true;
   };
 
   hardware.nvidia = {
     open = false;
     modesetting.enable = true;
-    powerManagement.enable = true;
-    # powerManagement.finegrained = false;
+    powerManagement.enable = false;
+    package = config.boot.kernelPackages.nvidiaPackages.beta;
   };
+
+  hardware.bluetooth.settings = {
+    General = {
+      Experimental = true;
+    };
+  };
+  hardware.bluetooth.powerOnBoot = true;
 
   boot.blacklistedKernelModules = ["nouveau"];
 
