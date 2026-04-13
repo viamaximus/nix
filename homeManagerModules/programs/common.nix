@@ -22,6 +22,10 @@
     vlc
 
     unixtools.xxd
+    (blender.override {cudaSupport = isx86_64;})
+    ffmpeg
+    yt-dlp
+    davinci-resolve
 
     nextcloud-client
     python3

@@ -37,7 +37,7 @@
     hackrf
     soapyhackrf
 
-    sdrangel
+    # sdrangel
 
     qFlipper
 
