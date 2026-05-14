@@ -7,6 +7,7 @@
 }: {
   imports = [
     ../../homeManagerModules
+    ../../homeManagerModules/programs/profiles/workstation.nix
   ];
 
   features.desktop.hyprland.enable = false;

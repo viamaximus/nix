@@ -14,6 +14,7 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs-signal.url = "github:NixOS/nixpkgs/nixos-unstable";
 
     # apple silicon support
     apple-silicon.url = "github:nix-community/nixos-apple-silicon";
@@ -97,6 +98,14 @@
         specialArgs = {inherit inputs;};
         modules = [
           ./hosts/server/configuration.nix
+        ];
+      };
+
+      netbook = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        specialArgs = {inherit inputs;};
+        modules = [
+          ./hosts/netbook/configuration.nix
         ];
       };
     };

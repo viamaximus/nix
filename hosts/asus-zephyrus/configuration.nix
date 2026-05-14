@@ -162,7 +162,6 @@ in {
     };
     ly.howdy.enable = true;
     login.howdy.enable = true;
-    sudo.howdy.enable = true;
   };
 
   # Asus Laptop Stuff

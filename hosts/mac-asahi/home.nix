@@ -7,7 +7,7 @@
 }: {
   imports = [
     ../../homeManagerModules
-    ../../homeManagerModules/programs/3dprint.nix
+    ../../homeManagerModules/programs/profiles/workstation.nix
   ];
 
   features.desktop.hyprland.enable = true;
