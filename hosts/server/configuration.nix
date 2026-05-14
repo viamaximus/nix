@@ -5,6 +5,7 @@
 }: {
   imports = [
     inputs.home-manager.nixosModules.home-manager
+    ../../nixosModules/networking.nix
     ../../nixosModules/nix-settings.nix
     ../../nixosModules/ssh-web-keys.nix
   ];

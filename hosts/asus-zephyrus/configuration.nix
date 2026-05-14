@@ -14,6 +14,7 @@ in {
     ./hardware-configuration.nix
     inputs.home-manager.nixosModules.home-manager
     inputs.stylix.nixosModules.stylix
+    ../../nixosModules/networking.nix
     ../../nixosModules/automount.nix
     ../../nixosModules/fonts.nix
     ../../nixosModules/stylix.nix
@@ -188,8 +189,6 @@ in {
   # };
 
   services.displayManager.ly.enable = true;
-
-  services.tailscale.enable = true;
 
   # Gaming support
   programs.gamemode.enable = true;

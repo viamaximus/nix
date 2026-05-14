@@ -10,6 +10,7 @@
     ../mac-asahi/hardware-configuration.nix
     inputs.home-manager.nixosModules.home-manager
     inputs.stylix.nixosModules.stylix
+    ../../nixosModules/networking.nix
     ../../nixosModules/automount.nix
     ../../nixosModules/fonts.nix
     ../../nixosModules/nix-settings.nix
@@ -97,8 +98,6 @@
   services.xserver.dpi = 192;
   services.xserver.desktopManager.xfce.enable = true;
   services.xserver.displayManager.lightdm.enable = true;
-
-  services.tailscale.enable = true;
 
   services.openssh.enable = true;
 

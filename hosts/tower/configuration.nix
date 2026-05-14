@@ -11,6 +11,7 @@ in {
     ./hardware-configuration.nix
     inputs.home-manager.nixosModules.home-manager
     inputs.stylix.nixosModules.stylix
+    ../../nixosModules/networking.nix
     ../../nixosModules/automount.nix
     ../../nixosModules/fonts.nix
     ../../nixosModules/stylix.nix
@@ -121,8 +122,6 @@ in {
   programs.hyprland.enable = true;
   programs.hyprlock.enable = true;
   security.pam.services.hyprlock = {};
-
-  services.tailscale.enable = true;
 
   ###gaming support
   programs.gamemode.enable = true;
