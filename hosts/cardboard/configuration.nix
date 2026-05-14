@@ -22,7 +22,7 @@ in
   stylix = {
     image = wallpaperConfig.currentWallpaper;
     cursor = {
-      name = "Catppuccin-Macchiato-Mauve";
+      name = "catppuccin-macchiato-mauve-cursors";
       package = pkgs.catppuccin-cursors.macchiatoMauve;
       size = 24;
     };

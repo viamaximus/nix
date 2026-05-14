@@ -24,7 +24,7 @@ in {
   stylix = {
     image = wallpaperConfig.currentWallpaper;
     cursor = {
-      name = "Catppuccin-Macchiato-Mauve";
+      name = "catppuccin-macchiato-mauve-cursors";
       package = pkgs.catppuccin-cursors.macchiatoMauve;
       size = 24;
     };
@@ -166,8 +166,6 @@ in {
     shell = pkgs.zsh;
     extraGroups = ["networkmanager" "wheel" "docker" "audio" "video" "input" "dialout"];
   };
-
-  # virtualisation.docker.enable = true;
 
   programs.ssh.startAgent = true;
 

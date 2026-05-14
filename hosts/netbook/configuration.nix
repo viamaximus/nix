@@ -11,7 +11,6 @@ in {
     ./hardware-configuration.nix
     inputs.home-manager.nixosModules.home-manager
     inputs.stylix.nixosModules.stylix
-    ../../nixosModules/automount.nix
     ../../nixosModules/fonts.nix
     ../../nixosModules/stylix.nix
     ../../nixosModules/nix-settings.nix
@@ -48,7 +47,7 @@ in {
 
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
-  networking.hostName = "tower"; # Define your hostname.
+  networking.hostName = "netbook";
 
   networking = {
     networkmanager.enable = true;
@@ -57,18 +56,9 @@ in {
   systemd.network.wait-online.enable = false;
   systemd.services.NetworkManager-wait-online.enable = false;
 
-  services.xserver.videoDrivers = ["nvidia"];
-
   hardware.graphics = {
     enable = true;
     enable32Bit = true;
-  };
-
-  hardware.nvidia = {
-    open = false;
-    modesetting.enable = true;
-    powerManagement.enable = false;
-    package = config.boot.kernelPackages.nvidiaPackages.beta;
   };
 
   hardware.bluetooth.settings = {
@@ -78,19 +68,17 @@ in {
   };
   hardware.bluetooth.powerOnBoot = true;
 
-  boot.blacklistedKernelModules = ["nouveau"];
-
-  fileSystems."/mnt/games" = {
-    device = "/dev/disk/by-uuid/4808c298-cd75-4cbd-bdef-71c063463b2e";
-    fsType = "ext4";
-    options = [
-      "noatime"
-      "discard"
-    ];
-  };
-  systemd.tmpfiles.rules = [
-    "d /mnt/games 0755 max max -"
-  ];
+  # Power management for laptop/netbook
+  # services.thermald.enable = true;
+  # services.tlp = {
+  #   enable = true;
+  #   settings = {
+  #     CPU_SCALING_GOVERNOR_ON_AC = "powersave";
+  #     CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
+  #     CPU_ENERGY_PERF_POLICY_ON_AC = "balance_power";
+  #     CPU_ENERGY_PERF_POLICY_ON_BAT = "power";
+  #   };
+  # };
 
   # Set your time zone.
   time.timeZone = "America/New_York";
@@ -111,23 +99,23 @@ in {
 
   programs.zsh.enable = true;
 
-  virtualisation.docker.enable = true;
-
-  # Enable the X11 windowing system.
+  # Enable the X11 windowing system and GNOME
   services.xserver.enable = true;
+  services.xserver.displayManager.gdm.enable = true;
+  services.xserver.desktopManager.gnome.enable = true;
 
-  programs.xwayland.enable = true;
-  programs.hyprland.enable = true;
-  programs.hyprlock.enable = true;
-  security.pam.services.hyprlock = {};
+  # GNOME-specific optimizations
+  services.gnome.core-utilities.enable = true;
+  services.gnome.gnome-keyring.enable = true;
 
-  services.tailscale.enable = true;
-
-  ###gaming support
-  programs.gamemode.enable = true;
-  programs.steam.enable = true;
-
-  services.displayManager.ly.enable = true;
+  # Exclude some GNOME apps we don't need on a minimal netbook
+  environment.gnome.excludePackages = with pkgs; [
+    gnome-tour
+    epiphany  # gnome web browser (we have firefox)
+    geary     # email client
+    gnome-music
+    gnome-photos
+  ];
 
   # Configure keymap in X11
   services.xserver.xkb = {
@@ -145,14 +133,12 @@ in {
     description = "max";
     shell = pkgs.zsh;
     group = "max";
-    extraGroups = ["networkmanager" "wheel" "docker" "audio" "video" "input" "dialout"];
-    packages = with pkgs; [
-      #  thunderbird
-    ];
+    extraGroups = ["networkmanager" "wheel" "audio" "video" "input"];
+    packages = with pkgs; [];
   };
   users.groups.max = {};
 
-  programs.ssh.startAgent = true;
+  # programs.ssh.startAgent = true;
 
   # Nix settings + allowUnfree provided by ../../nixosModules/nix-settings.nix
   programs.firefox.enable = true;
@@ -166,5 +152,5 @@ in {
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
 
-  system.stateVersion = "25.05"; # Did you read the comment?
+  system.stateVersion = "25.05";
 }

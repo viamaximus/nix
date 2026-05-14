@@ -26,6 +26,8 @@
 
       enable_audio_bell = lib.mkForce false;
 
+      touch_scroll_multiplier = lib.mkForce "2.0";
+
       tab_bar_style = lib.mkForce "powerline";
       tab_powerline_style = lib.mkForce "slanted";
     };
