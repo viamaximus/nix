@@ -10,6 +10,7 @@ in {
     ./hardware-configuration.nix
     inputs.home-manager.nixosModules.home-manager
     inputs.stylix.nixosModules.stylix
+    ../../nixosModules/terminal.nix
     ../../nixosModules/networking.nix
     ../../nixosModules/fonts.nix
     ../../nixosModules/stylix.nix
