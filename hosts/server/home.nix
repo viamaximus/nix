@@ -3,9 +3,8 @@
   ...
 }: {
   imports = [
-    ../../homeManagerModules/shell/zsh.nix
+    ../../homeManagerModules/shell/server.nix
     ../../homeManagerModules/shell/starship.nix
-    ../../homeManagerModules/shell/fastfetch.nix
   ];
 
   home.username = "max";
