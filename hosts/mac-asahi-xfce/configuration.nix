@@ -4,6 +4,7 @@
   lib,
   config,
   chicago95-src,
+  hostInventory,
   ...
 }: {
   imports = [
@@ -23,7 +24,7 @@
   stylix.enable = false;
 
   home-manager = {
-    extraSpecialArgs = {inherit inputs chicago95-src;};
+    extraSpecialArgs = {inherit inputs chicago95-src hostInventory;};
     users = {
       max = import ./home.nix;
     };

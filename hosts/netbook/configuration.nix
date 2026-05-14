@@ -2,6 +2,7 @@
   config,
   pkgs,
   inputs,
+  hostInventory,
   ...
 }: let
   wallpaperConfig = import ./current-wallpaper.nix;
@@ -29,7 +30,7 @@ in {
   };
 
   home-manager = {
-    extraSpecialArgs = {inherit inputs;};
+    extraSpecialArgs = {inherit inputs hostInventory;};
     users.max = import ./home.nix;
     useGlobalPkgs = true;
     backupFileExtension = "backup";

@@ -3,6 +3,7 @@
   pkgs,
   lib,
   config,
+  hostInventory,
   ...
 }: let
   wallpaperConfig = import ./current-wallpaper.nix;
@@ -34,7 +35,7 @@ in {
   # home manger
   ##
   home-manager = {
-    extraSpecialArgs = {inherit inputs;};
+    extraSpecialArgs = {inherit inputs hostInventory;};
     users = {
       max = import ./home.nix;
     };

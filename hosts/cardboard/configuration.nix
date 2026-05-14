@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running 'nixos-help').
 
-{ config, pkgs, inputs, ... }:
+{ config, pkgs, inputs, hostInventory, ... }:
 let
   wallpaperConfig = import ./current-wallpaper.nix;
 in
@@ -33,7 +33,7 @@ in
 
 
   home-manager = {
-    extraSpecialArgs = { inherit inputs; };
+    extraSpecialArgs = { inherit inputs hostInventory; };
     users = {
       nix = import ./home.nix;
     };

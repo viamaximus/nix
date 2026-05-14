@@ -9,5 +9,6 @@
     ./common.nix
     ./neovim.nix
     ./git.nix
+    ./ssh.nix
   ];
 }

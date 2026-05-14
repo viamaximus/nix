@@ -6,6 +6,7 @@
     ../../homeManagerModules/shell/server.nix
     ../../homeManagerModules/shell/starship.nix
     ../../homeManagerModules/programs/git.nix
+    ../../homeManagerModules/programs/ssh.nix
   ];
 
   home.username = "max";

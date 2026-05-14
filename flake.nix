@@ -46,11 +46,42 @@
     nixpkgs,
     apple-silicon,
     ...
-  } @ inputs: {
+  } @ inputs: let
+    hostInventory = {
+      mac-asahi = {
+        hostName = "mac-asahi";
+        user = "max";
+      };
+      mac-asahi-xfce = {
+        hostName = "mac-asahi";
+        user = "max";
+      };
+      asus-zephyrus = {
+        hostName = "asus-zephyrus";
+        user = "max";
+      };
+      cardboard = {
+        hostName = "cardboard";
+        user = "nix";
+      };
+      tower = {
+        hostName = "tower";
+        user = "max";
+      };
+      server = {
+        hostName = "server";
+        user = "max";
+      };
+      netbook = {
+        hostName = "netbook";
+        user = "max";
+      };
+    };
+  in {
     nixosConfigurations = {
       mac-asahi = nixpkgs.lib.nixosSystem {
         system = "aarch64-linux";
-        specialArgs = {inherit inputs apple-silicon;};
+        specialArgs = {inherit inputs apple-silicon hostInventory;};
         modules = [
           apple-silicon.nixosModules.apple-silicon-support
           ./hosts/mac-asahi/configuration.nix
@@ -60,7 +91,7 @@
       mac-asahi-xfce = nixpkgs.lib.nixosSystem {
         system = "aarch64-linux";
         specialArgs = {
-          inherit inputs apple-silicon;
+          inherit inputs apple-silicon hostInventory;
           chicago95-src = inputs.chicago95;
         };
         modules = [
@@ -71,7 +102,7 @@
 
       asus-zephyrus = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
-        specialArgs = {inherit inputs;};
+        specialArgs = {inherit inputs hostInventory;};
         modules = [
           ./hosts/asus-zephyrus/configuration.nix
         ];
@@ -79,7 +110,7 @@
 
       cardboard = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
-        specialArgs = {inherit inputs;};
+        specialArgs = {inherit inputs hostInventory;};
         modules = [
           ./hosts/cardboard/configuration.nix
         ];
@@ -87,7 +118,7 @@
 
       tower = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
-        specialArgs = {inherit inputs;};
+        specialArgs = {inherit inputs hostInventory;};
         modules = [
           ./hosts/tower/configuration.nix
         ];
@@ -95,7 +126,7 @@
 
       server = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
-        specialArgs = {inherit inputs;};
+        specialArgs = {inherit inputs hostInventory;};
         modules = [
           ./hosts/server/configuration.nix
         ];
@@ -103,7 +134,7 @@
 
       netbook = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
-        specialArgs = {inherit inputs;};
+        specialArgs = {inherit inputs hostInventory;};
         modules = [
           ./hosts/netbook/configuration.nix
         ];

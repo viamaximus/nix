@@ -1,6 +1,7 @@
 {
   pkgs,
   inputs,
+  hostInventory,
   ...
 }: {
   imports = [
@@ -12,7 +13,7 @@
   ];
 
   home-manager = {
-    extraSpecialArgs = {inherit inputs;};
+    extraSpecialArgs = {inherit inputs hostInventory;};
     users.max = import ./home.nix;
     useGlobalPkgs = true;
     backupFileExtension = "backup";
