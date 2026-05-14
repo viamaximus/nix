@@ -11,6 +11,9 @@
     file
     ida-free
 
+    openssh
+    yubikey-manager
+
     qbittorrent
     protonvpn-gui
 
@@ -18,6 +21,10 @@
     pulseview
     snapshot
     obs-studio
+
+    claude-code
+
+    wget
 
     vlc
 

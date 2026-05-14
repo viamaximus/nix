@@ -17,6 +17,7 @@ in
       ../../nixosModules/stylix.nix
       ../../nixosModules/nix-settings.nix
       ../../nixosModules/audio.nix
+      ../../nixosModules/ssh-web-keys.nix
     ];
 
   stylix = {
@@ -133,6 +134,8 @@ in
 
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
+
+  viamaximus.sshWebKeys.enable = true;
 
   system.stateVersion = "25.05"; # Did you read the comment?
 

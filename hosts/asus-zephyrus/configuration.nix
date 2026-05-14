@@ -19,6 +19,7 @@ in {
     ../../nixosModules/stylix.nix
     ../../nixosModules/nix-settings.nix
     ../../nixosModules/audio.nix
+    ../../nixosModules/ssh-web-keys.nix
   ];
 
   stylix = {
@@ -54,7 +55,7 @@ in {
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
   # fix amd gpu
-  boot.kernelParams = ["amdgpu.dcdebugmask=0x10"];
+  boot.kernelParams = ["amdgpu.dcdebugmask=0x10" "resume_offset=948213760"];
 
   networking.hostName = "asus-zephyrus"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -95,6 +96,8 @@ in {
   # Include both drivers on hybrid laptop
   services.xserver.videoDrivers = ["amdgpu" "nvidia"];
 
+  services.flatpak.enable = true;
+
   hardware.nvidia = {
     # Wayland/Hyprland support
     modesetting.enable = true;
@@ -129,6 +132,13 @@ in {
 
   security.unprivilegedUsernsClone = true;
 
+  services.howdy = {
+    enable = true;
+    control = "sufficient";
+  };
+
+  services.linux-enable-ir-emitter.enable = true;
+
   xdg.portal = {
     enable = true;
     xdgOpenUsePortal = true;
@@ -146,7 +156,14 @@ in {
     };
   };
 
-  security.pam.services.hyprlock = {};
+  security.pam.services = {
+    hyprlock = {
+      howdy.enable = true;
+    };
+    ly.howdy.enable = true;
+    login.howdy.enable = true;
+    sudo.howdy.enable = true;
+  };
 
   # Asus Laptop Stuff
   services = {
@@ -198,7 +215,25 @@ in {
 
   services.openssh.enable = true;
 
-  services.logind.settings.Login.HandleLidSwitch = "lock";
+  viamaximus.sshWebKeys.enable = true;
+
+  services.logind.settings.Login = {
+    HandleLidSwitch = "suspend-then-hibernate";
+    LockScreenOnSuspend = true;
+  };
+
+  systemd.sleep.extraConfig = ''
+    HibernateDelaySec=5min
+  '';
+
+  swapDevices = [
+    {
+      device = "/var/lib/swapfile";
+      size = 32 * 1024;
+    }
+  ];
+
+  boot.resumeDevice = "/dev/disk/by-uuid/fadd6b5f-04bc-4299-8df4-af6f225c0867";
 
   # Nix settings + allowUnfree provided by ../../nixosModules/nix-settings.nix
   # List packages installed in system profile. To search, run:

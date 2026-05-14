@@ -17,6 +17,7 @@ in {
     ./mako.nix
     ./clipboard.nix
     ./nightlight.nix
+    ./battery-notify.nix
   ];
 
   config = lib.mkIf cfg.enable {

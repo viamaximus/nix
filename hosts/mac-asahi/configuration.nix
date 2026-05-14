@@ -16,6 +16,7 @@ in {
     ../../nixosModules/stylix.nix
     ../../nixosModules/nix-settings.nix
     ../../nixosModules/audio.nix
+    ../../nixosModules/ssh-web-keys.nix
   ];
 
   stylix = {
@@ -138,7 +139,12 @@ in {
 
   services.openssh.enable = true;
 
-  services.logind.settings.Login.HandleLidSwitch = "lock";
+  viamaximus.sshWebKeys.enable = true;
+
+  services.logind.settings.Login = {
+    HandleLidSwitch = "suspend";
+    LockScreenOnSuspend = true;
+  };
 
   ############################################
   # Luckfox Pico udev rules

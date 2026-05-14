@@ -14,6 +14,7 @@
     ../../nixosModules/fonts.nix
     ../../nixosModules/nix-settings.nix
     ../../nixosModules/audio.nix
+    ../../nixosModules/ssh-web-keys.nix
   ];
 
   # Disable Stylix — Chicago95 handles all theming
@@ -100,6 +101,8 @@
   services.tailscale.enable = true;
 
   services.openssh.enable = true;
+
+  viamaximus.sshWebKeys.enable = true;
 
   services.logind.settings.Login.HandleLidSwitch = "lock";
 
