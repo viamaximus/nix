@@ -5,6 +5,7 @@
   imports = [
     ../../homeManagerModules/shell/server.nix
     ../../homeManagerModules/shell/starship.nix
+    ../../homeManagerModules/programs/git.nix
   ];
 
   home.username = "max";
@@ -14,6 +15,7 @@
     curl
     fd
     git
+    gh
     jq
     lazygit
     neovim
@@ -36,14 +38,6 @@
       clock24 = true;
       keyMode = "vi";
       extraConfig = "mouse on";
-    };
-
-    git = {
-      enable = true;
-      settings = {
-        user.name = "viamaximus";
-        user.email = "70414866+viamaximus@users.noreply.github.com";
-      };
     };
   };
 

@@ -24,6 +24,10 @@
     };
 
     initContent = ''
+      if [[ -n "$SSH_CONNECTION" && "$TERM" == "xterm-kitty" ]]; then
+        export TERM=xterm-256color
+      fi
+
       zstyle ':completion:*' menu select
       zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
       zstyle ':completion:*' list-colors "''${(s.:.)LS_COLORS}"
@@ -54,15 +58,6 @@
       ll = "ls -la --color=auto";
       la = "ls -A --color=auto";
       l = "ls -CF --color=auto";
-    };
-
-    oh-my-zsh = {
-      enable = true;
-      plugins = [
-        "git"
-        "colored-man-pages"
-        "command-not-found"
-      ];
     };
   };
 
