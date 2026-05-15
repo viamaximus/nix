@@ -5,6 +5,7 @@
 }: {
   programs.ssh = {
     enable = true;
+    enableDefaultConfig = false;
     matchBlocks =
       lib.mapAttrs
       (_: meta: {

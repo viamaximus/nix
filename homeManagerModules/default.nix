@@ -9,7 +9,5 @@
     ./xfce
     ./shell
   ];
-  config = {
-    nixpkgs.config.allowUnfree = true;
-  };
+  config = {};
 }

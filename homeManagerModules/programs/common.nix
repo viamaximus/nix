@@ -57,7 +57,13 @@ in {
     };
 
     btop.enable = true; # replacement of htop/nmon
-    eza.enable = true; # A modern replacement for ‘ls’
+    eza = {
+      enable = true;
+      icons = "auto";
+      extraOptions = [
+        "--group-directories-first"
+      ];
+    };
     jq.enable = true; # A lightweight and flexible command-line JSON processor
     aria2.enable = true;
   };

@@ -1,0 +1,7 @@
+evaluation warning: 'system' has been renamed to/replaced by 'stdenv.hostPlatform.system'
+evaluation warning: max profile: `programs.ssh` default values will be removed in the future.
+                    Consider setting `programs.ssh.enableDefaultConfig` to false,
+                    and manually set the default values you want to keep at
+                    `programs.ssh.matchBlocks."*"`.
+evaluation warning: max profile: You have set either `nixpkgs.config` or `nixpkgs.overlays` while using `home-manager.useGlobalPkgs`.
+                    This will soon not be possible. Please remove all `nixpkgs` options when using `home-manager.useGlobalPkgs`.

@@ -3,10 +3,13 @@
   pkgs,
   ...
 }: {
-  home.packages = with pkgs; [
-    (blender.override {
-      cudaSupport = pkgs.stdenv.isx86_64;
-    })
-    davinci-resolve
-  ];
+  home.packages = with pkgs;
+    [
+      (blender.override {
+        cudaSupport = pkgs.stdenv.isx86_64;
+      })
+    ]
+    ++ lib.optionals stdenv.isx86_64 [
+      davinci-resolve
+    ];
 }

@@ -18,6 +18,8 @@
     ../../nixosModules/nix-settings.nix
     ../../nixosModules/audio.nix
     ../../nixosModules/ssh-web-keys.nix
+    ../../nixosModules/agenix.nix
+    ../../nixosModules/secrets.nix
   ];
 
   # Disable Stylix — Chicago95 handles all theming

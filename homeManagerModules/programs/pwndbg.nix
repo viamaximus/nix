@@ -4,6 +4,6 @@
   ...
 }: {
   home.packages = [
-    inputs.pwndbg.packages.${pkgs.system}.default
+    inputs.pwndbg.packages.${pkgs.stdenv.hostPlatform.system}.default
   ];
 }
