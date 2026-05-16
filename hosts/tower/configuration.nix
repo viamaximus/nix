@@ -166,5 +166,12 @@ in {
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
 
+  programs.nix-ld = {
+    enable = true;
+    libraries = pkgs.steam-run.args.multiPkgs pkgs;
+  };
+
+  nixpkgs.config.allowUnfree = true;
+
   system.stateVersion = "25.05"; # Did you read the comment?
 }

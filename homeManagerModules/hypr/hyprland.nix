@@ -104,7 +104,10 @@ in {
           vrr = 0;
         };
 
-        windowrule = [];
+        windowrule = [
+          "monitor DP-3, match:title ^(Kitten Space Agency)"
+          "fullscreen 0, match:title ^(Kitten Space Agency)"
+        ];
 
         gestures = {
           gesture = "3, horizontal, workspace";

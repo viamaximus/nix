@@ -4,6 +4,14 @@
   lib,
   ...
 }: {
+  xdg.desktopEntries.ksa = {
+    name = "Kitten Space Agency";
+    comment = "KSA - Space simulation game";
+    exec = "nix run /home/max/Downloads/setup_ksa_v2026.4.13.4082/linux-x64";
+    terminal = false;
+    categories = [ "Game" ];
+  };
+
   home.packages = with pkgs; [
     steam
     steam-run
