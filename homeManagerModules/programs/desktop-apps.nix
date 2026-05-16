@@ -13,6 +13,7 @@ in {
       obs-studio
       vlc
       nextcloud-client
+      keepassxc
       obsidian
       fastfetch
       neofetch
