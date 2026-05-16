@@ -9,6 +9,7 @@
   imports = [
     ../../homeManagerModules
     ../../homeManagerModules/gaming.nix
+    ../../homeManagerModules/programs/profiles/workstation.nix
   ];
 
   features.desktop.hyprland.enable = true;

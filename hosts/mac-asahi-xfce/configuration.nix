@@ -4,23 +4,27 @@
   lib,
   config,
   chicago95-src,
+  hostInventory,
   ...
 }: {
   imports = [
     ../mac-asahi/hardware-configuration.nix
     inputs.home-manager.nixosModules.home-manager
     inputs.stylix.nixosModules.stylix
+    ../../nixosModules/terminal.nix
+    ../../nixosModules/networking.nix
     ../../nixosModules/automount.nix
     ../../nixosModules/fonts.nix
     ../../nixosModules/nix-settings.nix
     ../../nixosModules/audio.nix
+    ../../nixosModules/ssh-web-keys.nix
   ];
 
   # Disable Stylix — Chicago95 handles all theming
   stylix.enable = false;
 
   home-manager = {
-    extraSpecialArgs = {inherit inputs chicago95-src;};
+    extraSpecialArgs = {inherit inputs chicago95-src hostInventory;};
     users = {
       max = import ./home.nix;
     };
@@ -97,9 +101,9 @@
   services.xserver.desktopManager.xfce.enable = true;
   services.xserver.displayManager.lightdm.enable = true;
 
-  services.tailscale.enable = true;
-
   services.openssh.enable = true;
+
+  viamaximus.sshWebKeys.enable = true;
 
   services.logind.settings.Login.HandleLidSwitch = "lock";
 

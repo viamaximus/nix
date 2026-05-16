@@ -47,6 +47,8 @@
             "custom/divider"
             "pulseaudio"
             "custom/divider"
+            "battery"
+            "custom/divider"
             "clock"
             "custom/divider"
             "custom/powermenu"
@@ -128,6 +130,18 @@
             on-scroll-up = "pamixer --default-source -i 5";
             on-scroll-down = "pamixer --default-source -d 5";
             scroll-step = 5;
+          };
+
+          battery = {
+            states = {
+              warning = 15;
+              critical = 5;
+            };
+            format = "{icon} {capacity}%";
+            format-charging = "󰂄 {capacity}%";
+            format-plugged = "󰂄 {capacity}%";
+            format-icons = ["󰂎" "󰁺" "󰁼" "󰁾" "󰂀" "󰁹"];
+            tooltip = false;
           };
 
           "custom/divider" = {

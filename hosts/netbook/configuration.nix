@@ -8,13 +8,11 @@
   wallpaperConfig = import ./current-wallpaper.nix;
 in {
   imports = [
-    # Include the results of the hardware scan.
     ./hardware-configuration.nix
     inputs.home-manager.nixosModules.home-manager
     inputs.stylix.nixosModules.stylix
     ../../nixosModules/terminal.nix
     ../../nixosModules/networking.nix
-    ../../nixosModules/automount.nix
     ../../nixosModules/fonts.nix
     ../../nixosModules/stylix.nix
     ../../nixosModules/nix-settings.nix
@@ -33,46 +31,30 @@ in {
 
   home-manager = {
     extraSpecialArgs = {inherit inputs hostInventory;};
-    users = {
-      max = import ./home.nix;
-    };
+    users.max = import ./home.nix;
     useGlobalPkgs = true;
     backupFileExtension = "backup";
   };
 
-  # Bootloader.
   boot.loader = {
     grub = {
       enable = true;
       efiSupport = true;
       devices = ["nodev"];
     };
+    efi.canTouchEfiVariables = true;
   };
-  boot.loader.efi.canTouchEfiVariables = true;
 
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
-  networking.hostName = "tower"; # Define your hostname.
-
-  networking = {
-    networkmanager.enable = true;
-    useNetworkd = false;
-  };
+  networking.hostName = "netbook";
+  networking.networkmanager.enable = true;
   systemd.network.wait-online.enable = false;
   systemd.services.NetworkManager-wait-online.enable = false;
-
-  services.xserver.videoDrivers = ["nvidia"];
 
   hardware.graphics = {
     enable = true;
     enable32Bit = true;
-  };
-
-  hardware.nvidia = {
-    open = false;
-    modesetting.enable = true;
-    powerManagement.enable = false;
-    package = config.boot.kernelPackages.nvidiaPackages.beta;
   };
 
   hardware.bluetooth.settings = {
@@ -82,24 +64,8 @@ in {
   };
   hardware.bluetooth.powerOnBoot = true;
 
-  boot.blacklistedKernelModules = ["nouveau"];
-
-  fileSystems."/mnt/games" = {
-    device = "/dev/disk/by-uuid/4808c298-cd75-4cbd-bdef-71c063463b2e";
-    fsType = "ext4";
-    options = [
-      "noatime"
-      "discard"
-    ];
-  };
-  systemd.tmpfiles.rules = [
-    "d /mnt/games 0755 max max -"
-  ];
-
-  # Set your time zone.
   time.timeZone = "America/New_York";
 
-  # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
   i18n.extraLocaleSettings = {
     LC_ADDRESS = "en_US.UTF-8";
@@ -115,48 +81,36 @@ in {
 
   programs.zsh.enable = true;
 
-  virtualisation.docker.enable = true;
-
-  # Enable the X11 windowing system.
   services.xserver.enable = true;
-
-  programs.xwayland.enable = true;
-  programs.hyprland.enable = true;
-  programs.hyprlock.enable = true;
-  security.pam.services.hyprlock = {};
-
-  ###gaming support
-  programs.gamemode.enable = true;
-  programs.steam.enable = true;
-
-  services.displayManager.ly.enable = true;
-
-  # Configure keymap in X11
+  services.xserver.displayManager.gdm.enable = true;
+  services.xserver.desktopManager.gnome.enable = true;
   services.xserver.xkb = {
     layout = "us";
     variant = "";
   };
 
-  # Enable CUPS to print documents.
-  services.printing.enable = true;
+  services.gnome.core-utilities.enable = true;
+  services.gnome.gnome-keyring.enable = true;
 
-  # Audio + Bluetooth provided by ../../nixosModules/audio.nix
+  environment.gnome.excludePackages = with pkgs; [
+    gnome-tour
+    epiphany
+    geary
+    gnome-music
+    gnome-photos
+  ];
+
+  services.printing.enable = true;
 
   users.users.max = {
     isNormalUser = true;
     description = "max";
     shell = pkgs.zsh;
     group = "max";
-    extraGroups = ["networkmanager" "wheel" "docker" "audio" "video" "input" "dialout"];
-    packages = with pkgs; [
-      #  thunderbird
-    ];
+    extraGroups = ["networkmanager" "wheel" "audio" "video" "input"];
   };
   users.groups.max = {};
 
-  programs.ssh.startAgent = true;
-
-  # Nix settings + allowUnfree provided by ../../nixosModules/nix-settings.nix
   programs.firefox.enable = true;
 
   environment.systemPackages = with pkgs; [
@@ -165,16 +119,8 @@ in {
     git
   ];
 
-  # Enable the OpenSSH daemon.
   services.openssh.enable = true;
-
-  programs.nix-ld = {
-    enable = true;
-    libraries = pkgs.steam-run.args.multiPkgs pkgs;
-  };
-
-  nixpkgs.config.allowUnfree = true;
   viamaximus.sshWebKeys.enable = true;
 
-  system.stateVersion = "25.05"; # Did you read the comment?
+  system.stateVersion = "25.05";
 }

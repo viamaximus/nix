@@ -33,3 +33,16 @@ window#waybar {
 #custom-powermenu {
     margin-right: 20px;
 }
+
+#battery.warning {
+    color: red;
+}
+
+@keyframes blink {
+    to { opacity: 0; }
+}
+
+#battery.critical {
+    color: red;
+    animation: blink 1s ease-in-out infinite alternate;
+}

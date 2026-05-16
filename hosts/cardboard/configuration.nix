@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running 'nixos-help').
 
-{ config, pkgs, inputs, ... }:
+{ config, pkgs, inputs, hostInventory, ... }:
 let
   wallpaperConfig = import ./current-wallpaper.nix;
 in
@@ -12,11 +12,14 @@ in
       ./hardware-configuration.nix
       inputs.home-manager.nixosModules.home-manager
       inputs.stylix.nixosModules.stylix
+      ../../nixosModules/terminal.nix
+      ../../nixosModules/networking.nix
       ../../nixosModules/automount.nix
       ../../nixosModules/fonts.nix
       ../../nixosModules/stylix.nix
       ../../nixosModules/nix-settings.nix
       ../../nixosModules/audio.nix
+      ../../nixosModules/ssh-web-keys.nix
     ];
 
   stylix = {
@@ -30,7 +33,7 @@ in
 
 
   home-manager = {
-    extraSpecialArgs = { inherit inputs; };
+    extraSpecialArgs = { inherit inputs hostInventory; };
     users = {
       nix = import ./home.nix;
     };
@@ -85,8 +88,6 @@ in
   programs.hyprlock.enable = true;
   security.pam.services.hyprlock = {};
 
-  services.tailscale.enable = true;
-
   services.displayManager.ly.enable = true;
 
   # Configure keymap in X11
@@ -133,6 +134,8 @@ in
 
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
+
+  viamaximus.sshWebKeys.enable = true;
 
   system.stateVersion = "25.05"; # Did you read the comment?
 

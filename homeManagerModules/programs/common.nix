@@ -5,32 +5,22 @@
   inputs,
   ...
 }: let
-  inherit (pkgs.stdenv) isAarch64 isx86_64;
-
-  universalPkgs = with pkgs; [
+  commonPkgs = with pkgs; [
     file
-    ida-free
+    openssh
+    yubikey-manager
 
-    (blender.override {cudaSupport = isx86_64;})
-    ffmpeg
-    yt-dlp
-    davinci-resolve
+    claude-code
 
-    nextcloud-client
+    wget
     python3
     alejandra
 
     nextcloud-client
-
     cp210x-program
-
     signal-desktop
-    # cosign
-
     obsidian
-
     rpi-imager
-
     qbittorrent
     protonvpn-gui
 
@@ -39,85 +29,32 @@
     gnumake
     gcc13
     pkg-config
-    spdlog
-    fmt
 
     lazygit
     git
     gh
 
-    lazydocker
-    docker
-    docker-buildx
-    docker-compose
     impala
     fd
-
-    caligula
-    # rpi-imager
-
-    fastfetch
-    neofetch
     tree
-
-    screen
-    tio
 
     #archive tools
     zip
     unzip
     p7zip
 
-    # usbimager
-
     #utils
     ripgrep
     yq-go
     htop
     usbutils
-    feh
 
     #misc
     libnotify
     nodejs_22
-    cbonsai
-    cowsay
-
-    #bluetooth
-    bluetuith
-
-    #audio
-    pwvucontrol
-
-    #EVIL
-    # google-chrome
-    inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
-    ungoogled-chromium
-
-    #homelabby stuff
-    kubectl
-
-    #social
-    element-desktop
-    fluffychat
-
-    nautilus
-    kitty
-  ];
-
-  x86Pkgs = with pkgs; [
-    discord
-  ];
-
-  armPkgs = with pkgs; [
-    discordo
-    vesktop
   ];
 in {
-  home.packages =
-    universalPkgs
-    ++ lib.optionals isx86_64 x86Pkgs
-    ++ lib.optionals isAarch64 armPkgs;
+  home.packages = commonPkgs;
 
   programs = {
     tmux = {
@@ -130,7 +67,6 @@ in {
     btop.enable = true; # replacement of htop/nmon
     eza.enable = true; # A modern replacement for ‘ls’
     jq.enable = true; # A lightweight and flexible command-line JSON processor
-    #ssh.enable = true;
     aria2.enable = true;
   };
 }

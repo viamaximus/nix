@@ -3,6 +3,7 @@
   pkgs,
   lib,
   config,
+  hostInventory,
   ...
 }: let
   wallpaperConfig = import ./current-wallpaper.nix;
@@ -11,11 +12,14 @@ in {
     ./hardware-configuration.nix
     inputs.home-manager.nixosModules.home-manager
     inputs.stylix.nixosModules.stylix
+    ../../nixosModules/terminal.nix
+    ../../nixosModules/networking.nix
     ../../nixosModules/automount.nix
     ../../nixosModules/fonts.nix
     ../../nixosModules/stylix.nix
     ../../nixosModules/nix-settings.nix
     ../../nixosModules/audio.nix
+    ../../nixosModules/ssh-web-keys.nix
   ];
 
   stylix = {
@@ -31,7 +35,7 @@ in {
   # home manger
   ##
   home-manager = {
-    extraSpecialArgs = {inherit inputs;};
+    extraSpecialArgs = {inherit inputs hostInventory;};
     users = {
       max = import ./home.nix;
     };
@@ -134,11 +138,14 @@ in {
 
   services.seatd.enable = true;
 
-  services.tailscale.enable = true;
-
   services.openssh.enable = true;
 
-  services.logind.settings.Login.HandleLidSwitch = "lock";
+  viamaximus.sshWebKeys.enable = true;
+
+  services.logind.settings.Login = {
+    HandleLidSwitch = "suspend";
+    LockScreenOnSuspend = true;
+  };
 
   ############################################
   # Luckfox Pico udev rules

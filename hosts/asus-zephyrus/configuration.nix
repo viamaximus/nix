@@ -5,6 +5,7 @@
   config,
   pkgs,
   inputs,
+  hostInventory,
   ...
 }: let
   wallpaperConfig = import ./current-wallpaper.nix;
@@ -14,11 +15,14 @@ in {
     ./hardware-configuration.nix
     inputs.home-manager.nixosModules.home-manager
     inputs.stylix.nixosModules.stylix
+    ../../nixosModules/terminal.nix
+    ../../nixosModules/networking.nix
     ../../nixosModules/automount.nix
     ../../nixosModules/fonts.nix
     ../../nixosModules/stylix.nix
     ../../nixosModules/nix-settings.nix
     ../../nixosModules/audio.nix
+    ../../nixosModules/ssh-web-keys.nix
   ];
 
   stylix = {
@@ -31,7 +35,7 @@ in {
   };
 
   home-manager = {
-    extraSpecialArgs = {inherit inputs;};
+    extraSpecialArgs = {inherit inputs hostInventory;};
     users = {
       max = import ./home.nix;
     };
@@ -54,13 +58,18 @@ in {
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
   # fix amd gpu
-  boot.kernelParams = ["amdgpu.dcdebugmask=0x10"];
+  boot.kernelParams = ["amdgpu.dcdebugmask=0x10" "resume_offset=948213760"];
 
   networking.hostName = "asus-zephyrus"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
   # Enable networking
   networking.networkmanager.enable = true;
+  networking.extraHosts = ''
+       100.94.202.56 chm005 chm005.4dvc.com
+    100.98.106.44 chm006 chm006.4dvc.com
+       100.84.14.74 chm007 chm007.4dvc.com
+  '';
 
   # Set your time zone.
   time.timeZone = "America/New_York";
@@ -89,6 +98,8 @@ in {
 
   # Include both drivers on hybrid laptop
   services.xserver.videoDrivers = ["amdgpu" "nvidia"];
+
+  services.flatpak.enable = true;
 
   hardware.nvidia = {
     # Wayland/Hyprland support
@@ -121,7 +132,40 @@ in {
   programs.xwayland.enable = true;
   programs.hyprland.enable = true;
   programs.hyprlock.enable = true;
-  security.pam.services.hyprlock = {};
+
+  security.unprivilegedUsernsClone = true;
+
+  services.howdy = {
+    enable = true;
+    control = "sufficient";
+  };
+
+  services.linux-enable-ir-emitter.enable = true;
+
+  xdg.portal = {
+    enable = true;
+    xdgOpenUsePortal = true;
+
+    extraPortals = with pkgs; [
+      xdg-desktop-portal-hyprland
+      xdg-desktop-portal-gtk
+    ];
+
+    config = {
+      common = {
+        default = ["hyprland" "gtk"];
+        "org.freedesktop.impl.portal.FileChooser" = ["gtk"];
+      };
+    };
+  };
+
+  security.pam.services = {
+    hyprlock = {
+      howdy.enable = true;
+    };
+    ly.howdy.enable = true;
+    login.howdy.enable = true;
+  };
 
   # Asus Laptop Stuff
   services = {
@@ -148,8 +192,6 @@ in {
 
   services.displayManager.ly.enable = true;
 
-  services.tailscale.enable = true;
-
   # Gaming support
   programs.gamemode.enable = true;
   programs.steam.enable = true;
@@ -173,7 +215,25 @@ in {
 
   services.openssh.enable = true;
 
-  services.logind.settings.Login.HandleLidSwitch = "lock";
+  viamaximus.sshWebKeys.enable = true;
+
+  services.logind.settings.Login = {
+    HandleLidSwitch = "suspend-then-hibernate";
+    LockScreenOnSuspend = true;
+  };
+
+  systemd.sleep.extraConfig = ''
+    HibernateDelaySec=5min
+  '';
+
+  swapDevices = [
+    {
+      device = "/var/lib/swapfile";
+      size = 32 * 1024;
+    }
+  ];
+
+  boot.resumeDevice = "/dev/disk/by-uuid/fadd6b5f-04bc-4299-8df4-af6f225c0867";
 
   # Nix settings + allowUnfree provided by ../../nixosModules/nix-settings.nix
   # List packages installed in system profile. To search, run:
