@@ -18,7 +18,6 @@
 
     nextcloud-client
     cp210x-program
-    signal-desktop
     obsidian
     rpi-imager
     qbittorrent
