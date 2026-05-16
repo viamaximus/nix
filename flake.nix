@@ -39,6 +39,16 @@
       url = "github:grassmunk/Chicago95";
       flake = false;
     };
+
+    agenix = {
+      url = "github:ryantm/agenix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    agenix-rekey = {
+      url = "github:oddlama/agenix-rekey";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {
@@ -151,6 +161,12 @@
           ./hosts/meshbundle/configuration.nix
         ];
       };
+    };
+
+    agenix-rekey = inputs.agenix-rekey.configure {
+      userFlake = self;
+      nixosConfigurations = self.nixosConfigurations;
+      agePackage = p: p.age;
     };
   };
 }

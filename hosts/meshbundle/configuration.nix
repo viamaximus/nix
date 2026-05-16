@@ -11,6 +11,8 @@
     ../../nixosModules/networking.nix
     ../../nixosModules/nix-settings.nix
     ../../nixosModules/ssh-web-keys.nix
+    ../../nixosModules/agenix.nix
+    ../../nixosModules/secrets.nix
   ];
 
   home-manager = {
