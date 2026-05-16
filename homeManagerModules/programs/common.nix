@@ -29,6 +29,11 @@
 
     obsidian
 
+    rpi-imager
+
+    qbittorrent
+    protonvpn-gui
+
     cmake
     ninja
     gnumake
