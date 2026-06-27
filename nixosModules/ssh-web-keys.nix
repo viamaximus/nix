@@ -27,7 +27,7 @@ in {
       }
     ];
 
-    services.openssh.settings.AuthorizedKeysFile = "/etc/ssh/authorized_keys.d/%u .ssh/authorized_keys .ssh/authorized_keys2";
+    services.openssh.authorizedKeysFiles = ["/etc/ssh/authorized_keys.d/%u"];
 
     systemd.services.refresh-ssh-web-keys = {
       description = "Refresh SSH authorized keys from ${cfg.url}";

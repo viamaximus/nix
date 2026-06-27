@@ -9,8 +9,12 @@
     matchBlocks =
       {
         "github.com" = {
-          identityFile = "~/.ssh/id_ed25519_sk";
+          hostname = "github.com";
+          user = "git";
           identitiesOnly = true;
+          identityFile = [
+            "~/.ssh/id_ed25519_sk_yk5cnano"
+          ];
         };
       }
       // lib.mapAttrs
