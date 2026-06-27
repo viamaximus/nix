@@ -106,9 +106,11 @@
             format = "{icon}  {volume}%";
             tooltip = false;
             format-muted = " Muted";
-            on-click = "pamixer -t";
-            on-scroll-up = "pamixer -i 5";
-            on-scroll-down = "pamixer -d 5";
+            on-click = "${pkgs.swayosd}/bin/swayosd-client --output-volume mute-toggle";
+            on-click-right = "pavucontrol";
+            on-click-middle = "audio-switcher";
+            on-scroll-up = "${pkgs.swayosd}/bin/swayosd-client --output-volume raise";
+            on-scroll-down = "${pkgs.swayosd}/bin/swayosd-client --output-volume lower";
             scroll-step = 5;
             format-icons = {
               headphone = "";
@@ -126,9 +128,11 @@
             tooltip = false;
             format-source = " {volume}%";
             format-source-muted = " Muted";
-            on-click = "pamixer --default-source -t";
-            on-scroll-up = "pamixer --default-source -i 5";
-            on-scroll-down = "pamixer --default-source -d 5";
+            on-click = "${pkgs.swayosd}/bin/swayosd-client --input-volume mute-toggle";
+            on-click-right = "pavucontrol";
+            on-click-middle = "mic-switcher";
+            on-scroll-up = "${pkgs.swayosd}/bin/swayosd-client --input-volume raise";
+            on-scroll-down = "${pkgs.swayosd}/bin/swayosd-client --input-volume lower";
             scroll-step = 5;
           };
 

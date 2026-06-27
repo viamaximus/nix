@@ -122,6 +122,9 @@ in {
           "$mainMod, Q, killactive"
           "$mainMod, D, exec, sh -c 'if [ \"$(uname -m)\" = \"x86_64\" ]; then discord; else vesktop; fi'"
           "$mainMod, S, exec, spot"
+          "$mainMod, A, exec, audio-switcher"
+          "$mainMod SHIFT, A, exec, mic-switcher"
+          "$mainMod CTRL, A, exec, pavucontrol"
           "$mainMod, space, exec, wofi --show drun"
           "$mainMod SHIFT, L, exec, hyprlock"
           "$mainMod SHIFT, s, exec, grim -g \"$(slurp -d)\" - | wl-copy"
@@ -167,14 +170,14 @@ in {
 
           ",XF86LaunchA, exec, brightnessctl --device='kbd_backlight' set 5%-"
           ",XF86Search, exec, brightnessctl --device='kbd_backlight' set 5%+"
-          ",XF86AudioMute, exec, wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 0%"
+          ",XF86AudioMute, exec, ${pkgs.swayosd}/bin/swayosd-client --output-volume mute-toggle"
         ];
 
         bindel = [
           ",XF86MonBrightnessUp, exec, ${brightnessctlCmd} set +10%"
           ",XF86MonBrightnessDown, exec, ${brightnessctlCmd} set 10%-"
-          ",XF86AudioLowerVolume, exec, wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%-"
-          ",XF86AudioRaiseVolume, exec, wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+"
+          ",XF86AudioLowerVolume, exec, ${pkgs.swayosd}/bin/swayosd-client --output-volume lower"
+          ",XF86AudioRaiseVolume, exec, ${pkgs.swayosd}/bin/swayosd-client --output-volume raise"
         ];
 
         bindm = [

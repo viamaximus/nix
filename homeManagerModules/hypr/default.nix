@@ -16,7 +16,8 @@ in {
     ./gtk.nix
     ./mako.nix
     ./clipboard.nix
-    ./nightlight.nix
+    ./audio.nix
+    # ./nightlight.nix
     ./battery-notify.nix
   ];
 
