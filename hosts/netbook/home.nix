@@ -15,6 +15,14 @@
 
   home.packages = [];
 
+  home.pointerCursor = {
+    gtk.enable = true;
+    x11.enable = true;
+    name = "Adwaita";
+    package = pkgs.adwaita-icon-theme;
+    size = 24;
+  };
+
   home.sessionVariables = {
     EDITOR = "nvim";
   };
@@ -25,6 +33,10 @@
     };
     "org/gnome/desktop/wm/preferences" = {
       num-workspaces = 4;
+    };
+    "org/gnome/desktop/interface" = {
+      cursor-theme = "Adwaita";
+      cursor-size = 24;
     };
     "org/gnome/desktop/wm/keybindings" = {
       close = ["<Super>q"];
@@ -44,6 +56,9 @@
       switch-to-application-3 = lib.hm.gvariant.mkEmptyArray lib.hm.gvariant.type.string;
       switch-to-application-4 = lib.hm.gvariant.mkEmptyArray lib.hm.gvariant.type.string;
       show-screenshot-ui = ["<Super><Shift>s"];
+    };
+    "org/gnome/shell" = {
+      disable-user-extensions = true;
     };
     "org/gnome/settings-daemon/plugins/media-keys" = {
       screensaver = ["<Super><Shift>l"];

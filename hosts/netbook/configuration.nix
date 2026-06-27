@@ -25,8 +25,8 @@ in {
   stylix = {
     image = wallpaperConfig.currentWallpaper;
     cursor = {
-      name = "Catppuccin-Macchiato-Mauve";
-      package = pkgs.catppuccin-cursors.macchiatoMauve;
+      name = "Adwaita";
+      package = pkgs.adwaita-icon-theme;
       size = 24;
     };
   };
@@ -39,15 +39,15 @@ in {
   };
 
   boot.loader = {
-    grub = {
-      enable = true;
-      efiSupport = true;
-      devices = ["nodev"];
-    };
+    systemd-boot.enable = true;
     efi.canTouchEfiVariables = true;
   };
 
   boot.kernelPackages = pkgs.linuxPackages_latest;
+  boot.kernelParams = [
+    "mem_sleep_default=deep"
+    "intel_idle.max_cstate=4"
+  ];
 
   networking.hostName = "netbook";
   networking.networkmanager.enable = true;
@@ -89,6 +89,11 @@ in {
   services.xserver.xkb = {
     layout = "us";
     variant = "";
+  };
+  services.logind = {
+    lidSwitch = "suspend";
+    lidSwitchDocked = "ignore";
+    lidSwitchExternalPower = "suspend";
   };
 
   services.gnome.core-utilities.enable = true;
