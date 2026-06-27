@@ -58,10 +58,17 @@ in {
 
   networking = {
     networkmanager.enable = true;
+    firewall.trustedInterfaces = ["tailscale0"];
     useNetworkd = false;
   };
   systemd.network.wait-online.enable = false;
   systemd.services.NetworkManager-wait-online.enable = false;
+  systemd.targets = {
+    sleep.enable = false;
+    suspend.enable = false;
+    hibernate.enable = false;
+    hybrid-sleep.enable = false;
+  };
 
   services.xserver.videoDrivers = ["nvidia"];
 
@@ -73,7 +80,7 @@ in {
   hardware.nvidia = {
     open = false;
     modesetting.enable = true;
-    powerManagement.enable = false;
+    powerManagement.enable = true;
     package = config.boot.kernelPackages.nvidiaPackages.beta;
   };
 

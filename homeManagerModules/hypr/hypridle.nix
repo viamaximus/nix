@@ -18,10 +18,7 @@
           on-timeout = "hyprctl dispatch dpms off";
           on-resume = "hyprctl dispatch dpms on";
         }
-        {
-          timeout = 1800;
-          on-timeout = "systemctl suspend";
-        }
+        # suspend disabled - user wants to be able to SSH in
       ];
     };
   };

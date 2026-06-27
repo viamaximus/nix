@@ -31,6 +31,13 @@ let
         fi
         ;;
       "Sleep")
+        if command -v hyprlock >/dev/null 2>&1; then
+          hyprlock >/dev/null 2>&1 &
+          sleep 1
+        else
+          loginctl lock-session
+          sleep 1
+        fi
         systemctl suspend
         ;;
       "Reboot")
@@ -51,4 +58,3 @@ in {
     ];
   };
 }
-
