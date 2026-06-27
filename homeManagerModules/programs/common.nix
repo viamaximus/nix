@@ -6,11 +6,15 @@
   ...
 }: let
   commonPkgs = with pkgs; [
+    apostrophe
+    localsend
+
     file
     openssh
     yubikey-manager
 
-    claude-code
+    # claude-code
+    opencode
 
     wget
     python3

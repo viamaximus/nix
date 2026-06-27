@@ -211,6 +211,9 @@ in {
       bt = "blutuith";
       cat = "bat --paging=never";
 
+      cm = "claude-master start --tmux";
+      claude-code = "claued";
+
       rebuild = "sudo nixos-rebuild switch --flake .#$(hostname)";
 
       # git stuffs
