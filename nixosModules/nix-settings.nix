@@ -22,5 +22,14 @@
     ];
   };
 
-  nixpkgs.config.allowUnfree = true;
+  nixpkgs.config = {
+    allowUnfree = true;
+
+    # Insecure packages we explicitly accept (transitive deps that lag upstream).
+    # Add the exact `name-version` here as nixpkgs surfaces them.
+    permittedInsecurePackages = [
+      "nodejs-20.20.2"
+      "nodejs-slim-20.20.2"
+    ];
+  };
 }

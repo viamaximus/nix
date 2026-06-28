@@ -25,7 +25,7 @@
     obsidian
     rpi-imager
     qbittorrent
-    protonvpn-gui
+    proton-vpn
 
     cmake
     ninja
