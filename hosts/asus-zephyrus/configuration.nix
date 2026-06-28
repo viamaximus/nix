@@ -25,7 +25,17 @@ in {
     ../../nixosModules/ssh-web-keys.nix
     ../../nixosModules/agenix.nix
     ../../nixosModules/secrets.nix
+    inputs.nix-gaming.nixosModules.pipewireLowLatency
   ];
+
+  # Low-latency PipeWire for gaming (from fufexan/nix-gaming).
+  services.pipewire.lowLatency.enable = true;
+  nix.settings = {
+    extra-substituters = ["https://nix-gaming.cachix.org"];
+    extra-trusted-public-keys = [
+      "nix-gaming.cachix.org-1:nbjlureqMbRAxR1gJ/f3hxemL9svXaZF/Ees8vCUUs4="
+    ];
+  };
 
   stylix = {
     image = wallpaperConfig.currentWallpaper;
@@ -132,7 +142,10 @@ in {
   };
 
   programs.xwayland.enable = true;
-  programs.hyprland.enable = true;
+  programs.hyprland = {
+    enable = true;
+    withUWSM = true;
+  };
   programs.hyprlock.enable = true;
 
   security.unprivilegedUsernsClone = true;
@@ -176,9 +189,27 @@ in {
     };
     asusd = {
       enable = true;
-      enableUserService = true;
     };
   };
+
+  # CPU governor / turbo management per power source.
+  # asusd handles platform profile + fans, supergfxd handles the GPU mode;
+  # auto-cpufreq handles only the CPU governor, so they coexist.
+  services.auto-cpufreq = {
+    enable = true;
+    settings = {
+      battery = {
+        governor = "powersave";
+        turbo = "auto";
+      };
+      charger = {
+        governor = "performance";
+        turbo = "auto";
+      };
+    };
+  };
+  # power-profiles-daemon conflicts with auto-cpufreq; ensure it's off.
+  services.power-profiles-daemon.enable = false;
 
   #   boot.loader.grub.theme = pkgs.stdenv.mkDerivation {
   #   pname = "distro-grub-themes";
@@ -224,9 +255,9 @@ in {
     LockScreenOnSuspend = true;
   };
 
-  systemd.sleep.extraConfig = ''
-    HibernateDelaySec=5min
-  '';
+  systemd.sleep.settings.Sleep = {
+    HibernateDelaySec = "5min";
+  };
 
   swapDevices = [
     {
