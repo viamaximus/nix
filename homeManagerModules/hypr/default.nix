@@ -22,25 +22,26 @@ in {
   ];
 
   config = lib.mkIf cfg.enable {
-    home.packages = with pkgs; [
-      hyprpaper
-      hyprcursor
-      hyprlock
-      hypridle
-      kitty
-      libnotify
-      mako
-      qt5.qtwayland
-      qt6.qtwayland
-      swayidle
-      swaylock-effects
-      wlogout
-      wl-clipboard
-      wofi
-      waybar
-      brightnessctl
-      grim
-      slurp
-    ];
+    home.packages = with pkgs;
+      [
+        hyprpaper
+        hyprcursor
+        hyprlock
+        hypridle
+        kitty
+        libnotify
+        mako
+        qt5.qtwayland
+        qt6.qtwayland
+        swayidle
+        swaylock-effects
+        wlogout
+        wl-clipboard
+        wofi
+        brightnessctl
+        grim
+        slurp
+      ]
+      ++ lib.optional (!config.features.desktop.noctalia.enable) waybar;
   };
 }

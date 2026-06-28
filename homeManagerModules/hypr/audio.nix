@@ -75,18 +75,22 @@
     '';
   };
 in {
-  config = lib.mkIf cfg.enable {
-    home.packages = [
-      pkgs.pavucontrol
-      audio-switcher
-      mic-switcher
-    ];
+  config = lib.mkIf cfg.enable (lib.mkMerge [
+    {
+      home.packages = [pkgs.pavucontrol];
+    }
 
-    # On-screen slider overlay shown whenever volume/mute changes. This is what
-    # makes "scroll over the waybar audio widget" give visual feedback, and is
-    # especially useful on tower which has no media keys.
-    services.swayosd.enable = true;
+    # swayosd + the wofi-driven switchers are replaced by Noctalia's OSD and
+    # Control Center, so only ship them when Noctalia is not in use.
+    (lib.mkIf (!config.features.desktop.noctalia.enable) {
+      home.packages = [
+        audio-switcher
+        mic-switcher
+      ];
+      services.swayosd.enable = true;
+    })
 
+    {
     # Tower: the NVIDIA GPU exposes one digital audio sink at a time, selected
     # by the card profile. The Dell S3225QS (center monitor, its only display
     # with speakers) sits on the HDMI 4 connector (hdmi-stereo-extra3). Lock the
@@ -113,11 +117,19 @@ in {
               update-props = {
                 node.description = "Dell32"
                 node.nick = "Dell32"
+                # NVIDIA HDMI audio crackles/underruns when a low-latency client
+                # (e.g. Noctalia's spectrum capture) drags the graph to a 64-sample
+                # quantum. Extra ALSA headroom gives the DMA enough slack to stay
+                # glitch-free; never suspend the sink so pause/stop don't leave
+                # trailing artifacts or pop on resume.
+                api.alsa.headroom = 2048
+                session.suspend-timeout-seconds = 0
               }
             }
           }
         ]
       '';
     };
-  };
+    }
+  ]);
 }

@@ -14,7 +14,7 @@
     description = "Waybar height in pixels (set to 64 on MacBooks to clear the notch)";
   };
 
-  config = lib.mkIf config.features.desktop.hyprland.enable {
+  config = lib.mkIf (config.features.desktop.hyprland.enable && !config.features.desktop.noctalia.enable) {
     programs.waybar = {
       enable = true;
       style = builtins.readFile ./style.css;

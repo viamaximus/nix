@@ -1,5 +1,5 @@
 { config, pkgs, lib, ... }: {
-  config = lib.mkIf config.features.desktop.hyprland.enable {
+  config = lib.mkIf (config.features.desktop.hyprland.enable && !config.features.desktop.noctalia.enable) {
     systemd.user.services.battery-notify = {
       Unit.Description = "Battery level notifications";
       Service = {

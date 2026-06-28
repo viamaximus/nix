@@ -18,12 +18,68 @@ with lib; let
     if panelBrightnessDevice != null
     then "${pkgs.brightnessctl}/bin/brightnessctl -d ${panelBrightnessDevice}"
     else "${pkgs.brightnessctl}/bin/brightnessctl";
+
+  # When Noctalia is the shell, action keybinds are routed through its IPC
+  # (launcher, clipboard, lock, screenshot, control center, OSD, etc.) instead
+  # of wofi/hyprlock/swayosd. Window-management and app-launch binds are shared.
+  noctalia = config.features.desktop.noctalia.enable;
+  ipc = "noctalia msg";
+
+  actionBinds =
+    if noctalia
+    then [
+      "$mainMod, space, exec, ${ipc} panel-toggle launcher"
+      "$mainMod, V, exec, ${ipc} panel-toggle clipboard"
+      "$mainMod, C, exec, ${ipc} panel-toggle control-center"
+      "$mainMod, X, exec, ${ipc} panel-toggle session"
+      "$mainMod, A, exec, ${ipc} panel-open control-center audio"
+      "$mainMod SHIFT, A, exec, ${ipc} panel-open control-center audio"
+      "$mainMod SHIFT, L, exec, ${ipc} session lock"
+      "$mainMod SHIFT, N, exec, ${ipc} nightlight-toggle"
+      "$mainMod SHIFT, s, exec, ${ipc} screenshot-region"
+      ",XF86AudioMute, exec, ${ipc} volume-mute"
+    ]
+    else [
+      "$mainMod, A, exec, audio-switcher"
+      "$mainMod SHIFT, A, exec, mic-switcher"
+      "$mainMod, space, exec, wofi --show drun"
+      "$mainMod SHIFT, L, exec, hyprlock"
+      "$mainMod SHIFT, s, exec, grim -g \"$(slurp -d)\" - | wl-copy"
+      ",XF86AudioMute, exec, ${pkgs.swayosd}/bin/swayosd-client --output-volume mute-toggle"
+    ];
+
+  bindelBinds =
+    if noctalia
+    then [
+      ",XF86MonBrightnessUp, exec, ${ipc} brightness-up"
+      ",XF86MonBrightnessDown, exec, ${ipc} brightness-down"
+      ",XF86AudioLowerVolume, exec, ${ipc} volume-down"
+      ",XF86AudioRaiseVolume, exec, ${ipc} volume-up"
+    ]
+    else [
+      ",XF86MonBrightnessUp, exec, ${brightnessctlCmd} set +10%"
+      ",XF86MonBrightnessDown, exec, ${brightnessctlCmd} set 10%-"
+      ",XF86AudioLowerVolume, exec, ${pkgs.swayosd}/bin/swayosd-client --output-volume lower"
+      ",XF86AudioRaiseVolume, exec, ${pkgs.swayosd}/bin/swayosd-client --output-volume raise"
+    ];
+
+  # Blur for Noctalia layer surfaces (Hyprland-specific wiring). Hyprland 0.52+
+  # rule syntax: `RULE value, ..., match:namespace <regex>`. Excludes the
+  # wallpaper layer so it isn't blurred.
+  layerRules = optionals noctalia [
+    "blur on, ignore_alpha 0.5, match:namespace ^noctalia-(bar-.+|notification|dock|panel|attached-panel|osd)$"
+  ];
 in {
   options.features.desktop.hyprland.enable = mkEnableOption "hyprland config";
 
   config = mkIf cfg.enable {
     wayland.windowManager.hyprland = {
       enable = true;
+      # NOTE: home-manager's default flips to "lua" at stateVersion 26.05.
+      # The lua schema is NOT compatible with the hyprlang `settings` below
+      # (different option names, dispatchers, monitor format), so pin hyprlang
+      # explicitly until a deliberate migration is done.
+      configType = "hyprlang";
       settings = {
         xwayland = {
           force_zero_scaling = true;
@@ -31,12 +87,13 @@ in {
 
         monitor = [];
 
-        exec-once = [
-          "waybar"
-          "hyprpaper"
-          "hypridle"
-          "wl-paste -p -t text --watch clipman store -P --histpath=\"~/.local/share/clipman-primary.json\""
-        ];
+        exec-once =
+          lib.optional (!config.features.desktop.noctalia.enable) "waybar"
+          ++ [
+            "hyprpaper"
+            "hypridle"
+            "wl-paste -p -t text --watch clipman store -P --histpath=\"~/.local/share/clipman-primary.json\""
+          ];
 
         env =
           [
@@ -50,7 +107,7 @@ in {
           ];
 
         input = {
-          kb_layout = "us";
+          kb_layout = "us,jp";
           follow_mouse = 1;
 
           touchpad = {
@@ -92,7 +149,6 @@ in {
         };
 
         dwindle = {
-          pseudotile = true;
           preserve_split = true;
         };
 
@@ -109,6 +165,8 @@ in {
           "fullscreen 0, match:title ^(Kitten Space Agency)"
         ];
 
+        layerrule = layerRules;
+
         gestures = {
           gesture = "3, horizontal, workspace";
         };
@@ -120,14 +178,9 @@ in {
           "$mainMod, B, exec, zen-beta"
           "$mainMod, E, exec, nautilus"
           "$mainMod, Q, killactive"
-          "$mainMod, D, exec, sh -c 'if [ \"$(uname -m)\" = \"x86_64\" ]; then discord; else vesktop; fi'"
+          "$mainMod, D, exec, vesktop"
           "$mainMod, S, exec, spot"
-          "$mainMod, A, exec, audio-switcher"
-          "$mainMod SHIFT, A, exec, mic-switcher"
           "$mainMod CTRL, A, exec, pavucontrol"
-          "$mainMod, space, exec, wofi --show drun"
-          "$mainMod SHIFT, L, exec, hyprlock"
-          "$mainMod SHIFT, s, exec, grim -g \"$(slurp -d)\" - | wl-copy"
 
           "$mainMod, F, fullscreen"
           "$mainMod, V, togglefloating"
@@ -170,15 +223,10 @@ in {
 
           ",XF86LaunchA, exec, brightnessctl --device='kbd_backlight' set 5%-"
           ",XF86Search, exec, brightnessctl --device='kbd_backlight' set 5%+"
-          ",XF86AudioMute, exec, ${pkgs.swayosd}/bin/swayosd-client --output-volume mute-toggle"
-        ];
+        ]
+        ++ actionBinds;
 
-        bindel = [
-          ",XF86MonBrightnessUp, exec, ${brightnessctlCmd} set +10%"
-          ",XF86MonBrightnessDown, exec, ${brightnessctlCmd} set 10%-"
-          ",XF86AudioLowerVolume, exec, ${pkgs.swayosd}/bin/swayosd-client --output-volume lower"
-          ",XF86AudioRaiseVolume, exec, ${pkgs.swayosd}/bin/swayosd-client --output-volume raise"
-        ];
+        bindel = bindelBinds;
 
         bindm = [
           "$mainMod, mouse:272, movewindow"

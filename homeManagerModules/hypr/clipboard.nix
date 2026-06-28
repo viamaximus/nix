@@ -5,7 +5,7 @@
     fi
   '';
 in {
-  config = lib.mkIf config.features.desktop.hyprland.enable {
+  config = lib.mkIf (config.features.desktop.hyprland.enable && !config.features.desktop.noctalia.enable) {
     home.packages = with pkgs; [
       cliphist
       cliphist-wofi

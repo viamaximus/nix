@@ -1,5 +1,5 @@
 {config, lib, ...}: {
-  config = lib.mkIf config.features.desktop.hyprland.enable {
+  config = lib.mkIf (config.features.desktop.hyprland.enable && !config.features.desktop.noctalia.enable) {
     services.hypridle.enable = true;
     services.hypridle.settings = {
       general = {
