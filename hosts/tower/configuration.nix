@@ -22,16 +22,23 @@ in {
     ../../nixosModules/ssh-web-keys.nix
     ../../nixosModules/agenix.nix
     ../../nixosModules/secrets.nix
+    inputs.nix-gaming.nixosModules.pipewireLowLatency
+    inputs.noctalia-greeter.nixosModules.default
   ];
 
-  stylix = {
-    image = wallpaperConfig.currentWallpaper;
-    cursor = {
-      name = "Catppuccin-Macchiato-Mauve";
-      package = pkgs.catppuccin-cursors.macchiatoMauve;
-      size = 24;
-    };
+  # Low-latency PipeWire for gaming (from fufexan/nix-gaming).
+  services.pipewire.lowLatency.enable = true;
+  nix.settings = {
+    extra-substituters = ["https://nix-gaming.cachix.org"];
+    extra-trusted-public-keys = [
+      "nix-gaming.cachix.org-1:nbjlureqMbRAxR1gJ/f3hxemL9svXaZF/Ees8vCUUs4="
+    ];
   };
+
+  # Theming on tower is handled by Noctalia (wallpaper-dynamic colors + templates),
+  # so Stylix is disabled here. GTK/icon/font/cursor are re-homed in
+  # homeManagerModules/noctalia/apptheming.nix.
+  stylix.enable = false;
 
   home-manager = {
     extraSpecialArgs = {inherit inputs hostInventory;};
@@ -52,13 +59,22 @@ in {
   };
   boot.loader.efi.canTouchEfiVariables = true;
 
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+  # NOTE: do NOT use linuxPackages_latest with NVIDIA — the bleeding-edge
+  # kernel (7.1.x) outpaces the NVIDIA driver and the kernel module fails to
+  # compile. Track the nixpkgs default kernel, which is kept NVIDIA-compatible.
+  boot.kernelPackages = pkgs.linuxPackages;
+
+  # Keep the HDA codec awake — power-saving makes the Dell HDMI audio pop and
+  # leaves artifacts for a second or two after audio pauses/stops.
+  boot.extraModprobeConfig = ''
+    options snd_hda_intel power_save=0 power_save_controller=N
+  '';
 
   networking.hostName = "tower"; # Define your hostname.
 
   networking = {
     networkmanager.enable = true;
-    firewall.trustedInterfaces = ["tailscale0"];
+    # tailscale0 trust + UDP port handled by ../../nixosModules/networking.nix
     useNetworkd = false;
   };
   systemd.network.wait-online.enable = false;
@@ -128,21 +144,58 @@ in {
 
   programs.zsh.enable = true;
 
+  # Japanese input. The XKB "jp" layout (in hyprland kb_layout) only changes the
+  # physical layout; typing kana/kanji needs an IME. fcitx5 + mozc: toggle with
+  # Ctrl+Space. Autostarted from Hyprland in hosts/tower/home.nix.
+  i18n.inputMethod = {
+    enable = true;
+    type = "fcitx5";
+    fcitx5 = {
+      waylandFrontend = true;
+      addons = with pkgs; [
+        fcitx5-mozc
+        fcitx5-gtk
+      ];
+    };
+  };
+
   virtualisation.docker.enable = true;
 
   # Enable the X11 windowing system.
   services.xserver.enable = true;
 
   programs.xwayland.enable = true;
-  programs.hyprland.enable = true;
-  programs.hyprlock.enable = true;
-  security.pam.services.hyprlock = {};
+  programs.hyprland = {
+    enable = true;
+    withUWSM = true;
+  };
 
   ###gaming support
   programs.gamemode.enable = true;
   programs.steam.enable = true;
 
-  services.displayManager.ly.enable = true;
+  # Noctalia greeter (greetd-based) replaces ly. The module enables greetd and
+  # sets the session command automatically.
+  programs.noctalia-greeter = {
+    enable = true;
+    package = inputs.noctalia-greeter.packages.${pkgs.stdenv.hostPlatform.system}.default;
+    settings = {
+      output = {
+        name = "DP-3";
+        scale = 1.25;
+        layout = "DP-1:0,1764; DP-3:1920,1440; DP-2:4992,1248; HDMI-A-1:2176,0";
+      };
+      cursor = {
+        theme = "catppuccin-mocha-mauve-cursors";
+        size = 24;
+        path = "/run/current-system/sw/share/icons";
+      };
+      keyboard.layout = "us";
+    };
+  };
+
+  # Noctalia status integrations.
+  services.upower.enable = true;
 
   # Configure keymap in X11
   services.xserver.xkb = {
@@ -176,6 +229,7 @@ in {
     neovim
     kitty
     git
+    catppuccin-cursors.mochaMauve # greeter cursor theme (system-wide for greetd)
   ];
 
   # Enable the OpenSSH daemon.
