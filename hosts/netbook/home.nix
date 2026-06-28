@@ -19,7 +19,8 @@
     gtk.enable = true;
     x11.enable = true;
     name = "Adwaita";
-    package = pkgs.adwaita-icon-theme;
+    # stylix also defines this; force ours to resolve the priority clash.
+    package = lib.mkForce pkgs.adwaita-icon-theme;
     size = 24;
   };
 
