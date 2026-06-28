@@ -20,6 +20,10 @@
   in {
     enable = true;
 
+    # Keep legacy defaults (providers on) regardless of stateVersion < 26.05.
+    withRuby = true;
+    withPython3 = true;
+
     viAlias = true;
     vimAlias = true;
     vimdiffAlias = true;
@@ -79,6 +83,17 @@
       # UI bits
       lualine-nvim
       nvim-web-devicons
+
+      # Noctalia wallpaper-dynamic colors. The neovim template renders
+      # ~/.config/nvim/lua/matugen.lua from the current palette; base16-nvim
+      # applies it. pcall guards the first run before it's generated.
+      {
+        plugin = base16-nvim;
+        config = toLua ''
+          local ok, matugen = pcall(require, 'matugen')
+          if ok then matugen.setup() end
+        '';
+      }
 
       ################
       # Treesitter

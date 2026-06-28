@@ -8,7 +8,7 @@ in {
   home.packages =
     (with pkgs; [
       qbittorrent
-      protonvpn-gui
+      proton-vpn
       snapshot
       obs-studio
       vlc
@@ -16,7 +16,6 @@ in {
       keepassxc
       obsidian
       fastfetch
-      neofetch
       feh
       cbonsai
       cowsay
@@ -24,6 +23,6 @@ in {
       pwvucontrol
       nautilus
     ])
-    ++ lib.optionals isx86_64 [pkgs.discord]
+    ++ lib.optionals isx86_64 [pkgs.vesktop]
     ++ lib.optionals isAarch64 [pkgs.discordo pkgs.vesktop];
 }
