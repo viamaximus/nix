@@ -7,12 +7,12 @@
   keepassxc-browser = pkgs.fetchFirefoxAddon {
     name = "keepassxc-browser";
     url = "https://addons.mozilla.org/firefox/downloads/latest/keepassxc-browser/latest.xpi";
-    hash = "sha256-81hHHn9VRaZKtp9IlxJwMxl6jZzeV0YySx2uJBorCik=";
+    hash = "sha256-TfnFTgopOqLjfpvPl+wwejWgDnjOuqmmjtulUsB8RWg=";
   };
   ublock-origin = pkgs.fetchFirefoxAddon {
     name = "ublock-origin";
     url = "https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/latest.xpi";
-    hash = "sha256-8nMNKHcAV2OkXXZXSYkuk29JyucT0o96puoxRFS4nPE=";
+    hash = "sha256-ec1CarWZgBxZ3+mJXLS4AC+vPaBZ9xEcJyGsEBaKO2Q=";
   };
 in {
   programs = {
