@@ -25,6 +25,7 @@ in {
   ];
 
   stylix = {
+    enable = false;
     image = wallpaperConfig.currentWallpaper;
     cursor = {
       name = "Catppuccin-Macchiato-Mauve";
@@ -62,6 +63,7 @@ in {
   # Boot / basics
   ############################################
   boot.loader.systemd-boot.enable = true;
+  boot.loader.systemd-boot.graceful = true; # Asahi: efivars are read-only; make bootctl tolerate the failed EFI var write
   boot.loader.efi.canTouchEfiVariables = false;
 
   # Enable x86_64 emulation for Luckfox SDK toolchain
