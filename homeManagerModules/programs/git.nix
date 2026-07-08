@@ -2,9 +2,17 @@
   config,
   lib,
   pkgs,
+  osConfig ? null,
   ...
 }: let
   home = config.home.homeDirectory;
+  isTower = (osConfig.networking.hostName or "") == "tower";
+  # tower has the 5C Nano fixed in place, so it signs by default there;
+  # every other host defaults to the 5C, with both always reachable via alias.
+  defaultSigningKey =
+    if isTower
+    then "${home}/.ssh/id_ed25519_sk_yk5cnano.pub"
+    else "${home}/.ssh/id_ed25519_sk_yk5c.pub";
 in {
   programs.git = {
     enable = true;
@@ -13,7 +21,7 @@ in {
       user.email = "70414866+viamaximus@users.noreply.github.com";
 
       gpg.format = "ssh";
-      user.signingkey = "${home}/.ssh/id_ed25519_sk_yk5cnano.pub";
+      user.signingkey = defaultSigningKey;
       commit.gpgsign = true;
       tag.gpgSign = true;
       gpg.ssh.allowedSignersFile = "${home}/.ssh/allowed_signers";
