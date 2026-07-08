@@ -150,13 +150,6 @@ in {
 
   security.unprivilegedUsernsClone = true;
 
-  services.howdy = {
-    enable = true;
-    control = "sufficient";
-  };
-
-  services.linux-enable-ir-emitter.enable = true;
-
   xdg.portal = {
     enable = true;
     xdgOpenUsePortal = true;
@@ -174,13 +167,7 @@ in {
     };
   };
 
-  security.pam.services = {
-    hyprlock = {
-      howdy.enable = true;
-    };
-    ly.howdy.enable = true;
-    login.howdy.enable = true;
-  };
+  security.pam.services.hyprlock = {};
 
   # Asus Laptop Stuff
   services = {
