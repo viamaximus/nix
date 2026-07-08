@@ -5,11 +5,6 @@
   ...
 }:
 lib.mkIf config.features.desktop.noctalia.enable {
-  # Re-homes the non-color bits Stylix used to provide (Stylix is disabled on
-  # noctalia hosts). Noctalia's templates supply the *colors*; this sets the
-  # base GTK theme/icons/font, the cursor, and wires kitty to the generated
-  # color file. Gated on noctalia.enable so non-noctalia hosts keep Stylix.
-
   gtk = {
     theme = {
       name = "adw-gtk3-dark";
@@ -25,6 +20,8 @@ lib.mkIf config.features.desktop.noctalia.enable {
     };
   };
 
+  xdg.configFile."gtk-4.0/gtk.css".force = true;
+
   home.pointerCursor = {
     name = "catppuccin-mocha-mauve-cursors";
     package = pkgs.catppuccin-cursors.mochaMauve;
@@ -33,12 +30,8 @@ lib.mkIf config.features.desktop.noctalia.enable {
     x11.enable = true;
   };
 
-  # kitty.conf is a read-only HM symlink, so the kitty template can't inject the
-  # include itself — add it here. The template writes themes/noctalia.conf and
-  # live-reloads kitty on palette changes.
   programs.kitty.extraConfig = lib.mkAfter "include themes/noctalia.conf";
 
-  # Qt apps (OBS, qBittorrent, VLC). The qt template writes the palette to
   # qt{5,6}ct/colors/noctalia.conf; these conf files select it (custom_palette +
   # color_scheme_path) and qtct is set as the platform theme.
   qt = {
