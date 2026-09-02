@@ -25,6 +25,19 @@
     hello
   ];
 
+  # x86_64 Steam via FEX + muvm (see ../mac-asahi/steam-fex.nix for the
+  # muvm-steam wrapper itself). Needs the Steam bootstrap unpacked once at
+  # ~/.local/share/muvm-steam/steam-launcher (muvm-steam prints the command
+  # if it's missing).
+  xdg.desktopEntries.steam-fex = {
+    name = "Steam";
+    comment = "x86_64 Steam via FEX + muvm";
+    exec = "muvm-steam %U";
+    icon = "${config.home.homeDirectory}/.local/share/muvm-steam/steam-launcher/icons/256/steam.png";
+    terminal = false;
+    categories = ["Game" "Network"];
+  };
+
   home.sessionVariables = {
     EDITOR = "nvim";
   };

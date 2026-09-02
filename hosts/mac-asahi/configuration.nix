@@ -22,6 +22,7 @@ in {
     ../../nixosModules/ssh-web-keys.nix
     ../../nixosModules/agenix.nix
     ../../nixosModules/secrets.nix
+    ./steam-fex.nix
   ];
 
   stylix = {
@@ -129,6 +130,11 @@ in {
   };
 
   ############################################
+  # Gaming: x86_64 emulation (FEX + muvm) for Steam
+  ############################################
+  hardware.graphics.enable = true;
+
+  ############################################
   # Login manager: greetd → Hyprland as max
   ############################################
   # services.greetd = {
@@ -141,6 +147,11 @@ in {
   services.displayManager.ly.enable = true;
 
   services.seatd.enable = true;
+
+  # Noctalia reads battery state over the org.freedesktop.UPower system bus
+  # (bar battery widget + its low/critical notifications). Without the daemon
+  # the widget stays hidden and no warnings ever fire.
+  services.upower.enable = true;
 
   services.openssh.enable = true;
 
