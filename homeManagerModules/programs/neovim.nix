@@ -5,6 +5,7 @@
   ...
 }: {
   home.packages = with pkgs; [
+    # Rust
     rustc
     cargo
     clippy
@@ -12,7 +13,30 @@
     rust-analyzer
     pkg-config
     taplo
+    cargo-nextest
+    cargo-expand
+    cargo-edit
+    cargo-audit
+
+    # C / C++
+    # gcc13 is already provided globally by programs/common.nix. A second
+    # wrapped compiler (gcc or clang) can't be added here — both wrap
+    # binutils and collide on bin/ld.bfd in the same profile. Use
+    # `nix shell nixpkgs#clang` per-project if you need clang specifically;
+    # clangd (clang-tools, below) works fine alongside gcc13.
+    gdb
+    lldb.out # provides lldb-dap for nvim-dap
+    valgrind
+    cppcheck
+    bear # generates compile_commands.json for clangd
+
+    # Reference
+    man-pages
+    man-pages-posix
   ];
+
+  # `cargo install` (e.g. rustlings) puts binaries here
+  home.sessionPath = ["$HOME/.cargo/bin"];
 
   programs.neovim = let
     toLua = str: "lua << EOF\n${str}\nEOF\n";
@@ -39,8 +63,6 @@
       statix
       lazygit
 
-      # Copilot / CopilotChat deps
-      nodejs_20
       curl
       ripgrep
       git
@@ -73,27 +95,6 @@
       luasnip
       friendly-snippets
       lspkind-nvim
-
-      ################
-      # GitHub Copilot
-      ################
-      copilot-vim
-      CopilotChat-nvim
-
-      # UI bits
-      lualine-nvim
-      nvim-web-devicons
-
-      # Noctalia wallpaper-dynamic colors. The neovim template renders
-      # ~/.config/nvim/lua/matugen.lua from the current palette; base16-nvim
-      # applies it. pcall guards the first run before it's generated.
-      {
-        plugin = base16-nvim;
-        config = toLua ''
-          local ok, matugen = pcall(require, 'matugen')
-          if ok then matugen.setup() end
-        '';
-      }
 
       ################
       # Treesitter
@@ -155,7 +156,7 @@
         config = toLuaFile ./nvim/plugin/neo-tree.lua;
       }
       nui-nvim # required for neo-tree
-      plenary-nvim # required for neo-tree (also required for CopilotChat)
+      plenary-nvim # required for neo-tree
 
       ################
       # Git Integration
@@ -182,7 +183,10 @@
       }
       {
         plugin = nvim-colorizer-lua;
-        config = toLua ''require("colorizer").setup()'';
+        config = toLua ''
+          vim.opt.termguicolors = true
+          require("colorizer").setup()
+        '';
       }
       {
         plugin = alpha-nvim;
@@ -289,42 +293,6 @@
       vim.keymap.set('n', '<leader>xt', ':TodoTrouble<CR>', { silent = true, desc = 'Todo list (Trouble)' })
       vim.keymap.set('n', '<leader>st', ':TodoTelescope<CR>', { silent = true, desc = 'Search todos (Telescope)' })
 
-      -- -------------------------------------------------------------------
-      -- GitHub Copilot (copilot.vim)
-      -- -------------------------------------------------------------------
-      -- Let nvim-cmp own <Tab> and delegate to Copilot/snippets when appropriate
-      vim.g.copilot_no_tab_map = true
-
-      -- Secondary Copilot inline-suggestion controls
-      vim.keymap.set('i', '<C-J>', 'copilot#Accept("\\<CR>")', {
-        expr = true,
-        silent = true,
-        replace_keycodes = false,
-        desc = 'Copilot accept',
-      })
-      vim.keymap.set('i', '<M-]>', '<Plug>(copilot-next)', { silent = true, desc = 'Copilot next suggestion' })
-      vim.keymap.set('i', '<M-[>', '<Plug>(copilot-previous)', { silent = true, desc = 'Copilot previous suggestion' })
-
-      -- -------------------------------------------------------------------
-      -- CopilotChat.nvim
-      -- -------------------------------------------------------------------
-      pcall(function()
-        require("CopilotChat").setup({
-          window = { layout = "vertical", width = 0.5 },
-          auto_insert_mode = true,
-        })
-      end)
-
-      vim.keymap.set('n', '<leader>cc', ':CopilotChat<CR>', { silent = true, desc = 'CopilotChat' })
-      vim.keymap.set('n', '<leader>ct', ':CopilotChatToggle<CR>', { silent = true, desc = 'Toggle CopilotChat' })
-      vim.keymap.set('n', '<leader>cr', ':CopilotChatReset<CR>', { silent = true, desc = 'Reset CopilotChat' })
-
-      -- Visual-mode helpers (select code first)
-      vim.keymap.set('v', '<leader>ce', ':CopilotChatExplain<CR>', { silent = true, desc = 'Explain selection' })
-      vim.keymap.set('v', '<leader>cf', ':CopilotChatFix<CR>', { silent = true, desc = 'Fix selection' })
-      vim.keymap.set('v', '<leader>co', ':CopilotChatOptimize<CR>', { silent = true, desc = 'Optimize selection' })
-      vim.keymap.set('v', '<leader>cd', ':CopilotChatDocs<CR>', { silent = true, desc = 'Docs for selection' })
-      vim.keymap.set('v', '<leader>cT', ':CopilotChatTests<CR>', { silent = true, desc = 'Tests for selection' })
 
       -- Optional: if telescope-ui-select.nvim is installed, use it for vim.ui.select
       pcall(function()
@@ -354,6 +322,11 @@
         },
         tools = { float_win_config = { border = "rounded" } },
       }
+
+      -- rustaceanvim runnables/debuggables (uses the lldb dap adapter set up in dap.lua)
+      vim.keymap.set('n', '<leader>rr', ':RustLsp runnables<CR>', { silent = true, desc = 'Rust runnables' })
+      vim.keymap.set('n', '<leader>rd', ':RustLsp debuggables<CR>', { silent = true, desc = 'Rust debuggables' })
+      vim.keymap.set('n', '<leader>rt', ':RustLsp testables<CR>', { silent = true, desc = 'Rust testables' })
 
       -- -------------------------------------------------------------------
       -- conform.nvim: format on save (rustfmt / taplo)

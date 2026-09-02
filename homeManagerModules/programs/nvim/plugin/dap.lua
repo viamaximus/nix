@@ -62,3 +62,4 @@ local c_like = {
 
 dap.configurations.c = c_like
 dap.configurations.cpp = c_like
+dap.configurations.rust = c_like

@@ -16,10 +16,6 @@ local has_words_before = function()
   return text:sub(col, col):match("%s") == nil
 end
 
-local copilot_visible = function()
-  return vim.fn["copilot#GetDisplayedSuggestion"]().text ~= ""
-end
-
 cmp.setup({
   snippet = {
     expand = function(args)
@@ -34,8 +30,6 @@ cmp.setup({
     ["<Tab>"] = cmp.mapping(function(fallback)
       if cmp.visible() then
         cmp.select_next_item()
-      elseif copilot_visible() then
-        vim.api.nvim_feedkeys(vim.fn["copilot#Accept"](""), "i", true)
       elseif ok_luasnip and luasnip.expand_or_jumpable() then
         luasnip.expand_or_jump()
       elseif has_words_before() then
