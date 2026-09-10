@@ -1,0 +1,6 @@
+# rustup needs the bare-metal std component; nixpkgs' rustc does not ship it.
+# With rustup on PATH this file installs it automatically.
+[toolchain]
+channel = "stable"
+components = ["rust-src", "llvm-tools"]
+targets = ["thumbv6m-none-eabi"]

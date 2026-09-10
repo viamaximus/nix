@@ -1,0 +1,6 @@
+/target
+/result
+/result-*
+*.profraw
+perf.data*
+flamegraph.svg

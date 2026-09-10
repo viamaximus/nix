@@ -1,0 +1,7 @@
+[template]
+description = "Hosted Rust binary: color-eyre, clap, tokio, rayon, serde, jiff, itertools, criterion"
+cargo_generate_version = ">=0.18.0"
+exclude = ["README.md"]
+
+[placeholders]
+description = { type = "string", prompt = "Short description", default = "A Rust program" }

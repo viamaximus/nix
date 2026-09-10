@@ -1,0 +1,4 @@
+[template]
+description = "Bare-metal async Rust for RP2040 (Raspberry Pi Pico): embassy + defmt + probe-rs"
+cargo_generate_version = ">=0.18.0"
+exclude = ["README.md"]

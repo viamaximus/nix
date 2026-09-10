@@ -1,0 +1,50 @@
+[package]
+name = "{{project-name}}"
+version = "0.1.0"
+edition = "2024"
+# criterion 0.8 is the floor here; everything else is happy below it.
+rust-version = "1.86"
+description = "{{description}}"
+
+[dependencies]
+# Error reporting: eyre reports with colour, source chains and backtraces.
+color-eyre = "0.6.5"
+# CLI parsing.
+clap = { version = "4.6", features = ["derive", "env", "wrap_help"] }
+# (De)serialisation.
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+# Dates and times. jiff handles time zones properly, unlike chrono/time.
+jiff = { version = "0.2", features = ["serde"] }
+# Iterator adaptors.
+itertools = "0.15"
+# Data parallelism.
+rayon = "1.12"
+# Async runtime.
+tokio = { version = "1.53", features = [
+  "macros",
+  "rt-multi-thread",
+  "fs",
+  "io-util",
+  "io-std",
+  "process",
+  "time",
+  "signal",
+] }
+# Subprocess wrapper with checked exit status and captured output.
+command-run = "1.2"
+
+[dev-dependencies]
+criterion = { version = "0.8", features = ["html_reports"] }
+
+[[bench]]
+name = "throughput"
+harness = false
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+
+# Benchmarks profile with debug info so flamegraphs have symbols.
+[profile.bench]
+debug = true
