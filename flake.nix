@@ -57,6 +57,13 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # Rust toolchains with cross targets. nixpkgs' rustc ships std for the
+    # host, wasm and bpf only, so bare-metal work (embassy) needs this.
+    fenix = {
+      url = "github:nix-community/fenix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     agenix = {
       url = "github:ryantm/agenix";
       inputs.nixpkgs.follows = "nixpkgs";

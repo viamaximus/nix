@@ -4,18 +4,23 @@
 cargo generate --path ~/nix/rust/templates/embedded --name my-firmware
 ```
 
-## Toolchain prerequisite
+## Toolchain
 
-This template needs the `thumbv6m-none-eabi` target. **nixpkgs' `rustc` does
-not ship bare-metal targets** — its sysroot only carries the host, wasm and
-bpf. Either:
+The `thumbv6m-none-eabi` target comes from fenix, declared in `flake.nix` and
+pulled in by `features.rust.embeddedTargets` in
+`homeManagerModules/programs/neovim.nix`. Nothing to install by hand.
 
-- let the bundled `rust-toolchain.toml` do it, with `rustup` on `PATH`; or
-- add a Rust overlay (fenix / rust-overlay) to the flake and pull
-  `targets.thumbv6m-none-eabi.stable.rust-std` declaratively.
+nixpkgs' own `rustc` cannot do this -- its sysroot ships std for the host,
+wasm and bpf only, and its `rustc-src` contains just `proc_macro`, so even
+`-Z build-std` is not a way out. That is why the whole toolchain (rustc,
+cargo, clippy, rustfmt, rust-analyzer) comes from fenix: a cross target's
+`rust-std` is only usable by the exact rustc release that built it.
 
-Until one of those is in place `cargo build` fails with
-`can't find crate for 'core'`.
+To add another target, append it to `features.rust.embeddedTargets`.
+`thumbv7em-none-eabihf` (STM32F4, nRF52) is already on the default list.
+
+Verified building: 19.8 KB of text for the debug profile, linking cleanly for
+RP2040.
 
 ## What's in it
 
@@ -50,6 +55,10 @@ update three places:
 1. `Cargo.toml` — the HAL dependency and its chip feature
 2. `.cargo/config.toml` — `build.target` and `probe-rs --chip`
 3. `build.rs` — drop `-Tlink-rp.x` (that one is RP2040-specific)
+4. `memory.x` — flash/RAM origins and lengths for the new part
+
+Make sure the new target is in `features.rust.embeddedTargets` too, or the
+build fails with `can't find crate for 'core'`.
 
 ## Note on the editor
 

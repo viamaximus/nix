@@ -12,10 +12,14 @@ local MODE = "buf_diagnostics"
 -- Master switch, flipped by :RustDiagAuto.
 local auto_enabled = true
 
--- Our own view of whether the split is up. Trouble's is_open() is keyed on the
--- active view rather than the mode, so tracking it here avoids close() calls
--- that would tear down an unrelated Trouble window.
-local is_open = false
+-- The buffer the user last dismissed the split for. Without this, closing the
+-- split while errors are still on screen just makes it spring back on the next
+-- refresh. Dismissal lasts until you move to another file.
+local suppressed_for = nil
+
+-- Set while we are closing the split ourselves, so the WinClosed handler can
+-- tell our own close apart from the user pressing q.
+local closing = false
 
 local function trouble()
   local ok, mod = pcall(require, "trouble")
@@ -38,37 +42,66 @@ local function is_rust_win(win)
   return vim.bo[buf].filetype == "rust"
 end
 
-local function any_rust_visible()
+-- The Rust buffer the split should be reporting on. Prefers the current
+-- buffer; falls back to any visible Rust window, so standing inside the
+-- split itself (or a sidebar) doesn't count as "left Rust".
+local function target_rust_buf()
+  local current = vim.api.nvim_get_current_buf()
+  if vim.bo[current].filetype == "rust" then
+    return current
+  end
   for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
     if is_rust_win(win) then
-      return true
+      return vim.api.nvim_win_get_buf(win)
     end
   end
-  return false
+  return nil
 end
 
-local function open()
-  if is_open then
+-- Trouble's own is_open() discriminates by mode, so it is authoritative: it
+-- stays correct when the split is closed by hand, and it never claims a
+-- window exists after Trouble declined to open an empty one.
+local function is_open()
+  local t = trouble()
+  if not t or not t.is_open then
+    return false
+  end
+  local ok, result = pcall(t.is_open, { mode = MODE })
+  return ok and result == true
+end
+
+local function open(force)
+  if is_open() then
     return
+  end
+  -- Trouble renders a "No results" pane when a mode matches nothing, so
+  -- opening on FileType would put an empty split on screen for every Rust
+  -- file and leave it there until rust-analyzer finishes its first check.
+  -- Only open once there is something to report -- unless the user asked
+  -- for it explicitly.
+  if not force then
+    local buf = target_rust_buf()
+    if not buf or #vim.diagnostic.get(buf) == 0 then
+      return
+    end
   end
   local t = trouble()
   if not t then
     return
   end
   -- focus=false keeps the cursor in the source buffer.
-  local ok = pcall(t.open, { mode = MODE, focus = false })
-  is_open = ok
+  pcall(t.open, { mode = MODE, focus = false })
 end
 
 local function close()
-  if not is_open then
+  if not is_open() then
     return
   end
-  local t = trouble()
-  if t then
-    pcall(t.close, { mode = MODE })
-  end
-  is_open = false
+  closing = true
+  pcall(trouble().close, { mode = MODE })
+  vim.schedule(function()
+    closing = false
+  end)
 end
 
 -- Debounced so a single :bdelete or window split doesn't thrash the layout.
@@ -83,17 +116,31 @@ local function refresh()
     if not auto_enabled then
       return
     end
-    if any_rust_visible() then
-      open()
-    else
+    local buf = target_rust_buf()
+    if not buf or #vim.diagnostic.get(buf) == 0 then
+      -- No Rust buffer in sight, or the file is clean again.
       close()
+      return
     end
+    if suppressed_for == buf then
+      return
+    end
+    open()
   end)
 end
 
 local group = vim.api.nvim_create_augroup("RustDiagnosticsSplit", { clear = true })
 
-vim.api.nvim_create_autocmd({ "BufWinEnter", "BufWinLeave", "WinClosed", "TabEnter" }, {
+vim.api.nvim_create_autocmd({
+  "BufWinEnter",
+  "BufWinLeave",
+  "WinClosed",
+  "TabEnter",
+  -- rust-analyzer's clippy pass lands well after the buffer opens, so the
+  -- split has to react to diagnostics arriving and clearing, not just to
+  -- window changes.
+  "DiagnosticChanged",
+}, {
   group = group,
   callback = refresh,
 })
@@ -106,18 +153,19 @@ vim.api.nvim_create_autocmd("FileType", {
   callback = refresh,
 })
 
--- If the split was closed by hand (:q inside it), stop believing it's open so
--- the next Rust buffer re-opens it.
 vim.api.nvim_create_autocmd("WinClosed", {
   group = group,
   callback = function(args)
+    if closing then
+      return
+    end
     local win = tonumber(args.match)
     if not win then
       return
     end
     local ok, buf = pcall(vim.api.nvim_win_get_buf, win)
     if ok and vim.bo[buf].filetype == "trouble" then
-      is_open = false
+      suppressed_for = target_rust_buf()
     end
   end,
 })
@@ -125,6 +173,7 @@ vim.api.nvim_create_autocmd("WinClosed", {
 vim.api.nvim_create_user_command("RustDiagAuto", function()
   auto_enabled = not auto_enabled
   if auto_enabled then
+    suppressed_for = nil
     vim.notify("Rust diagnostics split: auto", vim.log.levels.INFO)
     refresh()
   else
@@ -136,10 +185,12 @@ end, { desc = "Toggle the auto-opening Rust diagnostics split" })
 -- Keymaps live in initLua, which runs after `vim.g.mapleader` is set; this
 -- file is sourced from init.vim, before it. Expose a command instead.
 vim.api.nvim_create_user_command("RustDiagToggle", function()
-  if is_open then
+  if is_open() then
     close()
+    suppressed_for = target_rust_buf()
   else
-    open()
+    suppressed_for = nil
+    open(true)
   end
 end, { desc = "Toggle the current-file diagnostics split" })
 

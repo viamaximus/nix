@@ -199,6 +199,7 @@ in {
       # --- Paths ---
       path+=("$HOME/.npm-global/bin")
       path+=("$HOME/.local/bin")
+      path+=("$HOME/.cargo/bin")
       export PATH
     '';
 

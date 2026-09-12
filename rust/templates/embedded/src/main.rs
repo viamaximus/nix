@@ -41,8 +41,11 @@ async fn main(spawner: Spawner) {
     // off the wifi chip instead and needs the cyw43 driver.
     let led = Output::new(p.PIN_25, Level::Low);
 
-    unwrap!(spawner.spawn(blink(led, SPEED.receiver())));
-    unwrap!(spawner.spawn(metronome(SPEED.sender())));
+    // In embassy-executor 0.10 the task function returns
+    // `Result<SpawnToken, SpawnError>` (the pool-exhausted check moved here),
+    // and `spawn` itself returns `()` -- so the unwrap goes on the inside.
+    spawner.spawn(unwrap!(blink(led, SPEED.receiver())));
+    spawner.spawn(unwrap!(metronome(SPEED.sender())));
 }
 
 #[embassy_executor::task]
@@ -73,6 +76,8 @@ async fn metronome(speed: Sender<'static, CriticalSectionRawMutex, Speed, 4>) {
     loop {
         Timer::after(Duration::from_secs(5)).await;
         fast = !fast;
-        speed.send(if fast { Speed::Fast } else { Speed::Slow }).await;
+        speed
+            .send(if fast { Speed::Fast } else { Speed::Slow })
+            .await;
     }
 }

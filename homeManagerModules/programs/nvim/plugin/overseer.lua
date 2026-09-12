@@ -14,8 +14,6 @@ overseer.setup({
   },
 })
 
--- A few cargo tasks worth having one keystroke away. `cargo run` gets a
--- terminal strategy so interactive programs still read stdin.
 local cargo_tasks = {
   { name = "cargo check", args = { "check", "--all-targets" } },
   { name = "cargo clippy", args = { "clippy", "--all-targets", "--", "-D", "warnings" } },

@@ -11,9 +11,6 @@ lib.mkIf config.features.desktop.noctalia.enable {
       position = "top_right";
     };
 
-    # Coordinates carried over from the old gammastep config (NYC).
-    # Weather needs a geocoded location; manual lat/long alone don't populate the
-    # weather widget, so set a named address (it geocodes to coords + display name).
     location = {
       auto_locate = false;
       address = "New York, NY";
@@ -35,7 +32,9 @@ lib.mkIf config.features.desktop.noctalia.enable {
       refresh_minutes = 30;
     };
 
-    # Replaces hypridle: lock @5min, screen-off @10min, never suspend
+    # Replaces the old battery-notify timer (disabled while noctalia is on).
+    battery.warning_threshold = 20;
+
     # (tower keeps sleep targets masked for SSH access).
     idle.behavior = {
       lock = {

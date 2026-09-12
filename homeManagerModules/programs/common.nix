@@ -9,6 +9,8 @@
     apostrophe
     localsend
 
+    # arduino-ide
+
     file
     openssh
     yubikey-manager

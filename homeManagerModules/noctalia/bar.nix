@@ -26,6 +26,7 @@ lib.mkIf config.features.desktop.noctalia.enable {
       "network"
       "volume"
       "nightlight"
+      "battery"
       "power_profile"
       "keyboard_layout"
       "noctalia/wallhaven:wallhaven"

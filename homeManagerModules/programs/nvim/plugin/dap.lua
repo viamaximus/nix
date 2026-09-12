@@ -27,12 +27,17 @@ dap.listeners.before.event_exited.dapui_config = function()
   dapui.close()
 end
 
+-- Resolve to an absolute path, not the bare name.
 local lldb_command = nil
-if vim.fn.executable("lldb-dap") == 1 then
-  lldb_command = "lldb-dap"
-elseif vim.fn.executable("lldb-vscode") == 1 then
-  lldb_command = "lldb-vscode"
-else
+for _, candidate in ipairs({ "lldb-dap", "lldb-vscode" }) do
+  local resolved = vim.fn.exepath(candidate)
+  if resolved ~= "" then
+    lldb_command = resolved
+    break
+  end
+end
+
+if not lldb_command then
   vim.notify("No LLDB DAP adapter found on PATH (tried lldb-dap and lldb-vscode)", vim.log.levels.ERROR)
 end
 
