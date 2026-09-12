@@ -9,11 +9,16 @@
     apostrophe
     localsend
 
-    # arduino-ide
+    bitwarden-cli
+    bitwarden-desktop
+    bitwarden-menu
 
     file
     openssh
     yubikey-manager
+
+    cifs-utils
+    samba # smbclient, for browsing/listing SMB shares
 
     # claude-code
     opencode
