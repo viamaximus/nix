@@ -6,6 +6,22 @@
   ...
 }: let
   wallpaperConfig = import ./current-wallpaper.nix;
+  truenasShare = share: {
+    device = "//192.168.1.101/${share}";
+    fsType = "cifs";
+    options = [
+      "credentials=/etc/samba/truenas-creds"
+      "uid=max"
+      "gid=max"
+      "iocharset=utf8"
+      "vers=3.0"
+      "x-systemd.automount"
+      "noauto"
+      "_netdev"
+      "x-systemd.idle-timeout=60"
+      "x-systemd.mount-timeout=10s"
+    ];
+  };
 in {
   imports = [
     # Include the results of the hardware scan.
@@ -107,8 +123,17 @@ in {
   };
   hardware.bluetooth.powerOnBoot = true;
 
-  services.udev.extraRules = ''    # Altera/Intel USB Blaster
+  services.udev.extraRules = ''
     SUBSYSTEM=="usb", ATTR{idVendor}=="09fb", ATTR{idProduct}=="6001", MODE="0666"
+    SUBSYSTEM=="usb", ATTR{idVendor}=="09fb", ATTR{idProduct}=="6810", MODE="0666"
+    SUBSYSTEM=="usb", ATTR{idVendor}=="09fb", ATTR{idProduct}=="6010", MODE="0666"
+    SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTR{idVendor}=="0925", ATTR{idProduct}=="3881", MODE="0666"
+    SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTR{idVendor}=="21a9", ATTR{idProduct}=="1001", MODE="0666"
+    SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTR{idVendor}=="21a9", ATTR{idProduct}=="1003", MODE="0666"
+    SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTR{idVendor}=="21a9", ATTR{idProduct}=="1004", MODE="0666"
+    SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTR{idVendor}=="21a9", ATTR{idProduct}=="1005", MODE="0666"
+    SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTR{idVendor}=="21a9", ATTR{idProduct}=="1006", MODE="0666"
+    SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTR{idVendor}=="21a9", ATTR{idProduct}=="1007", MODE="0666"
   '';
 
   boot.blacklistedKernelModules = ["nouveau"];
@@ -121,8 +146,17 @@ in {
       "discard"
     ];
   };
+
+  # TrueNAS SMB shares (192.168.1.101). Mounted on-demand (x-systemd.automount)
+  # since TrueNAS isn't always up. Credentials live outside the Nix store at
+  # /etc/samba/truenas-creds (root:root, mode 600) — not committed to git.
+  fileSystems."/mnt/truenas/plex-media" = truenasShare "plex-media";
+  fileSystems."/mnt/truenas/terashare" = truenasShare "terashare";
+  fileSystems."/mnt/truenas/turboshare" = truenasShare "turboshare";
+
   systemd.tmpfiles.rules = [
     "d /mnt/games 0755 max max -"
+    "d /mnt/truenas 0755 max max -"
   ];
 
   # Set your time zone.
@@ -160,6 +194,27 @@ in {
   };
 
   virtualisation.docker.enable = true;
+
+  # For BambuStudio (nixpkgs build hits a blank 3D viewport on this GPU/compositor
+  # combo, same failure as OrcaSlicer's). Flatpak's self-contained runtime avoids
+  # both the nixpkgs packaging quirks and manual FHS shimming.
+  services.flatpak.enable = true;
+  # nixpkgs' flatpak (1.18.0) has a regression where flatpak-spawn leaks the
+  # host's PATH into nested loader sandboxes (e.g. glycin icon loaders); NixOS's
+  # non-FHS PATH means the target binary isn't there, so bwrap fails with
+  # "execvp prlimit: No such file or directory" and the app crashes on icon load.
+  # Fixed upstream in 1.18.1 (also several security fixes). Remove once nixpkgs
+  # catches up. See: https://github.com/flatpak/flatpak/issues/6717
+  services.flatpak.package = pkgs.flatpak.overrideAttrs (old: rec {
+    version = "1.18.1";
+    src = pkgs.fetchurl {
+      url = "https://github.com/flatpak/flatpak/releases/download/${version}/flatpak-${version}.tar.xz";
+      hash = "sha256-vGg/yRbtIcBSS7Bk81jCrBhYa47IjHby9/KJh3UhYxw=";
+    };
+  });
+  # Missing portal.Settings backend makes flatpak GTK apps fall back to broken
+  # local icon-theme lookups (BambuStudio's flatpak crashes on icon load without it).
+  xdg.portal.extraPortals = [pkgs.xdg-desktop-portal-gtk];
 
   # Enable the X11 windowing system.
   services.xserver.enable = true;
@@ -230,6 +285,9 @@ in {
     kitty
     git
     catppuccin-cursors.mochaMauve # greeter cursor theme (system-wide for greetd)
+    cifs-utils # mount.cifs for the TrueNAS fileSystems entries above; must be
+    # system-wide, not just in the user profile, so systemd's automount unit
+    # (running as root) can find the helper.
   ];
 
   # Enable the OpenSSH daemon.

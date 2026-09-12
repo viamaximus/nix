@@ -4,14 +4,14 @@
   lib,
   ...
 }: let
-  # see: https://github.com/NixOS/nixpkgs/issues/387526
   orca-slicer-nvidia = pkgs.symlinkJoin {
     name = "orca-slicer";
     paths = [pkgs.orca-slicer];
     buildInputs = [pkgs.makeWrapper];
     postBuild = ''
       wrapProgram $out/bin/orca-slicer \
-        --set GBM_BACKEND dri
+        --set DRI_PRIME 0 \
+        --set __NV_PRIME_RENDER_OFFLOAD 0
     '';
   };
 in {
