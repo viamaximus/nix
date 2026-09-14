@@ -10,7 +10,7 @@
     # Bypass Nix TOML serializer which strips Private Use Area Unicode chars
     # (powerline arrows U+E0B0 etc.) — write TOML directly
     settings = {
-      palette = lib.mkForce "catppuccin_macchiato";
+      palette = lib.mkForce "cutie_pro";
 
       format = lib.mkForce (builtins.fromJSON ''"[\ue0b6](fg:red)$os$username$hostname[\ue0b0](bg:peach fg:red)$directory[\ue0b0](bg:yellow fg:peach)$git_branch$git_status[\ue0b0](fg:yellow bg:green)$c$cpp$rust$golang$nodejs$bun$python$java$kotlin$lua$nix_shell[\ue0b0](fg:green bg:sapphire)$docker_context$conda[\ue0b0](fg:sapphire bg:lavender)$time[\ue0b4](fg:lavender)$cmd_duration $character"'');
 
@@ -187,33 +187,15 @@
         vimcmd_visual_symbol = "[❮](bold fg:yellow)";
       };
 
-      palettes.catppuccin_macchiato = {
-        rosewater = "#f4dbd6";
-        flamingo = "#f0c6c6";
-        pink = "#f5bde6";
-        mauve = "#c6a0f6";
-        red = "#ed8796";
-        maroon = "#ee99a0";
-        peach = "#f5a97f";
-        yellow = "#eed49f";
-        green = "#a6da95";
-        teal = "#8bd5ca";
-        sky = "#91d7e3";
-        sapphire = "#7dc4e4";
-        blue = "#8aadf4";
-        lavender = "#b7bdf8";
-        text = "#cad3f5";
-        subtext1 = "#b8c0e0";
-        subtext0 = "#a5adcb";
-        overlay2 = "#939ab7";
-        overlay1 = "#8087a2";
-        overlay0 = "#6e738d";
-        surface2 = "#5b6078";
-        surface1 = "#494d64";
-        surface0 = "#363a4f";
-        base = "#24273a";
-        mantle = "#1e2030";
-        crust = "#181926";
+      # Same Cutie Pro scheme as kitty/neovim, mapped onto this template's slot names by hue.
+      palettes.cutie_pro = {
+        red = "#f56e7f";
+        peach = "#f58669";
+        yellow = "#e8d6a7"; # tan (closest to yellow)
+        green = "#37cb8a";
+        sapphire = "#42d9c5"; # teal
+        lavender = "#b294bb"; # mauve
+        crust = "#181818"; # background, used as fg text on bright segments
       };
     };
   };

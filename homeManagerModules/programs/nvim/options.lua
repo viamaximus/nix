@@ -17,3 +17,10 @@ vim.o.updatetime = 300
 vim.o.termguicolors = true
 
 vim.o.mouse = 'a'
+
+-- Treesitter folding (za/zo/zc); foldlevelstart=99 keeps everything open by default.
+vim.o.foldmethod = 'expr'
+vim.o.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+vim.o.foldenable = true
+vim.o.foldlevel = 99
+vim.o.foldlevelstart = 99

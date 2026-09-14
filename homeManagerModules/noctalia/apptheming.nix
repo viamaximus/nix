@@ -30,7 +30,7 @@ lib.mkIf config.features.desktop.noctalia.enable {
     x11.enable = true;
   };
 
-  programs.kitty.extraConfig = lib.mkAfter "include themes/noctalia.conf";
+  # kitty is pinned to a static theme instead (see shell/kitty.nix).
 
   # qt{5,6}ct/colors/noctalia.conf; these conf files select it (custom_palette +
   # color_scheme_path) and qtct is set as the platform theme.

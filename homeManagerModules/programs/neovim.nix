@@ -321,6 +321,9 @@ in {
       ];
 
       initLua = ''
+        -- Cutie Pro colorscheme (matches kitty/starship)
+        ${builtins.readFile ./nvim/cutie-pro-theme.lua}
+
         -- autopairs
         require("nvim-autopairs").setup({})
 

@@ -7,7 +7,7 @@
   programs.kitty = {
     enable = true;
     font = {
-      name = lib.mkForce "JetBrainsMono Nerd Font";
+      name = lib.mkForce "FiraCode Nerd Font Mono";
       size = lib.mkForce 11;
     };
     settings = {
@@ -17,6 +17,34 @@
 
       background_opacity = lib.mkForce "0.85";
       background_blur = lib.mkForce 32;
+
+      # --- Cutie Pro (https://github.com/mbadolato/iTerm2-Color-Schemes) ---
+      background = lib.mkForce "#181818";
+      foreground = lib.mkForce "#d5d0c9";
+      cursor = lib.mkForce "#efc4cd";
+      cursor_text_color = lib.mkForce "#181818";
+      selection_background = lib.mkForce "#d5d0c9";
+      selection_foreground = lib.mkForce "#181818";
+      color0 = lib.mkForce "#000000";
+      color1 = lib.mkForce "#f56e7f";
+      color2 = lib.mkForce "#bec975";
+      color3 = lib.mkForce "#f58669";
+      color4 = lib.mkForce "#42d9c5";
+      color5 = lib.mkForce "#d286b7";
+      color6 = lib.mkForce "#37cb8a";
+      color7 = lib.mkForce "#d5c3c3";
+      color8 = lib.mkForce "#88847f";
+      color9 = lib.mkForce "#e5a1a3";
+      color10 = lib.mkForce "#e8d6a7";
+      color11 = lib.mkForce "#f1bb79";
+      color12 = lib.mkForce "#80c5de";
+      color13 = lib.mkForce "#b294bb";
+      color14 = lib.mkForce "#9dccbb";
+      color15 = lib.mkForce "#ffffff";
+      active_tab_foreground = lib.mkForce "#181818";
+      active_tab_background = lib.mkForce "#d5d0c9";
+      inactive_tab_foreground = lib.mkForce "#88847f";
+      inactive_tab_background = lib.mkForce "#0f0f0f";
 
       window_padding_width = lib.mkForce 8;
 
