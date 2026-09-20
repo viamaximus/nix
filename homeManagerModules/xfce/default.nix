@@ -38,6 +38,9 @@ in {
     # GTK theming
     gtk = {
       enable = true;
+      # Adopt the new (>=26.05) default: don't force GTK3 theming onto GTK4/
+      # libadwaita apps, let them use their own default styling.
+      gtk4.theme = null;
       theme = {
         name = lib.mkForce "Chicago95";
         package = lib.mkForce pkgs.chicago95;
@@ -60,11 +63,8 @@ in {
     fonts.fontconfig.enable = true;
 
     # Fontconfig — MS Sans Serif aliasing and hinting
-    xdg.configFile."fontconfig/conf.d/99-ms-sans-serif.conf".source =
-      "${c95}/Extras/99-ms-sans-serif.conf";
-    xdg.configFile."fontconfig/conf.d/99-ms-sans-serif-bold.conf".source =
-      "${c95}/Extras/99-ms-sans-serif-bold.conf";
-
+    xdg.configFile."fontconfig/conf.d/99-ms-sans-serif.conf".source = "${c95}/Extras/99-ms-sans-serif.conf";
+    xdg.configFile."fontconfig/conf.d/99-ms-sans-serif-bold.conf".source = "${c95}/Extras/99-ms-sans-serif-bold.conf";
 
     # Apply Chicago95 xfconf settings during activation.
     # Uses xfconf-query which works when a dbus session is running (i.e. logged in).

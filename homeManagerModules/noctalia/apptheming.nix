@@ -10,6 +10,7 @@ lib.mkIf config.features.desktop.noctalia.enable {
       name = "adw-gtk3-dark";
       package = pkgs.adw-gtk3;
     };
+    gtk4.theme = config.gtk.theme;
     iconTheme = {
       name = "Papirus-Dark";
       package = pkgs.papirus-icon-theme;
@@ -41,7 +42,7 @@ lib.mkIf config.features.desktop.noctalia.enable {
   };
 
   # The qt module sets QT_QPA_PLATFORMTHEME=qt5ct, but OBS/qBittorrent/VLC are
-  # Qt6 and need the qt6ct plugin. Force it.
+  # Qt6 and need the qt6ct plugin
   home.sessionVariables.QT_QPA_PLATFORMTHEME = lib.mkForce "qt6ct";
 
   xdg.configFile."qt6ct/qt6ct.conf".text = ''
