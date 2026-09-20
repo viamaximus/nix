@@ -16,20 +16,20 @@ in {
   programs.ssh = {
     enable = true;
     enableDefaultConfig = false;
-    matchBlocks =
+    settings =
       {
         "github.com" = {
-          hostname = "github.com";
-          user = "git";
-          identitiesOnly = true;
-          identityFile = githubIdentityFiles;
+          HostName = "github.com";
+          User = "git";
+          IdentitiesOnly = true;
+          IdentityFile = githubIdentityFiles;
         };
       }
       // lib.mapAttrs
       (_: meta: {
-        hostname = meta.hostName;
-        user = meta.user;
-        forwardAgent = true;
+        HostName = meta.hostName;
+        User = meta.user;
+        ForwardAgent = true;
       })
       hostInventory;
   };
