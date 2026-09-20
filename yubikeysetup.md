@@ -7,12 +7,12 @@
 
   # On MAIN Yubikey:
   age-plugin-yubikey --generate --slot 2
-  age-plugin-yubikey --identity --slot 2 > secrets/master-keys/yubikey-main-identity.txt
+  age-plugin-yubikey --identity --slot 2 > secrets/master-keys/yubikey-main-identity.pub
   age-plugin-yubikey --identity --slot 2 | age-keygen -y > secrets/master-keys/yubikey-main-recipient.pub
 
   # Swap to BACKUP Yubikey:
   age-plugin-yubikey --generate --slot 2
-  age-plugin-yubikey --identity --slot 2 > secrets/master-keys/yubikey-backup-identity.txt
+  age-plugin-yubikey --identity --slot 2 > secrets/master-keys/yubikey-backup-identity.pub
   age-plugin-yubikey --identity --slot 2 | age-keygen -y > secrets/master-keys/yubikey-backup-recipient.pub
 
   2. Generate paper backup:
@@ -45,7 +45,7 @@
   1. Create it (Yubikey must be plugged in, will prompt for touch):
   cd /home/max/nix
   nix run nixpkgs#agenix -- -e secrets/secrets/my-secret.age \
-    -i secrets/master-keys/yubikey-main-identity.txt
+    -i secrets/master-keys/yubikey-main-identity.pub
 
   2. Rekey for all hosts (so hosts can decrypt it without the Yubikey):
   nix run .#agenix-rekey -- rekey

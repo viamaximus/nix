@@ -22,12 +22,12 @@
     masterIdentities = [
       {
         # Main Yubikey (PIV slot 2 / slot 82)
-        identity = inputs.self + "/secrets/master-keys/yubikey-main-identity.txt";
+        identity = inputs.self + "/secrets/master-keys/yubikey-main-identity.pub";
         pubkey = lib.fileContents (inputs.self + "/secrets/master-keys/yubikey-main-recipient.pub");
       }
       {
         # Backup Yubikey (PIV slot 2 / slot 82)
-        identity = inputs.self + "/secrets/master-keys/yubikey-backup-identity.txt";
+        identity = inputs.self + "/secrets/master-keys/yubikey-backup-identity.pub";
         pubkey = lib.fileContents (inputs.self + "/secrets/master-keys/yubikey-backup-recipient.pub");
       }
       {
