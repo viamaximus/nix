@@ -12,7 +12,14 @@
   ];
 
   features.desktop.hyprland.enable = true;
-  stylix.targets.firefox.profileNames = [ "default" ];
+  features.desktop.noctalia.enable = true;
+
+  # This host rotates between multiple yubikeys: sign with whatever key is in
+  # the ssh-agent, and auth to GitHub through git-credential-manager (browser).
+  features.git = {
+    agentSigning = true;
+    browserAuth = true;
+  };
 
   home.username = "nix";
   home.homeDirectory = "/home/nix";
