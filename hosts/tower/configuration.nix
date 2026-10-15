@@ -1,11 +1,19 @@
 {
   config,
   pkgs,
+  lib,
   inputs,
   hostInventory,
   ...
 }: let
   wallpaperConfig = import ./current-wallpaper.nix;
+  # Both Steam library locations (home.nix has no second library of its own;
+  # /mnt/games/SteamLibrary is the fileSystems entry below) — SteamVR could
+  # live in either.
+  steamvrLaunchers = [
+    "/home/max/.local/share/Steam/steamapps/common/SteamVR/bin/linux64/vrcompositor-launcher"
+    "/mnt/games/SteamLibrary/steamapps/common/SteamVR/bin/linux64/vrcompositor-launcher"
+  ];
   truenasShare = share: {
     device = "//192.168.1.101/${share}";
     fsType = "cifs";
@@ -50,6 +58,42 @@ in {
       "nix-gaming.cachix.org-1:nbjlureqMbRAxR1gJ/f3hxemL9svXaZF/Ees8vCUUs4="
     ];
   };
+
+  # nixpkgs' wivrn (26.6.1) is older than the Quest client, which rejects the
+  # server as an incompatible version. Bump to the matching v26.9 release
+  # (same monado pin nixpkgs uses, just following wivrn's own monado-rev file
+  # for that tag) until nixpkgs catches up. Also build with cudaSupport so it
+  # can use NVENC — without it, WiVRn finds no usable hardware encoder on
+  # this NVIDIA GPU (Vulkan video encode extensions are present in the
+  # driver, but WiVRn's encoder selection doesn't pick them up here) and the
+  # Quest connects then immediately drops.
+  nixpkgs.overlays = [
+    (final: prev: {
+      wivrn = (prev.wivrn.override {cudaSupport = true;}).overrideAttrs (old: let
+        newSrc = final.fetchFromGitHub {
+          owner = "wivrn";
+          repo = "wivrn";
+          rev = "v26.9";
+          hash = "sha256-/kXgbku/4EeYY5YTwtY71csgxOP8bRACLqOvKXolg5g=";
+        };
+      in {
+        version = "26.9";
+        src = newSrc;
+        monado = final.applyPatches {
+          src = final.fetchFromGitLab {
+            domain = "gitlab.freedesktop.org";
+            owner = "monado";
+            repo = "monado";
+            rev = "f037264d23e2472a444a157370647fcd601ed81b";
+            hash = "sha256-exHbecudAy57szL7kut7/fBYCoekEs3riZzhMtFWS/c=";
+          };
+          postPatch = ''
+            ${newSrc}/patches/apply.sh ${newSrc}/patches/monado/*
+          '';
+        };
+      });
+    })
+  ];
 
   # Theming on tower is handled by Noctalia (wallpaper-dynamic colors + templates),
   # so Stylix is disabled here. GTK/icon/font/cursor are re-homed in
@@ -147,6 +191,24 @@ in {
     ];
   };
 
+  boot.supportedFilesystems.ntfs = true;
+
+  fileSystems."/mnt/windows" = {
+    device = "/dev/disk/by-uuid/FEC674D0C6748B23";
+    fsType = "ntfs3";
+    noCheck = true;
+    options = [
+      "rw"
+      "uid=1000"
+      "gid=987"
+      "umask=022"
+      "noatime"
+      "windows_names"
+      "nofail"
+      "x-systemd.device-timeout=5s"
+    ];
+  };
+
   # TrueNAS SMB shares (192.168.1.101). Mounted on-demand (x-systemd.automount)
   # since TrueNAS isn't always up. Credentials live outside the Nix store at
   # /etc/samba/truenas-creds (root:root, mode 600) — not committed to git.
@@ -228,6 +290,81 @@ in {
   ###gaming support
   programs.gamemode.enable = true;
   programs.steam.enable = true;
+  hardware.steam-hardware.enable = true;
+
+  # ALVR: left enabled but effectively superseded by WiVRn below — its
+  # SteamVR driver hits a direct-mode interface mismatch
+  # (IVRDriverDirectModeComponent_007 vs what current SteamVR expects),
+  # causing a restart loop and a garbled/stale-reprojected image.
+  programs.alvr = {
+    enable = true;
+    openFirewall = true; # TCP/UDP 9943, 9944
+  };
+  # Virtual Desktop Streamer isn't packaged in nixpkgs (installed/updated
+  # through Steam itself) — only the firewall ports are needed here.
+  networking.firewall.allowedTCPPorts = [38810 38820 38830 38840];
+
+  # WiVRn: native-Linux OpenXR streamer to the Quest over the LAN. Avoids
+  # SteamVR entirely — xrizer (OpenVR→OpenXR shim) lets SteamVR-only games
+  # run against WiVRn's Monado runtime directly, sidestepping the
+  # vrserver/vrcompositor driver-interface problems above.
+  services.wivrn = {
+    enable = true;
+    openFirewall = true; # TCP/UDP 9757 + mDNS discovery via avahi
+    autoStart = true;
+    highPriority = true; # cap_sys_nice for the compositor via a setuid wrapper
+    steam.importOXRRuntimes = true; # let Steam's sandbox see the WiVRn OpenXR runtime
+    # wayvr (formerly wlx-overlay-s): XSOverlay-style desktop/notification
+    # overlay, native OpenXR — shown as WiVRn's dashboard/home environment.
+    config = {
+      enable = true;
+      json = {
+        application = [pkgs.wayvr];
+        encoder = {
+          encoder = "nvenc";
+          codec = "av1";
+        };
+      };
+    };
+  };
+
+  # SteamVR's vrcompositor-launcher needs CAP_SYS_NICE for realtime scheduling.
+  # Its own setup script grants this via pkexec, which has no polkit agent in
+  # this Hyprland session, so the grant silently fails and SteamVR reports
+  # "setup is incomplete". Grant it from the system side instead, and
+  # re-apply periodically, since every SteamVR update rewrites the binary
+  # (clearing the capability). +ep (not Valve's own +eip) avoids the
+  # inheritable flag's known vrcompositor crash/graphics-reset bug.
+  #
+  # A systemd.path watch on the binary was tried first but is too fragile:
+  # Steam's own background verification/update traffic in that directory can
+  # burst past the path unit's default trigger-rate limit and fail outright.
+  # A timer is immune to that — it just re-applies on a schedule instead of
+  # reacting to filesystem events.
+  systemd.services.steamvr-setcap = {
+    description = "Grant SteamVR's vrcompositor-launcher cap_sys_nice";
+    after = ["local-fs.target"];
+    startLimitIntervalSec = 0;
+    serviceConfig.Type = "oneshot";
+    script = ''
+      for launcher in ${lib.concatMapStringsSep " " lib.escapeShellArg steamvrLaunchers}; do
+        if [ -e "$launcher" ]; then
+          ${pkgs.libcap}/bin/setcap cap_sys_nice+ep "$launcher"
+        fi
+      done
+      exit 0
+    '';
+  };
+
+  systemd.timers.steamvr-setcap = {
+    description = "Periodically grant SteamVR's vrcompositor-launcher cap_sys_nice";
+    wantedBy = ["timers.target"];
+    timerConfig = {
+      OnBootSec = "30s";
+      OnUnitActiveSec = "1h";
+      Persistent = true;
+    };
+  };
 
   # Noctalia greeter (greetd-based) replaces ly. The module enables greetd and
   # sets the session command automatically.
@@ -288,6 +425,8 @@ in {
     cifs-utils # mount.cifs for the TrueNAS fileSystems entries above; must be
     # system-wide, not just in the user profile, so systemd's automount unit
     # (running as root) can find the helper.
+    xrizer # OpenVR->OpenXR shim; path pasted into WiVRn dashboard as a
+    # "Custom" OpenVR compatibility library (/run/current-system/sw/lib/xrizer)
   ];
 
   # Enable the OpenSSH daemon.

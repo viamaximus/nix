@@ -27,6 +27,12 @@
     bottles
 
     gamescope
+
+    vrcx
+    (writeShellScriptBin "vrcx-steam" ''
+      unset LD_PRELOAD
+      exec ${vrcx}/bin/vrcx "$@"
+    '')
   ];
 
   xdg.configFile."MangoHud/MangoHud.conf".text = ''

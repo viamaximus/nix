@@ -9,6 +9,7 @@
     ./noctalia
     ./xfce
     ./shell
+    ./vrcdev.nix
   ];
   config = {};
 }

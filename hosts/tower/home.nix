@@ -13,6 +13,7 @@
 
   features.desktop.hyprland.enable = true;
   features.desktop.noctalia.enable = true;
+  features.vrcdev.enable = true;
 
   home.username = "max";
   home.homeDirectory = "/home/max";
@@ -20,6 +21,17 @@
   home.packages = with pkgs; [
     hello
   ];
+
+  # WiVRn's package ships its OpenXR manifest as share/openxr/1/openxr_wivrn.json,
+  # but the standard OpenXR loader (what xrizer embeds) only ever looks for a
+  # file literally named active_runtime.json under XDG_CONFIG_HOME (not
+  # XDG_DATA_HOME — the OpenXR loader's manifest_file.cpp searches
+  # ~/.config/openxr, never ~/.local/share/openxr) — nothing registers WiVRn
+  # under that name/location on its own, so any app (native OpenXR, or
+  # OpenVR-via-xrizer) fails with ERROR_RUNTIME_UNAVAILABLE even though
+  # WiVRn itself is running fine. Register it explicitly.
+  xdg.configFile."openxr/1/active_runtime.json".source =
+    "${pkgs.wivrn}/share/openxr/1/openxr_wivrn.json";
 
   home.sessionVariables = {
     EDITOR = "nvim";

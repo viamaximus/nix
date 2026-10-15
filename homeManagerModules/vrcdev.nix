@@ -23,6 +23,15 @@ with lib; let
       ${moduleFlags} --childModules "$@"
   '';
 
+  unityEditor = pkgs.writeShellScriptBin "vrcdev-unity" ''
+    editor="$HOME/Unity/Hub/Editor/${cfg.unityVersion}/Editor/Unity"
+    if [ ! -x "$editor" ]; then
+      echo "Unity ${cfg.unityVersion} is not installed. Run vrcdev-install-unity first." >&2
+      exit 1
+    fi
+    exec ${unityhub.fhsEnv}/bin/unityhub-fhs-env "$editor" ${lib.optionalString cfg.forceVulkan "-force-vulkan"} "$@"
+  '';
+
   addRepos = pkgs.writeShellScriptBin "vrcdev-add-repos" ''
     for repo in ${escapeShellArgs cfg.vpmRepos}; do
       ${pkgs.vrc-get}/bin/vrc-get repo add "$repo" || true
@@ -31,7 +40,7 @@ with lib; let
   '';
 in {
   options.features.vrcdev = {
-    enable = mkEnableOption "VRChat avatar development (Unity + Creator Companion + Blender)";
+    enable = mkEnableOption "VRChat avatar development (Unity + Creator Companion + SDK tooling)";
 
     unityVersion = mkOption {
       type = types.str;
@@ -68,16 +77,21 @@ in {
       '';
     };
 
+    forceVulkan = mkOption {
+      type = types.bool;
+      default = true;
+      description = ''
+        Launch the editor with -force-vulkan. The Linux editor otherwise falls
+        back to GLCore, whose shader keyword limits are too low for Poiyomi and
+        lilToon: materials fail with "State comes from an incompatible keyword
+        space" and avatars render untextured or invisible.
+      '';
+    };
+
     quest.enable = mkOption {
       type = types.bool;
       default = true;
       description = "Install adb and expose it inside the Unity FHS environment for Quest builds.";
-    };
-
-    blender.enable = mkOption {
-      type = types.bool;
-      default = true;
-      description = "Install Blender for avatar mesh/rig work.";
     };
   };
 
@@ -86,11 +100,11 @@ in {
       [
         unityhub
         installUnity
+        unityEditor
         addRepos
         pkgs.alcom
         pkgs.vrc-get
       ]
-      ++ optional cfg.blender.enable pkgs.blender
       ++ optional cfg.quest.enable pkgs.android-tools;
 
     home.sessionVariables.VRCDEV_UNITY_VERSION = cfg.unityVersion;
