@@ -8,6 +8,8 @@
 with lib; let
   cfg = config.features.desktop.hyprland;
   hostName = osConfig.networking.hostName or "";
+  hl = import ./lua.nix {inherit lib;};
+  inherit (hl) mod bind bindel bindm exec focus move swap;
 
   panelBrightnessDevice =
     if builtins.elem hostName ["zephyrus" "asus-zephyrus"]
@@ -28,211 +30,275 @@ with lib; let
   actionBinds =
     if noctalia
     then [
-      "$mainMod, space, exec, ${ipc} panel-toggle launcher"
-      "$mainMod, V, exec, ${ipc} panel-toggle clipboard"
-      "$mainMod, C, exec, ${ipc} panel-toggle control-center"
-      "$mainMod, X, exec, ${ipc} panel-toggle session"
-      "$mainMod, A, exec, ${ipc} panel-open control-center audio"
-      "$mainMod SHIFT, A, exec, ${ipc} panel-open control-center audio"
-      "$mainMod SHIFT, L, exec, ${ipc} session lock"
-      "$mainMod SHIFT, N, exec, ${ipc} nightlight-toggle"
-      "$mainMod SHIFT, s, exec, ${ipc} screenshot-region"
-      ",XF86AudioMute, exec, ${ipc} volume-mute"
+      (bind "${mod} + space" (exec "${ipc} panel-toggle launcher"))
+      (bind "${mod} + V" (exec "${ipc} panel-toggle clipboard"))
+      (bind "${mod} + C" (exec "${ipc} panel-toggle control-center"))
+      (bind "${mod} + X" (exec "${ipc} panel-toggle session"))
+      (bind "${mod} + A" (exec "${ipc} panel-open control-center audio"))
+      (bind "${mod} + SHIFT + A" (exec "${ipc} panel-open control-center audio"))
+      (bind "${mod} + SHIFT + L" (exec "${ipc} session lock"))
+      (bind "${mod} + SHIFT + N" (exec "${ipc} nightlight-toggle"))
+      (bind "${mod} + SHIFT + s" (exec "${ipc} screenshot-region"))
+      (bind "XF86AudioMute" (exec "${ipc} volume-mute"))
     ]
     else [
-      "$mainMod, A, exec, audio-switcher"
-      "$mainMod SHIFT, A, exec, mic-switcher"
-      "$mainMod, space, exec, wofi --show drun"
-      "$mainMod SHIFT, L, exec, hyprlock"
-      "$mainMod SHIFT, s, exec, grim -g \"$(slurp -d)\" - | wl-copy"
-      ",XF86AudioMute, exec, ${pkgs.swayosd}/bin/swayosd-client --output-volume mute-toggle"
+      (bind "${mod} + A" (exec "audio-switcher"))
+      (bind "${mod} + SHIFT + A" (exec "mic-switcher"))
+      (bind "${mod} + space" (exec "wofi --show drun"))
+      (bind "${mod} + SHIFT + L" (exec "hyprlock"))
+      (bind "${mod} + SHIFT + s" (exec "grim -g \"$(slurp -d)\" - | wl-copy"))
+      (bind "XF86AudioMute" (exec "${pkgs.swayosd}/bin/swayosd-client --output-volume mute-toggle"))
     ];
 
   bindelBinds =
     if noctalia
     then [
-      ",XF86MonBrightnessUp, exec, ${ipc} brightness-up"
-      ",XF86MonBrightnessDown, exec, ${ipc} brightness-down"
-      ",XF86AudioLowerVolume, exec, ${ipc} volume-down"
-      ",XF86AudioRaiseVolume, exec, ${ipc} volume-up"
+      (bindel "XF86MonBrightnessUp" (exec "${ipc} brightness-up"))
+      (bindel "XF86MonBrightnessDown" (exec "${ipc} brightness-down"))
+      (bindel "XF86AudioLowerVolume" (exec "${ipc} volume-down"))
+      (bindel "XF86AudioRaiseVolume" (exec "${ipc} volume-up"))
     ]
     else [
-      ",XF86MonBrightnessUp, exec, ${brightnessctlCmd} set +10%"
-      ",XF86MonBrightnessDown, exec, ${brightnessctlCmd} set 10%-"
-      ",XF86AudioLowerVolume, exec, ${pkgs.swayosd}/bin/swayosd-client --output-volume lower"
-      ",XF86AudioRaiseVolume, exec, ${pkgs.swayosd}/bin/swayosd-client --output-volume raise"
+      (bindel "XF86MonBrightnessUp" (exec "${brightnessctlCmd} set +10%"))
+      (bindel "XF86MonBrightnessDown" (exec "${brightnessctlCmd} set 10%-"))
+      (bindel "XF86AudioLowerVolume" (exec "${pkgs.swayosd}/bin/swayosd-client --output-volume lower"))
+      (bindel "XF86AudioRaiseVolume" (exec "${pkgs.swayosd}/bin/swayosd-client --output-volume raise"))
     ];
 
-  # Blur for Noctalia layer surfaces (Hyprland-specific wiring). Hyprland 0.52+
-  # rule syntax: `RULE value, ..., match:namespace <regex>`. Excludes the
-  # wallpaper layer so it isn't blurred.
+  # Blur for Noctalia layer surfaces. Excludes the wallpaper layer so it isn't
+  # blurred.
   layerRules = optionals noctalia [
-    "blur on, ignore_alpha 0.5, match:namespace ^noctalia-(bar-.+|notification|dock|panel|attached-panel|osd)$"
+    {
+      name = "noctalia-blur";
+      match.namespace = "^noctalia-(bar-.+|notification|dock|panel|attached-panel|osd)$";
+      blur = true;
+      ignore_alpha = 0.5;
+    }
   ];
+
+  stylixCursor = osConfig ? stylix && osConfig.stylix ? cursor && osConfig.stylix.cursor != null;
+
+  noctaliaTheme = config.programs.noctalia.settings.theme or {};
+  noctaliaPalette = config.programs.noctalia.customPalettes.${noctaliaTheme.custom_palette or ""}.dark or null;
+  rgb = hex: "rgb(${removePrefix "#" hex})";
+
+  workspaces = range 1 9;
 in {
   options.features.desktop.hyprland.enable = mkEnableOption "hyprland config";
 
   config = mkIf cfg.enable {
     wayland.windowManager.hyprland = {
       enable = true;
-      # NOTE: home-manager's default flips to "lua" at stateVersion 26.05.
-      # The lua schema is NOT compatible with the hyprlang `settings` below
-      # (different option names, dispatchers, monitor format), so pin hyprlang
-      # explicitly until a deliberate migration is done.
-      configType = "hyprlang";
+      configType = "lua";
       settings = {
-        xwayland = {
-          force_zero_scaling = true;
+        config = {
+          xwayland.force_zero_scaling = true;
+
+          input = {
+            kb_layout = "us";
+            follow_mouse = 1;
+            touchpad.natural_scroll = true;
+            sensitivity = 0;
+          };
+
+          general = {
+            col = mkIf (noctalia && noctaliaPalette != null) {
+              active_border = rgb noctaliaPalette.mPrimary;
+              inactive_border = rgb noctaliaPalette.mOutline;
+            };
+            gaps_in = 3;
+            gaps_out = 3;
+            border_size = 1;
+            layout = "dwindle";
+          };
+
+          decoration = {
+            rounding = 10;
+            blur = {
+              enabled = true;
+              size = 3;
+              passes = 3;
+            };
+            active_opacity = 0.99;
+            inactive_opacity = 0.85;
+          };
+
+          animations.enabled = true;
+
+          dwindle = {
+            preserve_split = true;
+            smart_split = true;
+          };
+
+          misc = {
+            disable_splash_rendering = true;
+            disable_hyprland_logo = true;
+            vrr = mkDefault 0;
+          };
         };
 
-        monitor = [];
-
-        exec-once =
-          lib.optional (!config.features.desktop.noctalia.enable) "waybar"
-          ++ [
-            "hyprpaper"
-            "hypridle"
-            "wl-paste -p -t text --watch clipman store -P --histpath=\"~/.local/share/clipman-primary.json\""
+        curve = {
+          _args = [
+            "myBezier"
+            {
+              type = "bezier";
+              points = [[0.05 0.9] [0.1 1.05]];
+            }
           ];
+        };
+
+        animation = [
+          {
+            leaf = "windows";
+            enabled = true;
+            speed = 7;
+            bezier = "myBezier";
+          }
+          {
+            leaf = "windowsOut";
+            enabled = true;
+            speed = 7;
+            bezier = "default";
+            style = "popin 80%";
+          }
+          {
+            leaf = "border";
+            enabled = true;
+            speed = 10;
+            bezier = "default";
+          }
+          {
+            leaf = "borderangle";
+            enabled = true;
+            speed = 8;
+            bezier = "default";
+          }
+          {
+            leaf = "fade";
+            enabled = true;
+            speed = 7;
+            bezier = "default";
+          }
+          {
+            leaf = "workspaces";
+            enabled = true;
+            speed = 6;
+            bezier = "default";
+          }
+        ];
+
+        gesture = {
+          fingers = 3;
+          direction = "horizontal";
+          action = "workspace";
+        };
 
         env =
+          [(hl.env "NIXOS_OZONE_WL" "1")]
+          ++ optional (stylixCursor && osConfig.stylix.cursor ? name)
+          (hl.env "XCURSOR_THEME" osConfig.stylix.cursor.name)
+          ++ optional (stylixCursor && osConfig.stylix.cursor ? size)
+          (hl.env "XCURSOR_SIZE" (toString osConfig.stylix.cursor.size));
+
+        on = [
+          (hl.onStart (
+            optional (!noctalia) "waybar"
+            ++ [
+              "hyprpaper"
+              "hypridle"
+              "wl-paste -p -t text --watch clipman store -P --histpath=\"~/.local/share/clipman-primary.json\""
+            ]
+          ))
+        ];
+
+        window_rule = [
+          {
+            name = "fix-xwayland-drags";
+            match = {
+              class = "^$";
+              title = "^$";
+              xwayland = true;
+              float = true;
+              fullscreen = false;
+              pin = false;
+            };
+            no_focus = true;
+          }
+          {
+            name = "pip";
+            match.title = "^(Picture-in-Picture)$";
+            float = true;
+            pin = true;
+            keep_aspect_ratio = true;
+          }
+          {
+            name = "idle-inhibit-fullscreen";
+            match.class = ".*";
+            idle_inhibit = "fullscreen";
+          }
+          {
+            name = "suppress-maximize-events";
+            match.class = ".*";
+            suppress_event = "maximize";
+          }
+          {
+            name = "ksa-monitor";
+            match.title = "^(Kitten Space Agency)";
+            monitor = "DP-3";
+            fullscreen = false;
+          }
+          {
+            name = "unity-opaque";
+            match.class = "^([Uu]nity.*)$";
+            opacity = "1.0 override 1.0 override 1.0 override";
+            opaque = true;
+          }
+        ];
+
+        layer_rule = layerRules;
+
+        bind =
           [
-            "WLR_NO_HARDWARE_CURSORS,1"
+            (bind "${mod} + return" (exec "kitty"))
+            (bind "${mod} + B" (exec "zen-beta"))
+            (bind "${mod} + E" (exec "nautilus"))
+            (bind "${mod} + Q" hl.close)
+            (bind "${mod} + D" (exec "vesktop"))
+            (bind "${mod} + S" (exec "spot"))
+            (bind "${mod} + CTRL + A" (exec "pavucontrol"))
+
+            (bind "${mod} + F" hl.fullscreen)
+            (bind "${mod} + V" hl.toggleFloat)
+            (bind "${mod} + T" "hl.dsp.layout(\"togglesplit\")")
+            (bind "${mod} + mouse_up" (focus {workspace = "e-1";}))
+            (bind "${mod} + mouse_down" (focus {workspace = "e+1";}))
+
+            (bind "${mod} + CTRL + h" (swap {direction = "left";}))
+            (bind "${mod} + CTRL + h" (move {x = -50; y = 0; relative = true;}))
+            (bind "${mod} + CTRL + l" (swap {direction = "right";}))
+            (bind "${mod} + CTRL + l" (move {x = 50; y = 0; relative = true;}))
+            (bind "${mod} + CTRL + k" (swap {direction = "up";}))
+            (bind "${mod} + CTRL + k" (move {x = 0; y = -50; relative = true;}))
+            (bind "${mod} + CTRL + j" (swap {direction = "down";}))
+            (bind "${mod} + CTRL + j" (move {x = 0; y = 50; relative = true;}))
+
+            (bind "${mod} + h" (focus {direction = "left";}))
+            (bind "${mod} + j" (focus {direction = "down";}))
+            (bind "${mod} + k" (focus {direction = "up";}))
+            (bind "${mod} + l" (focus {direction = "right";}))
+
+            (bind "XF86LaunchA" (exec "brightnessctl --device='kbd_backlight' set 5%-"))
+            (bind "XF86Search" (exec "brightnessctl --device='kbd_backlight' set 5%+"))
           ]
-          ++ lib.optionals (osConfig ? stylix && osConfig.stylix ? cursor && osConfig.stylix.cursor != null && osConfig.stylix.cursor ? name) [
-            "XCURSOR_THEME,${osConfig.stylix.cursor.name}"
-          ]
-          ++ lib.optionals (osConfig ? stylix && osConfig.stylix ? cursor && osConfig.stylix.cursor != null && osConfig.stylix.cursor ? size) [
-            "XCURSOR_SIZE,${toString osConfig.stylix.cursor.size}"
+          ++ map (i: bind "${mod} + ${toString i}" (focus {workspace = i;})) workspaces
+          ++ map (i: bind "${mod} + SHIFT + ${toString i}" (move {workspace = i;})) workspaces
+          ++ actionBinds
+          ++ bindelBinds
+          ++ [
+            (bindm "${mod} + mouse:272" hl.drag)
+            (bindm "${mod} + mouse:273" hl.resize)
+            (bindm "ALT + mouse:272" hl.resize)
           ];
-
-        input = {
-          kb_layout = "us,jp";
-          follow_mouse = 1;
-
-          touchpad = {
-            natural_scroll = true;
-          };
-
-          sensitivity = 0;
-        };
-
-        general = {
-          gaps_in = 3;
-          gaps_out = 3;
-          border_size = 1;
-          layout = "dwindle";
-        };
-
-        decoration = {
-          rounding = 10;
-          blur = {
-            enabled = true;
-            size = 3;
-            passes = 3;
-          };
-          active_opacity = 0.99;
-          inactive_opacity = 0.85;
-        };
-
-        animations = {
-          enabled = true;
-          bezier = "myBezier, 0.05, 0.9, 0.1, 1.05";
-          animation = [
-            "windows, 1, 7, myBezier"
-            "windowsOut, 1, 7, default, popin 80%"
-            "border, 1, 10, default"
-            "borderangle, 1, 8, default"
-            "fade, 1, 7, default"
-            "workspaces, 1, 6, default"
-          ];
-        };
-
-        dwindle = {
-          preserve_split = true;
-        };
-
-        master = {};
-
-        misc = {
-          disable_splash_rendering = true;
-          disable_hyprland_logo = true;
-          vrr = 0;
-        };
-
-        windowrule = [
-          "monitor DP-3, match:title ^(Kitten Space Agency)"
-          "fullscreen 0, match:title ^(Kitten Space Agency)"
-        ];
-
-        layerrule = layerRules;
-
-        gestures = {
-          gesture = "3, horizontal, workspace";
-        };
-
-        "$mainMod" = "SUPER";
-
-        bind = [
-          "$mainMod, return, exec, kitty"
-          "$mainMod, B, exec, zen-beta"
-          "$mainMod, E, exec, nautilus"
-          "$mainMod, Q, killactive"
-          "$mainMod, D, exec, vesktop"
-          "$mainMod, S, exec, spot"
-          "$mainMod CTRL, A, exec, pavucontrol"
-
-          "$mainMod, F, fullscreen"
-          "$mainMod, V, togglefloating"
-          "$mainMod, mouse_up, workspace, e-1"
-          "$mainMod, mouse_down, workspace, e+1"
-
-          "$mainMod CTRL, h, swapwindow, l"
-          "$mainMod CTRL, h, moveactive, -50 0"
-          "$mainMod CTRL, l, swapwindow, r"
-          "$mainMod CTRL, l, moveactive, 50 0"
-          "$mainMod CTRL, k, swapwindow, u"
-          "$mainMod CTRL, k, moveactive, 0 -50"
-          "$mainMod CTRL, j, swapwindow, d"
-          "$mainMod CTRL, j, moveactive, 0 50"
-
-          "$mainMod, h, movefocus, l"
-          "$mainMod, j, movefocus, d"
-          "$mainMod, k, movefocus, u"
-          "$mainMod, l, movefocus, r"
-
-          "$mainMod, 1, workspace, 1"
-          "$mainMod, 2, workspace, 2"
-          "$mainMod, 3, workspace, 3"
-          "$mainMod, 4, workspace, 4"
-          "$mainMod, 5, workspace, 5"
-          "$mainMod, 6, workspace, 6"
-          "$mainMod, 7, workspace, 7"
-          "$mainMod, 8, workspace, 8"
-          "$mainMod, 9, workspace, 9"
-
-          "$mainMod SHIFT, 1, movetoworkspace, 1"
-          "$mainMod SHIFT, 2, movetoworkspace, 2"
-          "$mainMod SHIFT, 3, movetoworkspace, 3"
-          "$mainMod SHIFT, 4, movetoworkspace, 4"
-          "$mainMod SHIFT, 5, movetoworkspace, 5"
-          "$mainMod SHIFT, 6, movetoworkspace, 6"
-          "$mainMod SHIFT, 7, movetoworkspace, 7"
-          "$mainMod SHIFT, 8, movetoworkspace, 8"
-          "$mainMod SHIFT, 9, movetoworkspace, 9"
-
-          ",XF86LaunchA, exec, brightnessctl --device='kbd_backlight' set 5%-"
-          ",XF86Search, exec, brightnessctl --device='kbd_backlight' set 5%+"
-        ]
-        ++ actionBinds;
-
-        bindel = bindelBinds;
-
-        bindm = [
-          "$mainMod, mouse:272, movewindow"
-          "$mainMod, mouse:273, resizewindow"
-          "ALT, mouse:272, resizeWindow"
-        ];
       };
     };
   };

@@ -15,7 +15,12 @@
   features.desktop.hyprland.enable = true;
 
   wayland.windowManager.hyprland.settings.monitor = [
-    "eDP-1,2880x1800@120.00,0x0,1.6"
+    {
+      output = "eDP-1";
+      mode = "2880x1800@120.00";
+      position = "0x0";
+      scale = "1.6";
+    }
   ];
   stylix.targets.firefox.profileNames = [ "default" ];
 

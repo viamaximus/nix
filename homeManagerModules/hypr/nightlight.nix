@@ -1,4 +1,6 @@
-{config, pkgs, lib, ...}: {
+{config, pkgs, lib, ...}: let
+  hl = import ./lua.nix {inherit lib;};
+in {
   config = lib.mkIf (config.features.desktop.hyprland.enable && !config.features.desktop.noctalia.enable) {
     services.gammastep = {
       enable = true;
@@ -20,7 +22,7 @@
 
     wayland.windowManager.hyprland.settings = {
       bind = [
-        "$mainMod SHIFT, N, exec, ${pkgs.systemd}/bin/systemctl --user restart gammastep"
+        (hl.bind "${hl.mod} + SHIFT + N" (hl.exec "${pkgs.systemd}/bin/systemctl --user restart gammastep"))
       ];
     };
   };

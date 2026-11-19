@@ -1,4 +1,5 @@
 {config, pkgs, lib, ...}: let
+  hl = import ./lua.nix {inherit lib;};
   cliphist-wofi = pkgs.writeShellScriptBin "cliphist-wofi" ''
     if ${pkgs.cliphist}/bin/cliphist list | ${pkgs.wofi}/bin/wofi --dmenu --prompt "Clipboard" | ${pkgs.cliphist}/bin/cliphist decode | ${pkgs.wl-clipboard}/bin/wl-copy; then
       exit 0
@@ -12,12 +13,14 @@ in {
     ];
 
     wayland.windowManager.hyprland.settings = {
-      exec-once = [
-        "${pkgs.wl-clipboard}/bin/wl-paste --type text --watch ${pkgs.cliphist}/bin/cliphist store"
-        "${pkgs.wl-clipboard}/bin/wl-paste --type image --watch ${pkgs.cliphist}/bin/cliphist store"
+      on = [
+        (hl.onStart [
+          "${pkgs.wl-clipboard}/bin/wl-paste --type text --watch ${pkgs.cliphist}/bin/cliphist store"
+          "${pkgs.wl-clipboard}/bin/wl-paste --type image --watch ${pkgs.cliphist}/bin/cliphist store"
+        ])
       ];
       bind = [
-        "$mainMod, V, exec, cliphist-wofi"
+        (hl.bind "${hl.mod} + V" (hl.exec "cliphist-wofi"))
       ];
     };
   };
