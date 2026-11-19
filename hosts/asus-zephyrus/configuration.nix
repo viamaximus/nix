@@ -26,6 +26,7 @@ in {
     ../../nixosModules/ssh-web-keys.nix
     ../../nixosModules/agenix.nix
     ../../nixosModules/secrets.nix
+    ../../nixosModules/backup.nix
     inputs.nix-gaming.nixosModules.pipewireLowLatency
   ];
 
@@ -74,6 +75,9 @@ in {
   boot.kernelParams = ["amdgpu.dcdebugmask=0x10" "resume_offset=948213760"];
 
   networking.hostName = "asus-zephyrus"; # Define your hostname.
+
+  # off until secrets/secrets/restic-password.age exists (backupsetup.md step 2)
+  features.backup.enable = false;
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
   # Enable networking

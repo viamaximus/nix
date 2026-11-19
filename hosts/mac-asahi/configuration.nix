@@ -22,6 +22,7 @@ in {
     ../../nixosModules/ssh-web-keys.nix
     ../../nixosModules/agenix.nix
     ../../nixosModules/secrets.nix
+    ../../nixosModules/backup.nix
     ./steam-fex.nix
   ];
 
@@ -112,6 +113,9 @@ in {
   '';
 
   networking.hostName = "mac-asahi";
+
+  # off until secrets/secrets/restic-password.age exists (backupsetup.md step 2)
+  features.backup.enable = false;
   networking.networkmanager.enable = true;
 
   ############################################

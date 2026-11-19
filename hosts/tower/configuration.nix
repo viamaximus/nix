@@ -46,6 +46,7 @@ in {
     ../../nixosModules/ssh-web-keys.nix
     ../../nixosModules/agenix.nix
     ../../nixosModules/secrets.nix
+    ../../nixosModules/backup.nix
     inputs.nix-gaming.nixosModules.pipewireLowLatency
     inputs.noctalia-greeter.nixosModules.default
   ];
@@ -220,6 +221,20 @@ in {
     "d /mnt/games 0755 max max -"
     "d /mnt/truenas 0755 max max -"
   ];
+
+  features.backup = {
+    # off until secrets/secrets/restic-password.age exists (backupsetup.md step 2)
+    enable = false;
+    extraExclude = [
+      "/home/max/vrchat"
+      "/home/max/projects/llamacpp"
+      "/home/max/projects/llama.cpp"
+    ];
+    archive = {
+      enable = true;
+      paths = ["/home/max/vrchat"];
+    };
+  };
 
   # Set your time zone.
   time.timeZone = "America/New_York";
