@@ -102,7 +102,7 @@ in {
   wayland.windowManager.hyprland.settings = {
     config = {
       general = {
-        gaps_in = lib.mkForce 2;
+        gaps_in = lib.mkForce 1; # per side -> 2px between windows
         gaps_out = lib.mkForce 0;
         border_size = lib.mkForce 0;
       };
@@ -111,6 +111,9 @@ in {
         blur.enabled = lib.mkForce false;
         active_opacity = lib.mkForce 1.0;
         inactive_opacity = lib.mkForce 1.0;
+        # unfocused windows 10% darker, so the focused one stands out without borders
+        dim_inactive = true;
+        dim_strength = 0.1;
         shadow.enabled = false;
         # whole-display mild CRT filter (scanlines, glow, vignette); "" disables
         screen_shader = "${./crt.frag}";

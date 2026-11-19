@@ -76,6 +76,9 @@ in {
     color_theme = "noctalia";
     theme_background = false;
     rounded_corners = false;
+    # The Toshiba font has no braille or quadrant-block glyphs, so the default
+    # graphs fall back to another font and overlap text. tty = only ░▒▓█.
+    graph_symbol = "tty";
     vim_keys = true;
   };
 

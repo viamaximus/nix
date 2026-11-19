@@ -101,6 +101,40 @@
     '';
   };
 
+  # CRT only reads its colours at startup. After a palette switch, restart each
+  # open CRT window that hosts a tmux client and reattach it to the same
+  # session on the same workspace, so it comes back in the new colours. CRT
+  # windows running something else (yazi, btop, ...) are left alone.
+  crtReload = pkgs.writeShellApplication {
+    name = "crt-reload";
+    runtimeInputs = with pkgs; [tmux jq procps coreutils hyprland];
+    text = ''
+      [ -n "''${HYPRLAND_INSTANCE_SIGNATURE:-}" ] || exit 0
+      clients=$(tmux list-clients -F '#{client_pid} #{session_name}' 2>/dev/null) || exit 0
+
+      hyprctl clients -j \
+        | jq -r '.[] | select(.class | startswith("cool-retro-term")) | "\(.pid) \(.workspace.name)"' \
+        | while read -r crt ws; do
+            sess=""
+            while read -r cpid name; do
+              [ "$(ps -o ppid= -p "$cpid" | tr -d ' ')" = "$crt" ] && sess=$name
+            done <<<"$clients"
+            [ -n "$sess" ] || continue
+
+            # keep the session alive while it has no client attached
+            keep=$(tmux show-options -v -t "$sess" destroy-unattached 2>/dev/null || echo off)
+            tmux set-option -t "$sess" destroy-unattached off
+
+            kill "$crt" 2>/dev/null || continue
+            for _ in $(seq 50); do kill -0 "$crt" 2>/dev/null || break; sleep 0.1; done
+
+            restore=""
+            [ "$keep" = on ] && restore=' \\; set-option destroy-unattached on'
+            hyprctl dispatch "hl.dsp.exec_cmd(\"retro-term -e tmux attach-session -t $sess$restore\", { workspace = \"$ws silent\" })" >/dev/null
+          done
+    '';
+  };
+
   # `retro-term` -> CRT + tmux; `retro-term -e cmd ...` -> CRT running cmd.
   retroTerm = pkgs.writeShellApplication {
     name = "retro-term";
@@ -114,14 +148,21 @@
     '';
   };
 in {
-  options.t1200.retro.crtApply = lib.mkOption {
-    type = lib.types.package;
-    readOnly = true;
-    default = crtApply;
+  options.t1200.retro = {
+    crtApply = lib.mkOption {
+      type = lib.types.package;
+      readOnly = true;
+      default = crtApply;
+    };
+    crtReload = lib.mkOption {
+      type = lib.types.package;
+      readOnly = true;
+      default = crtReload;
+    };
   };
 
   config = {
-    home.packages = [pkgs.cool-retro-term crtApply retroTmux retroTerm];
+    home.packages = [pkgs.cool-retro-term crtApply crtReload retroTmux retroTerm];
     home.sessionVariables.TERMINAL = "retro-term";
 
     # Seed the DB at activation so the first launch is already themed.

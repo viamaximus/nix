@@ -112,6 +112,31 @@
         path = "/run/current-system/sw/share/icons";
       };
       keyboard.layout = "us";
+
+      # Retro look, from the same palette/font as the desktop
+      # (hosts/t1200/retro; follows t1200.retro.scheme, not live switches).
+      appearance = let
+        retro = config.home-manager.users.max.t1200.retro;
+        p = retro.palettes.${retro.scheme};
+        m = p.${p.mode};
+        # noctalia mFooBar -> greeter foo_bar
+        toKey = n: lib.toLower (lib.concatStringsSep "_" (lib.filter (s: s != "") (lib.splitString "_" (
+          lib.concatMapStrings (c: if lib.toUpper c == c && lib.toLower c != c then "_${c}" else c)
+          (lib.stringToCharacters (lib.removePrefix "m" n))))));
+      in {
+        scheme = "Synced";
+        theme_mode = p.mode;
+        font_family = retro.font;
+        corner_radius_scale = 0.0;
+        hide_logo = true;
+        scheme_selector_position = "hidden";
+        password_style = "default";
+        palette = lib.mapAttrs' (n: v: lib.nameValuePair (toKey n) v) (removeAttrs m ["terminal"]);
+        wallpaper = {
+          path = "${./retro/wallpaper.png}";
+          fill_mode = "crop";
+        };
+      };
     };
   };
 

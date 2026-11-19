@@ -15,10 +15,9 @@
   pkill = "${pkgs.procps}/bin/pkill";
 in {
   # All four palettes, selectable live (Settings -> Theme -> Custom palette).
-  programs.noctalia.customPalettes =
-    lib.mapAttrs' (name: p:
-      lib.nameValuePair "t1200-${name}" (removeAttrs p ["mode"]))
-    cfg.palettes;
+  programs.noctalia.customPalettes = lib.mapAttrs' (name: p:
+    lib.nameValuePair "t1200-${name}" (removeAttrs p ["mode"]))
+  cfg.palettes;
 
   programs.noctalia.settings = {
     theme = {
@@ -38,7 +37,7 @@ in {
           t1200_crt = {
             input_path = "${tpl}/crt-colors.json";
             output_path = "$XDG_CACHE_HOME/noctalia/t1200/crt-colors.json";
-            post_hook = "${config.t1200.retro.crtApply}/bin/crt-apply";
+            post_hook = "${config.t1200.retro.crtApply}/bin/crt-apply && ${config.t1200.retro.crtReload}/bin/crt-reload";
           };
           t1200_kitty = {
             input_path = "${upstreamTpl}/kitty/kitty.conf";
@@ -97,6 +96,45 @@ in {
     lockscreen = {
       blurred_desktop = lib.mkForce false;
       transition = ["crt"];
+      # one duration for both lock and unlock (no separate unlock setting);
+      # default 1500ms felt slow on unlock
+      transition_duration = 600;
+    };
+
+    # Compact login box: one square password row centred on the usable area,
+    # no media / weather / session buttons / eye / login button.
+    lockscreen_widgets = {
+      schema_version = 2;
+      widget_order = ["lockscreen-login-box@DP-4"];
+      widget."lockscreen-login-box@DP-4" = {
+        type = "login_box";
+        output = "DP-4";
+        cx = 960.0;
+        cy = 360.0;
+        box_width = 420.0;
+        box_height = 64.0;
+        rotation = 0.0;
+        placement_width = 1920.0;
+        placement_height = 720.0;
+        settings = {
+          layout = "compact";
+          show_session_buttons = false;
+          show_media = false;
+          show_media_controls = false;
+          show_weather = false;
+          show_login_button = false;
+          show_password_reveal = false;
+          show_keyboard_layout = false;
+          show_unlock_hint = false; # no "Type your password..."; errors + caps lock still show
+          show_caps_lock = true;
+          center_password_text = true;
+          background_color = "surface";
+          background_opacity = 1.0;
+          background_radius = 0.0;
+          input_opacity = 1.0;
+          input_radius = 0.0;
+        };
+      };
     };
 
     wallpaper.default.path = lib.mkForce "${config.home.homeDirectory}/Pictures/Wallpapers/t1200-crt.png";
