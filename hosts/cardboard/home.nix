@@ -4,8 +4,7 @@
   lib,
   inputs,
   ...
-}:
-{
+}: {
   imports = [
     ../../homeManagerModules
     ../../homeManagerModules/programs/profiles/workstation.nix
@@ -19,6 +18,9 @@
   features.git = {
     agentSigning = true;
     browserAuth = true;
+    userName = "weatheredian";
+    userEmail = "ian@weatheredsecurity.com";
+    githubUser = null;
   };
 
   home.username = "nix";
