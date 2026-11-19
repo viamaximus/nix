@@ -9,6 +9,11 @@
     apostrophe
     localsend
 
+    tldr
+    dust
+    hexyl
+    heh
+
     bitwarden-cli
     bitwarden-desktop
     bitwarden-menu
