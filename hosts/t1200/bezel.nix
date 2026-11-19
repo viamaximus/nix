@@ -83,9 +83,6 @@ in {
     ];
   };
 
-  # maximize while telling the client it's fullscreen, so windows stay inside the bezel
-  wayland.windowManager.hyprland.extraConfig = ''
-    hl.unbind("${hl.mod} + F")
-    hl.bind("${hl.mod} + F", hl.dsp.window.fullscreen_state({ internal = 1, client = 2, action = "toggle" }))
-  '';
+  # Super+F (maximize while telling the client it's fullscreen, so windows stay
+  # inside the bezel) now lives with the rest of the keymap in retro/hyprland.nix.
 }

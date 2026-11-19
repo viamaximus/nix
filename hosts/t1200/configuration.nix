@@ -107,7 +107,7 @@
         scale = 1;
       };
       cursor = {
-        theme = "catppuccin-mocha-mauve-cursors";
+        theme = "Hackneyed";
         size = 24;
         path = "/run/current-system/sw/share/icons";
       };
@@ -177,8 +177,21 @@
 
   programs.chromium = {
     enable = true;
-    extensions = ["nngceckbapebfimnlniiiahkandclblb"];
+    extensions = [
+      "nngceckbapebfimnlniiiahkandclblb" # Bitwarden
+      "dbepggeogbaibhgnhhndojpepiihcmeb" # Vimium (keyboard browsing)
+    ];
   };
+
+  # Helium reads Chromium's managed policies. This one file is user-writable so
+  # Noctalia's palette template (hosts/t1200/retro/noctalia.nix) can set
+  # BrowserThemeColor without root.
+  systemd.tmpfiles.rules = [
+    "f /etc/chromium/policies/managed/noctalia-color.json 0644 max users - {}"
+  ];
+
+  # Toshiba text-mode fonts (retro theme) - system-wide so the greeter has them.
+  fonts.packages = [pkgs.ultimate-oldschool-pc-font-pack];
 
   # allowUnfree provided by ../../nixosModules/nix-settings.nix
   environment.systemPackages = with pkgs; [
@@ -187,7 +200,7 @@
     git
     framework-tool
     framework-tool-tui
-    catppuccin-cursors.mochaMauve # greeter cursor theme (system-wide for greetd)
+    hackneyed # greeter cursor theme (system-wide for greetd)
   ];
 
   # List services that you want to enable:

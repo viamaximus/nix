@@ -10,6 +10,7 @@
     ../../homeManagerModules/programs/profiles/slim.nix
     ./bezel.nix
     ./desktop.nix
+    ./retro
     inputs.nix-index-database.homeModules.nix-index
   ];
 
@@ -29,7 +30,6 @@
   home.packages = with pkgs; [
     hello
     inputs.helium.packages.${pkgs.stdenv.hostPlatform.system}.default
-    cool-retro-term
   ];
 
   home.sessionVariables = {
