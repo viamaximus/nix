@@ -8,12 +8,14 @@
   imports = [
     ../../homeManagerModules
     ../../homeManagerModules/gaming.nix
+    ../../homeManagerModules/hermes.nix
     ../../homeManagerModules/programs/profiles/workstation.nix
   ];
 
   features.desktop.hyprland.enable = true;
   features.desktop.noctalia.enable = true;
   features.vrcdev.enable = true;
+  features.hermes.enable = true;
 
   home.username = "max";
   home.homeDirectory = "/home/max";

@@ -47,6 +47,7 @@ in {
     ../../nixosModules/agenix.nix
     ../../nixosModules/secrets.nix
     ../../nixosModules/backup.nix
+    ../../nixosModules/local-llm.nix
     inputs.nix-gaming.nixosModules.pipewireLowLatency
     inputs.noctalia-greeter.nixosModules.default
   ];
@@ -235,6 +236,8 @@ in {
       paths = ["/home/max/vrchat"];
     };
   };
+
+  features.localLlm.enable = true;
 
   # Set your time zone.
   time.timeZone = "America/New_York";
