@@ -9,6 +9,7 @@
     ../../homeManagerModules
     ../../homeManagerModules/programs/profiles/slim.nix
     ./bezel.nix
+    ./desktop.nix
     inputs.nix-index-database.homeModules.nix-index
   ];
 
@@ -27,8 +28,8 @@
 
   home.packages = with pkgs; [
     hello
-    bitwarden-desktop
     inputs.helium.packages.${pkgs.stdenv.hostPlatform.system}.default
+    cool-retro-term
   ];
 
   home.sessionVariables = {

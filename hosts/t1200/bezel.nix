@@ -88,10 +88,4 @@ in {
     hl.unbind("${hl.mod} + F")
     hl.bind("${hl.mod} + F", hl.dsp.window.fullscreen_state({ internal = 1, client = 2, action = "toggle" }))
   '';
-
-  programs.noctalia.settings.bar.main = {
-    radius = lib.mkForce 0;
-    concave_edge_corners = lib.mkForce false;
-    shadow = lib.mkForce false;
-  };
 }
