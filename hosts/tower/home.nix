@@ -22,6 +22,7 @@
 
   home.packages = with pkgs; [
     hello
+    wayvr # launch manually; crashes as WiVRn's autostart app when a game takes over
   ];
 
   # WiVRn's package ships its OpenXR manifest as share/openxr/1/openxr_wivrn.json,

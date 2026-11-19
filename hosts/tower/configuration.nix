@@ -153,6 +153,12 @@ in {
   hardware.graphics = {
     enable = true;
     enable32Bit = true;
+    extraPackages = [pkgs.nvidia-vaapi-driver];
+  };
+
+  environment.sessionVariables = {
+    LIBVA_DRIVER_NAME = "nvidia";
+    NVD_BACKEND = "direct";
   };
 
   hardware.nvidia = {
@@ -332,12 +338,9 @@ in {
     autoStart = true;
     highPriority = true; # cap_sys_nice for the compositor via a setuid wrapper
     steam.importOXRRuntimes = true; # let Steam's sandbox see the WiVRn OpenXR runtime
-    # wayvr (formerly wlx-overlay-s): XSOverlay-style desktop/notification
-    # overlay, native OpenXR — shown as WiVRn's dashboard/home environment.
     config = {
       enable = true;
       json = {
-        application = [pkgs.wayvr];
         encoder = {
           encoder = "nvenc";
           codec = "av1";
@@ -345,6 +348,11 @@ in {
       };
     };
   };
+
+  # SlimeVR: udev rules give the session access to the dongle over hidraw
+  services.udev.packages = [pkgs.slimevr];
+  # WiFi tracker listener; not needed for dongle-paired trackers
+  networking.firewall.allowedUDPPorts = [6969];
 
   # SteamVR's vrcompositor-launcher needs CAP_SYS_NICE for realtime scheduling.
   # Its own setup script grants this via pkexec, which has no polkit agent in
@@ -445,6 +453,7 @@ in {
     # (running as root) can find the helper.
     xrizer # OpenVR->OpenXR shim; path pasted into WiVRn dashboard as a
     # "Custom" OpenVR compatibility library (/run/current-system/sw/lib/xrizer)
+    slimevr
   ];
 
   # Enable the OpenSSH daemon.
