@@ -13,6 +13,8 @@
   features.desktop.hyprland.enable = true;
   features.desktop.noctalia.enable = true;
 
+  features.rendering.blender.enable = false;
+
   # This host rotates between multiple yubikeys: sign with whatever key is in
   # the ssh-agent, and auth to GitHub through git-credential-manager (browser).
   features.git = {
@@ -28,6 +30,7 @@
 
   home.packages = with pkgs; [
     hello
+    freecad
   ];
 
   home.sessionVariables = {

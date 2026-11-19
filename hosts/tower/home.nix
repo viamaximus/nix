@@ -22,6 +22,7 @@
 
   home.packages = with pkgs; [
     hello
+    freecad
     wayvr # launch manually; crashes as WiVRn's autostart app when a game takes over
   ];
 
