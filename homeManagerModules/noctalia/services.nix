@@ -1,10 +1,15 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }:
 lib.mkIf config.features.desktop.noctalia.enable {
+  home.packages = [pkgs.kdePackages.ocean-sound-theme];
+
   programs.noctalia.settings = {
+    audio.sound_theme = "ocean";
+
     # Replaces mako (was top-right).
     notification = {
       enable_daemon = true;
