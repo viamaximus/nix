@@ -1,9 +1,14 @@
 {
+  config,
   inputs,
   lib,
   pkgs,
   ...
-}: {
+}: let
+  # Rekeying target for this host. Drop a host's
+  # /etc/ssh/ssh_host_ed25519_key.pub here to bring it into the rotation.
+  hostPubkeyFile = inputs.self + "/secrets/public-keys/${config.networking.hostName}.pub";
+in {
   imports = [
     inputs.agenix.nixosModules.default
     inputs.agenix-rekey.nixosModules.default
@@ -16,6 +21,8 @@
   ];
 
   age.rekey = {
+    hostPubkey = lib.mkIf (builtins.pathExists hostPubkeyFile) (lib.fileContents hostPubkeyFile);
+
     storageMode = "local";
     localStorageDir = inputs.self + "/secrets/rekeyed";
 

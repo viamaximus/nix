@@ -30,13 +30,13 @@
   ssh cardboard "cat /etc/ssh/ssh_host_ed25519_key.pub" > secrets/public-keys/cardboard.pub
   # repeat for server, netbook, meshbundle
 
-  4. Add hostPubkey to each host's configuration.nix:
-  age.rekey.hostPubkey = builtins.readFile ../../secrets/public-keys/tower.pub;
-  (adjust path depth per host — ../../ from hosts/tower/configuration.nix)
+  4. Nothing to do — nixosModules/agenix.nix picks up
+  secrets/public-keys/<hostname>.pub automatically. A host with no file there
+  warns at eval time and rekeys with a dummy key.
 
   5. Commit the master keys and git add everything, then run initial rekey:
   git add secrets/
-  nix run .#agenix-rekey -- rekey   # needs a Yubikey plugged in
+  nix run .#agenix-rekey.x86_64-linux.rekey   # needs a Yubikey plugged in
   git add secrets/rekeyed/
 
   ---
@@ -48,7 +48,7 @@
     -i secrets/master-keys/yubikey-main-identity.pub
 
   2. Rekey for all hosts (so hosts can decrypt it without the Yubikey):
-  nix run .#agenix-rekey -- rekey
+  nix run .#agenix-rekey.x86_64-linux.rekey
 
   3. Reference it in a host config:
   age.secrets.my-secret = {
@@ -68,5 +68,5 @@
 
   # restore from printed paper key to:
   nano ~/.config/age/paper-key.txt   # type it in
-  nix run .#agenix-rekey -- rekey
+  nix run .#agenix-rekey.x86_64-linux.rekey
   shred -u ~/.config/age/paper-key.txt
