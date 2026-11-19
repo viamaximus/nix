@@ -23,6 +23,7 @@
   home.packages = with pkgs; [
     hello
     freecad
+    inputs.helium.packages.${pkgs.stdenv.hostPlatform.system}.default
     wayvr # launch manually; crashes as WiVRn's autostart app when a game takes over
   ];
 
