@@ -19,6 +19,7 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixpkgs-signal.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixos-hardware.url = "github:NixOS/nixos-hardware";
 
     # apple silicon support
     apple-silicon.url = "github:nix-community/nixos-apple-silicon";
@@ -76,6 +77,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    nix-index-database = {
+      url = "github:nix-community/nix-index-database";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     hermes-agent = {
       url = "github:NousResearch/hermes-agent/v0.23.0";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -111,6 +117,10 @@
       cardboard = {
         hostName = "cardboard";
         user = "nix";
+      };
+      t1200 = {
+        hostName = "t1200";
+        user = "max";
       };
       tower = {
         hostName = "tower";
@@ -165,6 +175,14 @@
         specialArgs = {inherit inputs hostInventory;};
         modules = [
           ./hosts/cardboard/configuration.nix
+        ];
+      };
+
+      t1200 = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        specialArgs = {inherit inputs hostInventory;};
+        modules = [
+          ./hosts/t1200/configuration.nix
         ];
       };
 
