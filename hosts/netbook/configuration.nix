@@ -84,19 +84,19 @@ in {
   programs.zsh.enable = true;
 
   services.xserver.enable = true;
-  services.xserver.displayManager.gdm.enable = true;
-  services.xserver.desktopManager.gnome.enable = true;
+  services.displayManager.gdm.enable = true;
+  services.desktopManager.gnome.enable = true;
   services.xserver.xkb = {
     layout = "us";
     variant = "";
   };
-  services.logind = {
-    lidSwitch = "suspend";
-    lidSwitchDocked = "ignore";
-    lidSwitchExternalPower = "suspend";
+  services.logind.settings.Login = {
+    HandleLidSwitch = "suspend";
+    HandleLidSwitchDocked = "ignore";
+    HandleLidSwitchExternalPower = "suspend";
   };
 
-  services.gnome.core-utilities.enable = true;
+  services.gnome.core-apps.enable = true;
   services.gnome.gnome-keyring.enable = true;
 
   environment.gnome.excludePackages = with pkgs; [
@@ -104,7 +104,6 @@ in {
     epiphany
     geary
     gnome-music
-    gnome-photos
   ];
 
   services.printing.enable = true;

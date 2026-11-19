@@ -3,6 +3,7 @@
 # and in the NixOS manual (accessible by running 'nixos-help').
 {
   config,
+  lib,
   pkgs,
   inputs,
   hostInventory,
@@ -94,12 +95,9 @@ in {
   services.xserver.enable = true;
 
   programs.xwayland.enable = true;
-  programs.hyprland = {
-    enable = true;
-    withUWSM = true;
-  };
   programs.hyprlock.enable = true;
   security.pam.services.hyprlock = {};
+  services.hypridle.enable = lib.mkForce false;
   programs.hyprland = {
     enable = true;
     withUWSM = true;
@@ -107,66 +105,7 @@ in {
   # Noctalia greeter (greetd-based) replaces ly. The module enables greetd and
   # sets the session command automatically. Locking is handled by Noctalia's
   # own lock screen (so no system-level hyprlock here).
-  programs.noctalia-greeter = {
-    enable = true;
-    package = inputs.noctalia-greeter.packages.${pkgs.stdenv.hostPlatform.system}.default;
-    settings = {
-      output = {
-        name = "HDMI-A-1";
-        scale = 1;
-      };
-      cursor = {
-        theme = "catppuccin-mocha-mauve-cursors";
-        size = 24;
-        path = "/run/current-system/sw/share/icons";
-      };
-      keyboard.layout = "us";
-    };
-  };
-  # Noctalia status integrations.
-  services.upower.enable = true;
-  # Noctalia greeter (greetd-based) replaces ly. The module enables greetd and
-  # sets the session command automatically. Locking is handled by Noctalia's
-  # own lock screen (so no system-level hyprlock here).
-  programs.noctalia-greeter = {
-    enable = true;
-    package = inputs.noctalia-greeter.packages.${pkgs.stdenv.hostPlatform.system}.default;
-    settings = {
-      output = {
-        name = "HDMI-A-1";
-        scale = 1;
-      };
-      cursor = {
-        theme = "catppuccin-mocha-mauve-cursors";
-        size = 24;
-        path = "/run/current-system/sw/share/icons";
-      };
-      keyboard.layout = "us";
-    };
-  };
-  # Noctalia greeter (greetd-based) replaces ly. The module enables greetd and
-  # sets the session command automatically. Locking is handled by Noctalia's
-  # own lock screen (so no system-level hyprlock here).
-  programs.noctalia-greeter = {
-    enable = true;
-    package = inputs.noctalia-greeter.packages.${pkgs.stdenv.hostPlatform.system}.default;
-    settings = {
-      output = {
-        name = "HDMI-A-1";
-        scale = 1;
-      };
-      cursor = {
-        theme = "catppuccin-mocha-mauve-cursors";
-        size = 24;
-        path = "/run/current-system/sw/share/icons";
-      };
-      keyboard.layout = "us";
-    };
-  };
-  # Noctalia greeter (greetd-based) replaces ly. The module enables greetd and
-  # sets the session command automatically. Locking is handled by Noctalia's
-  # own lock screen (so no system-level hyprlock here).
-  programs.noctalia-greeter = {
+  services.displayManager.noctalia-greeter = {
     enable = true;
     package = inputs.noctalia-greeter.packages.${pkgs.stdenv.hostPlatform.system}.default;
     settings = {

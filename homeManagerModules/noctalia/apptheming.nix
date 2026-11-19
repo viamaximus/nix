@@ -24,6 +24,7 @@ lib.mkIf config.features.desktop.noctalia.enable {
   xdg.configFile."gtk-4.0/gtk.css".force = true;
 
   home.pointerCursor = {
+    enable = true;
     name = "catppuccin-mocha-mauve-cursors";
     package = pkgs.catppuccin-cursors.mochaMauve;
     size = 24;

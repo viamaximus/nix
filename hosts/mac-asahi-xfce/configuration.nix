@@ -57,7 +57,7 @@
 
   programs.nix-ld.enable = true;
 
-  system.activationScripts.setup-x86_64-ld = lib.mkIf pkgs.stdenv.isAarch64 ''
+  system.activationScripts.setup-x86_64-ld = lib.mkIf pkgs.stdenv.hostPlatform.isAarch64 ''
     mkdir -p /lib64
     ln -sfn ${pkgs.pkgsCross.gnu64.glibc}/lib/ld-linux-x86-64.so.2 /lib64/ld-linux-x86-64.so.2
   '';
@@ -142,6 +142,7 @@
   security.sudo.enable = true;
 
   programs.ssh.startAgent = true;
+  services.gnome.gcr-ssh-agent.enable = false;
 
   ############################################
   # System packages

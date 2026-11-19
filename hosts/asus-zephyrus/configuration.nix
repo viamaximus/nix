@@ -3,6 +3,7 @@
 # and in the NixOS manual (accessible by running 'nixos-help').
 {
   config,
+  lib,
   pkgs,
   inputs,
   hostInventory,
@@ -148,8 +149,6 @@ in {
   };
   programs.hyprlock.enable = true;
 
-  security.unprivilegedUsernsClone = true;
-
   xdg.portal = {
     enable = true;
     xdgOpenUsePortal = true;
@@ -168,6 +167,7 @@ in {
   };
 
   security.pam.services.hyprlock = {};
+  services.hypridle.enable = lib.mkForce false;
 
   # Asus Laptop Stuff
   services = {

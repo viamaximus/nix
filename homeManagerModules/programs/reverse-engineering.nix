@@ -4,7 +4,7 @@
   ...
 }: {
   home.packages = with pkgs;
-    lib.optionals stdenv.isx86_64 [
+    lib.optionals stdenv.hostPlatform.isx86_64 [
       # ida-free 9.3 is a requireFile package: hex-rays gates downloads behind a
       # login, so Nix can't fetch the installer. To re-enable:
       #   1. Download ida-free-pc_93_x64linux.run from

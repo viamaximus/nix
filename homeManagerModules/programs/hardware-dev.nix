@@ -12,7 +12,7 @@
       screen
       tio
     ]
-    ++ lib.optionals stdenv.isx86_64 [
+    ++ lib.optionals stdenv.hostPlatform.isx86_64 [
       saleae-logic-2
     ];
 }

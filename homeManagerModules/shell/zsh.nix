@@ -270,14 +270,18 @@ in {
       "--border"
       "--info=inline"
     ];
-    fileWidgetCommand = "fd --type f --hidden --follow --exclude .git";
-    fileWidgetOptions = [
-      "--preview 'bat --color=always --style=numbers --line-range=:500 {} 2>/dev/null || cat {}'"
-    ];
-    changeDirWidgetCommand = "fd --type d --hidden --follow --exclude .git";
-    changeDirWidgetOptions = [
-      "--preview 'eza --tree --level=2 --icons --color=always {} | head -50'"
-    ];
+    fileWidget = {
+      command = "fd --type f --hidden --follow --exclude .git";
+      options = [
+        "--preview 'bat --color=always --style=numbers --line-range=:500 {} 2>/dev/null || cat {}'"
+      ];
+    };
+    changeDirWidget = {
+      command = "fd --type d --hidden --follow --exclude .git";
+      options = [
+        "--preview 'eza --tree --level=2 --icons --color=always {} | head -50'"
+      ];
+    };
   };
 
   # --- zoxide (replaces cd with smart matching) ---

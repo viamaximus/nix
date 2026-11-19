@@ -16,7 +16,6 @@ in {
       chicago95
 
       # Dependencies
-      gtk-engine-murrine # GTK2 pixbuf engine
       xfce4-panel-profiles
 
       # Core XFCE extras

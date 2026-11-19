@@ -1,0 +1,13 @@
+{
+  "version": "0.14.1",
+  "platforms": {
+    "x86_64-linux": {
+      "target": "linux-x64",
+      "hash": "sha256-nR5x+k9O1sg+cIs/6ISZHLY1bBekZMrdp/y4Swq1faU="
+    },
+    "aarch64-linux": {
+      "target": "linux-arm64",
+      "hash": "sha256-Vhjg/8xQ3PX0Ir933Gx0W1zvPTAPMys8bncrJRqn828="
+    }
+  }
+}

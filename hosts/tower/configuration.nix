@@ -368,7 +368,7 @@ in {
 
   # Noctalia greeter (greetd-based) replaces ly. The module enables greetd and
   # sets the session command automatically.
-  programs.noctalia-greeter = {
+  services.displayManager.noctalia-greeter = {
     enable = true;
     package = inputs.noctalia-greeter.packages.${pkgs.stdenv.hostPlatform.system}.default;
     settings = {

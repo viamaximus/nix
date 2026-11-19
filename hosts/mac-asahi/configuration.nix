@@ -74,7 +74,7 @@ in {
   programs.nix-ld.enable = true;
 
   # For x86_64 emulation under QEMU, create /lib64 with x86_64 glibc
-  system.activationScripts.setup-x86_64-ld = lib.mkIf pkgs.stdenv.isAarch64 ''
+  system.activationScripts.setup-x86_64-ld = lib.mkIf pkgs.stdenv.hostPlatform.isAarch64 ''
     mkdir -p /lib64
     ln -sfn ${pkgs.pkgsCross.gnu64.glibc}/lib/ld-linux-x86-64.so.2 /lib64/ld-linux-x86-64.so.2
   '';

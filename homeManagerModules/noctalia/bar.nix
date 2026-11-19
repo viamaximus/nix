@@ -30,7 +30,7 @@ lib.mkIf config.features.desktop.noctalia.enable {
       "power_profile"
       "keyboard_layout"
       "noctalia/wallhaven:wallhaven"
-      "noctalia/screen_recorder:service"
+      "noctalia/screen_recorder:recorder"
       "notifications"
       "control-center"
       "session"

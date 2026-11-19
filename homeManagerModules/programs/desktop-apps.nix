@@ -3,7 +3,7 @@
   pkgs,
   ...
 }: let
-  inherit (pkgs.stdenv) isAarch64 isx86_64;
+  inherit (pkgs.stdenv.hostPlatform) isAarch64 isx86_64;
 in {
   home.packages =
     (with pkgs; [
