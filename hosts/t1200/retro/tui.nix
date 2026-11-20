@@ -57,13 +57,12 @@
   '';
 
   # ── discordo (Super+Shift+D): plain borders, double for the focused pane
+  # (key names follow the upstream-HEAD pin in apps.nix; unknown keys are
+  # silently ignored, so recheck docs/config.md when bumping it)
   xdg.configFile."discordo/config.toml".text = ''
-    [theme.border]
+    [ui.border]
     normal_set = "plain"
     active_set = "double"
-
-    [theme.scroll_bar]
-    glyph_set = "box_drawing"
 
     [sidebar.markers]
     expanded = "▼ "

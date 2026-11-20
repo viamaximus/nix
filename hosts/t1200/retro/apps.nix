@@ -13,7 +13,19 @@ in {
     imv # image viewer, vim keys
     wiremix # terminal audio mixer (replaces pavucontrol)
     spotify-player # terminal spotify client (`spotify_player`)
-    discordo # terminal discord client; not the default (third-party clients break Discord ToS)
+    # terminal discord client; not the default (third-party clients break Discord ToS).
+    # Pinned to upstream HEAD: nixpkgs' 2026-08-18 build has broken QR login.
+    # Upstream needs Go >= 1.27. Drop this override once nixpkgs catches up.
+    ((discordo.override {buildGoModule = buildGo127Module;}).overrideAttrs (_: {
+      version = "0-unstable-2026-11-17";
+      src = fetchFromGitHub {
+        owner = "ayn2op";
+        repo = "discordo";
+        rev = "976d7584f1a9db706c4304eba0d2b1782ffc4450";
+        hash = "sha256-RlK4+Fq5hfM1YqTRDjd+daHBbuyD3GvuXYeuJehIRSs=";
+      };
+      vendorHash = "sha256-7M1jZvuhT58TwcXe78TOuwWh6yRIfmcGgP+2P8ssv2A=";
+    }))
     ultimate-oldschool-pc-font-pack
   ];
 
