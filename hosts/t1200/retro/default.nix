@@ -10,6 +10,8 @@ in {
     ./shell.nix
     ./apps.nix
     ./guide.nix
+    ./screen-filter.nix
+    ./tui.nix
   ];
 
   options.t1200.retro = {

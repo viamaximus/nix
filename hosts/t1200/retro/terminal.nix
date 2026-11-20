@@ -42,7 +42,7 @@
     glowingLine = 0.06;
     burnIn = 0.15;
     bloom = 0.35;
-    rasterization = 0; # no own scanlines: the Hyprland screen shader (crt.frag) adds them
+    rasterization = 0; # no own scanlines: the Hyprland screen filter (screen-filter.nix) adds them
     jitter = 0;
     rbgShift = 0;
     brightness = 0.5;

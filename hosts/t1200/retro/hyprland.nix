@@ -29,7 +29,8 @@
       (k "SUPER + SHIFT + D" (crt "discordo" "discordo") "discord in terminal (discordo)")
       (k "SUPER + S" (crt "spotify" "spotify_player") "music (spotify-player)")
       (k "SUPER + CTRL + A" (crt "mixer" "wiremix") "audio mixer (wiremix)")
-      (k "SUPER + N" (crt "wifi" "impala") "wi-fi (impala)")
+      # --ascii: no nerd-font icons (the Toshiba font has none)
+      (k "SUPER + N" (crt "wifi" "impala --ascii") "wi-fi (impala)")
       (k "SUPER + SHIFT + Escape" (crt "btop" "btop") "system monitor (btop)")
       (k "SUPER + slash" (exec "t1200-guide --window") "this keybind / program guide")
       (k "SUPER + F1" (exec "t1200-guide --window") "this keybind / program guide")
@@ -44,6 +45,7 @@
       (k "SUPER + SHIFT + L" (exec "${ipc} session lock") "lock screen")
       (k "SUPER + SHIFT + N" (exec "${ipc} nightlight-toggle") "night light")
       (k "SUPER + SHIFT + S" (exec "${ipc} screenshot-region") "screenshot region")
+      (k "SUPER + SHIFT + G" (exec "screen-filter toggle") "screen filter: palette monochrome <-> plain CRT")
       (k "SUPER + M" (exec "wl-kbptr") "keyboard pointer: type a hint to click there")
 
       # ── windows ──
@@ -115,8 +117,6 @@ in {
         dim_inactive = true;
         dim_strength = 0.1;
         shadow.enabled = false;
-        # whole-display mild CRT filter (scanlines, glow, vignette); "" disables
-        screen_shader = "${./crt.frag}";
       };
       animations.enabled = lib.mkForce false;
 
